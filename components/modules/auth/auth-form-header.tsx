@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthVariant as AuthFormHeaderProps } from "./auth.types";
+import { AuthVariant as AuthFormHeaderProps } from "./auth-form.types";
 
 const AUTH_HEADER = {
   signIn: {

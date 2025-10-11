@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AuthVariant as AuthFormFooterProps } from "./auth.types";
+import { AuthVariant as AuthFormFooterProps } from "./auth-form.types";
 
 const AUTH_FOOTER = {
   signIn: {
