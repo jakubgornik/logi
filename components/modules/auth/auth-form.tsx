@@ -1,0 +1,57 @@
+"use client";
+
+import { Card } from "@/components/ui/card";
+import { motion } from "motion/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AuthenticationForm,
+  authenticationSchema,
+} from "./auth-form.validation";
+import { itemVariants } from "../home/animation-variants/variants";
+import { AuthFormHeader } from "./auth-form-header";
+import { AuthFormFields } from "./auth-form-fields";
+import { Button } from "@/components/ui/button";
+import { AuthFormFooter } from "./auth-form-footer";
+import { AuthVariant as AuthFormProps } from "./auth-form.types";
+
+export const AuthForm = ({ variant }: AuthFormProps) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AuthenticationForm>({
+    resolver: zodResolver(authenticationSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (data: AuthenticationForm) => {
+    if (variant === "signIn") {
+      // Handle sign in logic here
+      console.log("Sign In:", data);
+    } else {
+      // Handle sign up logic here
+      console.log("Sign Up:", data);
+    }
+  };
+
+  return (
+    <motion.div variants={itemVariants} initial="hidden" animate="visible">
+      <Card className="relative z-[999] p-8 shadow-2xl border-0">
+        <div className="space-y-8">
+          <AuthFormHeader variant={variant} />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <AuthFormFields control={control} errors={errors} />
+            <Button size="lg" className="w-full mt-3">
+              {variant === "signIn" ? "Sign in" : "Sign up"}
+            </Button>
+          </form>
+          <AuthFormFooter variant={variant} />
+        </div>
+      </Card>
+    </motion.div>
+  );
+};

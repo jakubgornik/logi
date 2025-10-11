@@ -112,7 +112,7 @@ function InteractiveDot({ x, y, mouseX, mouseY, isIdle }: InteractiveDotProps) {
     if (isIdle) {
       setIsInTrail(false);
       springOpacity.set(0.25);
-      springScale.set(1);
+      springScale.set(0.8);
     }
   }, [isIdle, springOpacity, springScale]);
 
