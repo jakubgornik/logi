@@ -19,7 +19,7 @@ export function useSignIn() {
 
         const idToken = await userCredential.user.getIdToken();
 
-        const response = await api.post("/auth/login", { idToken });
+        const response = await api.post("/auth/signin", { idToken });
         return response.data;
       }
     },

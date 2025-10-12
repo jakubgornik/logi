@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Controller, Control, FieldErrors } from "react-hook-form";
-import { AuthenticationForm } from "./auth-validation";
+import { AuthenticationForm } from "./auth-form.validation";
 
 interface AuthFormFieldsProps {
   control: Control<AuthenticationForm>;

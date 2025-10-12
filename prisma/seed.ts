@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
 
 async function main() {
-  await prisma.testData.create({
+  await prisma.user.create({
     data: {
-      name: "Sample Test Data",
+      authId: "test-uid-123",
+      email: "test@example.com",
     },
   });
 }
 
 main()
-  .catch((e) => {
+  .catch(() => {
     process.exit(1);
   })
   .finally(async () => {
