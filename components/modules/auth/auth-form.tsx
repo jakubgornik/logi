@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { motion } from "motion/react";
+import { motion } from "framer-motion"; // Note: motion is from framer-motion
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,6 +14,9 @@ import { AuthFormFields } from "./auth-form-fields";
 import { Button } from "@/components/ui/button";
 import { AuthFormFooter } from "./auth-form-footer";
 import { AuthVariant as AuthFormProps } from "./auth-form.types";
+import { useSignUp } from "@/hooks/use-signup";
+import { useSignIn } from "@/hooks/use-signin";
+import { Spinner } from "@/components/ui/spinner";
 
 export const AuthForm = ({ variant }: AuthFormProps) => {
   const {
@@ -28,13 +31,16 @@ export const AuthForm = ({ variant }: AuthFormProps) => {
     },
   });
 
+  const { mutate: signUp, isPending: isSigningUp } = useSignUp();
+  const { mutate: signIn, isPending: isSigningIn } = useSignIn();
+
+  const isLoading = isSigningUp || isSigningIn;
+
   const onSubmit = (data: AuthenticationForm) => {
     if (variant === "signIn") {
-      // Handle sign in logic here
-      console.log("Sign In:", data);
+      signIn(data);
     } else {
-      // Handle sign up logic here
-      console.log("Sign Up:", data);
+      signUp(data);
     }
   };
 
@@ -45,8 +51,19 @@ export const AuthForm = ({ variant }: AuthFormProps) => {
           <AuthFormHeader variant={variant} />
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <AuthFormFields control={control} errors={errors} />
-            <Button size="lg" className="w-full mt-3">
-              {variant === "signIn" ? "Sign in" : "Sign up"}
+            <Button
+              size="lg"
+              className="w-full mt-3"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Spinner />
+              ) : variant === "signIn" ? (
+                "Sign in"
+              ) : (
+                "Sign up"
+              )}
             </Button>
           </form>
           <AuthFormFooter variant={variant} />
