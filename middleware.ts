@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { COOKIE_NAME } from "./lib/shared/consts";
 
-const COOKIE_NAME = "app-session";
 const PUBLIC_PAGES = ["/", "/signin", "/signup"];
 
 export const config = {

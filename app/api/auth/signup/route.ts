@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { prisma } from "@/lib/prisma";
-import Error from "next/error";
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
-    if (!email || !password || password.length < 8) {
+    if (!email || !password) {
       return NextResponse.json(
         { message: "Invalid credentials" },
         { status: 400 }

@@ -3,8 +3,11 @@ import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
 import { prisma } from "@/lib/prisma";
-
-const COOKIE_NAME = "app-session";
+import {
+  COOKIE_NAME,
+  COOKIE_OPTIONS,
+  JWT_SIGN_OPTIONS,
+} from "@/lib/shared/consts";
 
 export async function POST(request: Request) {
   try {
@@ -39,16 +42,10 @@ export async function POST(request: Request) {
         email: user.email,
       },
       process.env.JWT_SECRET!,
-      { expiresIn: "1d" }
+      JWT_SIGN_OPTIONS
     );
 
-    const cookie = serialize(COOKIE_NAME, accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      maxAge: 60 * 60 * 24 * 1, // 1 day
-      sameSite: "lax",
-      path: "/",
-    });
+    const cookie = serialize(COOKIE_NAME, accessToken, COOKIE_OPTIONS);
 
     const response = NextResponse.json(
       { message: "Signed in successfully." },

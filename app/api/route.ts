@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { routeGuard } from "@/lib/auth";
 
-export async function GET() {
+export const GET = routeGuard(async () => {
   try {
     await prisma.$queryRaw`SELECT 1`;
 
     return NextResponse.json({
-      message: "API OK",
+      message: `API ok`,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Health check failed:", error);
-
-    return NextResponse.json({ status: 503 });
+    return NextResponse.json(
+      { message: "Service Unavailable" },
+      { status: 503 }
+    );
   }
-}
+});
