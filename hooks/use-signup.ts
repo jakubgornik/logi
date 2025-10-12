@@ -8,11 +8,6 @@ export function useSignUp() {
       const response = await api.post("/auth/signup", data);
       return response.data;
     },
-    onSuccess: () => {
-      console.log("User signed up successfully");
-    },
-    onError: () => {
-      console.error("Error signing up user:");
-    },
+    // TODO: add notifications
   });
 }

@@ -24,11 +24,7 @@ export function useSignIn() {
       }
     },
     onSuccess: () => {
-      console.log("Successfully signing in user:");
       router.push("/dashboard");
-    },
-    onError: () => {
-      console.log("Error signing in user:");
     },
   });
 }
