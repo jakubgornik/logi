@@ -17,6 +17,7 @@ import { LogOut as LogOutIcon, SidebarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import { useLogout } from "@/hooks/use-logout";
+import { cn } from "@/lib/utils";
 
 export function AppSidebar() {
   const { mutate: logout } = useLogout();
@@ -40,7 +41,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarGroup className="border-b">
+        <SidebarGroup className={cn(open && !isMobile && "border-b")}>
           {open ? (
             <SidebarGroupLabel
               className={clsx(
@@ -53,13 +54,13 @@ export function AppSidebar() {
                   <h1 className="text-lg font-extrabold text-primary">Logi</h1>
                 </div>
               )}
-              <Button size="icon" onClick={toggleSidebar}>
+              <Button size="icon" onClick={toggleSidebar} className="h-8 w-8">
                 <SidebarIcon />
               </Button>
             </SidebarGroupLabel>
           ) : (
-            <div className="w-full flex justify-center items-center py-4 h-16">
-              <Button size="icon" onClick={toggleSidebar}>
+            <div className="w-full flex justify-center items-center ">
+              <Button size="icon" onClick={toggleSidebar} className="h-8 w-8">
                 <SidebarIcon />
               </Button>
             </div>

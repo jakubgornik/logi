@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthForm } from "@/components/modules/auth/auth-form";
-import { InteractiveDots } from "@/components/modules/home/interactive-dots";
+import { AuthForm } from "@/modules/auth/auth-form";
+import { InteractiveDots } from "@/modules/home/interactive-dots";
 import { motion } from "motion/react";
 
 export default function SignInPage() {

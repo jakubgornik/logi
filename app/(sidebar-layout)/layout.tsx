@@ -14,15 +14,15 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarInset>
-      <nav className="flex justify-between sticky h-16 shrink-0 items-center px-4 border-b md:hidden bg-card">
+      <nav className="flex justify-between sticky h-13 shrink-0 items-center px-4 md:hidden bg-card">
         <Button
           size="icon"
           onClick={() => setOpenMobile(true)}
-          className="mr-2"
+          className="h-8 w-8"
         >
           <SidebarIcon />
         </Button>
-        <h1 className="text-2xl font-extrabold text-secondary">Logi</h1>
+        <h1 className="ml-2 text-2xl font-extrabold text-secondary">Logi</h1>
         <div className="w-8" />
       </nav>
       <main className="flex flex-1 flex-col">{children}</main>
