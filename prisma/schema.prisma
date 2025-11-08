@@ -9,11 +9,23 @@ datasource db {
 }
 
 model User {
-    id     String  @id @default(cuid())
-    authId String  @unique
-    email  String  @unique
-    name   String?
-
+    id        String   @id @default(cuid())
+    authId    String   @unique
+    email     String   @unique
+    name      String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt()
+}
+
+model Supplier {
+    id                String   @id @default(cuid())
+    name              String
+    phone             String?
+    email             String?
+    addressCountry    String
+    addressCity       String
+    addressStreet     String
+    addressPostalCode String
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt()
 }
