@@ -13,7 +13,11 @@ import {
 } from "./supplier-form.utils";
 import { ComboboxField } from "@/components/combobox-field";
 
-export const SupplierForm = () => {
+interface SupplierFormProps {
+  userId: string;
+}
+
+export const SupplierForm = ({ userId }: SupplierFormProps) => {
   const {
     control,
     handleSubmit,
@@ -38,94 +42,92 @@ export const SupplierForm = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            <div className="space-y-2">
-              <div className="rounded-lg border bg-background  p-3">
-                <div className="grid grid-cols-1">
-                  <Field>
-                    <FieldLabel
-                      className="font-semibold text-muted-foreground"
-                      htmlFor="name"
-                    >
-                      Supplier Name
-                    </FieldLabel>
-                    <Controller
-                      name="name"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          id="name"
-                          placeholder="Enter supplier name"
-                          aria-invalid={!!errors.name}
-                        />
-                      )}
-                    />
-                    <FieldError
-                      errors={[errors.name]}
-                      className="text-xs text-destructive"
-                    />
-                  </Field>
-                </div>
+            <div className="rounded-lg border p-3">
+              <div className="grid grid-cols-1">
+                <Field>
+                  <FieldLabel
+                    className="font-semibold text-muted-foreground"
+                    htmlFor="name"
+                  >
+                    Supplier Name
+                  </FieldLabel>
+                  <Controller
+                    name="name"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id="name"
+                        placeholder="Enter supplier name"
+                        aria-invalid={!!errors.name}
+                      />
+                    )}
+                  />
+                  <FieldError
+                    errors={[errors.name]}
+                    className="text-xs text-destructive"
+                  />
+                </Field>
               </div>
-              <div className="rounded-lg border bg-background p-3 ">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel
-                      className="font-semibold text-muted-foreground"
-                      htmlFor="email"
-                    >
-                      Email
-                    </FieldLabel>
-                    <Controller
-                      name="email"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          value={field.value || ""}
-                          id="email"
-                          type="email"
-                          placeholder="supplier@example.com"
-                          aria-invalid={!!errors.email}
-                        />
-                      )}
-                    />
-                    <FieldError
-                      errors={[errors.email]}
-                      className="text-xs text-destructive"
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel
-                      className="font-semibold  text-muted-foreground"
-                      htmlFor="phone"
-                    >
-                      Phone Number
-                    </FieldLabel>
-                    <Controller
-                      name="phone"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          value={field.value || ""}
-                          id="phone"
-                          type="tel"
-                          placeholder="444 444 444"
-                          aria-invalid={!!errors.phone}
-                        />
-                      )}
-                    />
-                    <FieldError
-                      errors={[errors.phone]}
-                      className="text-xs text-destructive"
-                    />
-                  </Field>
-                </div>
+            </div>
+            <div className="rounded-lg border p-3 ">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel
+                    className="font-semibold text-muted-foreground"
+                    htmlFor="email"
+                  >
+                    Email
+                  </FieldLabel>
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        id="email"
+                        type="email"
+                        placeholder="supplier@example.com"
+                        aria-invalid={!!errors.email}
+                      />
+                    )}
+                  />
+                  <FieldError
+                    errors={[errors.email]}
+                    className="text-xs text-destructive"
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel
+                    className="font-semibold  text-muted-foreground"
+                    htmlFor="phone"
+                  >
+                    Phone Number
+                  </FieldLabel>
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        id="phone"
+                        type="tel"
+                        placeholder="444 444 444"
+                        aria-invalid={!!errors.phone}
+                      />
+                    )}
+                  />
+                  <FieldError
+                    errors={[errors.phone]}
+                    className="text-xs text-destructive"
+                  />
+                </Field>
               </div>
             </div>
             <div className="space-y-6">
-              <div className="rounded-lg border bg-background p-3 space-y-4">
+              <div className="rounded-lg border p-3 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel

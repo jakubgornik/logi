@@ -16,7 +16,7 @@ export default function DashboardLayout({
   return (
     <>
       <div className="bg-sidebar w-full py-[0.2rem] sm:py-[0.72rem] border-t border-b">
-        <h1 className="font-semibold px-4 text-primary">
+        <h1 className="flex justify-center md:justify-start w-full font-semibold px-4 text-primary">
           {routeNames[pathname]} Page
         </h1>
       </div>
