@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
-import { AuthenticationForm } from "@/components/modules/auth/auth-form.validation";
 import { auth } from "@/lib/firebase";
+import { AuthenticationForm } from "@/modules/auth/auth-form.validation";
 
 export function useSignIn() {
   const router = useRouter();

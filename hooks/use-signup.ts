@@ -1,5 +1,5 @@
-import { AuthenticationForm } from "@/components/modules/auth/auth-form.validation";
 import api from "@/lib/axios";
+import { AuthenticationForm } from "@/modules/auth/auth-form.validation";
 import { useMutation } from "@tanstack/react-query";
 
 export function useSignUp() {
