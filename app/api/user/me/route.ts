@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { routeGuard } from "@/lib/auth";
 
-export const GET = routeGuard(async (request, { user }) => {
+export const GET = routeGuard(async (_, { user }) => {
   const currentUser = await prisma.user.findUnique({
     where: {
       id: user.id,

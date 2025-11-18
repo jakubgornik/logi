@@ -12,6 +12,7 @@ import {
   createDefaultSupplierFormData,
 } from "./supplier-form.utils";
 import { ComboboxField } from "@/components/combobox-field";
+import { useCreateSupplier } from "@/hooks/use-create-supplier";
 
 interface SupplierFormProps {
   userId: string;
@@ -27,8 +28,10 @@ export const SupplierForm = ({ userId }: SupplierFormProps) => {
     defaultValues: createDefaultSupplierFormData(),
   });
 
+  const { mutate: createSupplier } = useCreateSupplier();
+
   const onSubmit = (data: SupplierFormSchema) => {
-    console.log("data", data);
+    createSupplier(data);
   };
 
   return (
@@ -42,7 +45,7 @@ export const SupplierForm = ({ userId }: SupplierFormProps) => {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            <div className="rounded-lg border p-3">
+            <div className="rounded-lg border p-3 bg-background/35">
               <div className="grid grid-cols-1">
                 <Field>
                   <FieldLabel
@@ -70,7 +73,7 @@ export const SupplierForm = ({ userId }: SupplierFormProps) => {
                 </Field>
               </div>
             </div>
-            <div className="rounded-lg border p-3 ">
+            <div className="rounded-lg border p-3 bg-background/35">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel
@@ -127,7 +130,7 @@ export const SupplierForm = ({ userId }: SupplierFormProps) => {
               </div>
             </div>
             <div className="space-y-6">
-              <div className="rounded-lg border p-3 space-y-4">
+              <div className="rounded-lg border p-3 bg-background/35 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel

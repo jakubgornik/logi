@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
@@ -9,7 +9,7 @@ import {
   JWT_SIGN_OPTIONS,
 } from "@/lib/shared/consts";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { idToken } = await request.json();
 
