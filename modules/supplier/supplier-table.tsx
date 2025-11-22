@@ -16,8 +16,10 @@ export type SupplierWithId = SupplierFormSchema & { id: string };
 
 export function SupplierTable() {
   const [rowSelection, setRowSelection] = useState({});
-  const columns = useSupplierTableColumns();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const selectedIds = Object.keys(rowSelection);
 
+  const columns = useSupplierTableColumns();
   const data = useMemo<SupplierWithId[]>(
     () => [
       {
@@ -47,17 +49,20 @@ export function SupplierTable() {
   const table = useReactTable({
     data,
     columns,
-    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
+    enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    manualSorting: true,
     getRowId: (row) => row.id,
     state: {
       rowSelection,
+      sorting,
     },
   });
 
-  const selectedIds = Object.keys(rowSelection);
   console.log(selectedIds);
+  console.log(sorting);
 
   return (
     <div className="p-6">

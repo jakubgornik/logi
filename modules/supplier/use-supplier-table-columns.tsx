@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SupplierWithId } from "./supplier-table";
 
@@ -18,31 +20,29 @@ export function useSupplierTableColumns(): ColumnDef<SupplierWithId>[] {
   return useMemo(
     () => [
       {
-        accessorKey: "name",
+        id: "select",
         header: ({ table }) => (
-          <div className="flex items-center gap-3">
-            <Checkbox
-              checked={
-                table.getIsAllPageRowsSelected() ||
-                (table.getIsSomePageRowsSelected() && "indeterminate")
-              }
-              onCheckedChange={(value) =>
-                table.toggleAllPageRowsSelected(!!value)
-              }
-            />
-            <span>Supplier name</span>
-          </div>
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+          />
         ),
         cell: ({ row }) => (
-          <div className="flex items-center gap-3">
-            <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              onClick={(e) => e.stopPropagation()}
-            />
-            <span className="font-medium">{row.original.name}</span>
-          </div>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            onClick={(e) => e.stopPropagation()}
+          />
         ),
+      },
+      {
+        accessorKey: "name",
+        header: "Supplier Name",
       },
       {
         accessorKey: "phone",

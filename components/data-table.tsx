@@ -1,6 +1,9 @@
 "use client";
 
 import { flexRender, type Table as TableType } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -25,12 +28,36 @@ export function DataTable<TData>({ table }: DataTableProps<TData>) {
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+                      {header.isPlaceholder ? null : (
+                        <div className={cn("flex items-center space-x-2")}>
+                          {header.column.getCanSort() ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="-ml-3 h-8 data-[state=open]:bg-accent hover:bg-muted/50"
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              <span>
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                              </span>
+                              {{
+                                asc: <ArrowUp className="ml-2 h-4 w-4" />,
+                                desc: <ArrowDown className="ml-2 h-4 w-4" />,
+                              }[header.column.getIsSorted() as string] ?? (
+                                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                              )}
+                            </Button>
+                          ) : (
+                            flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )
                           )}
+                        </div>
+                      )}
                     </TableHead>
                   );
                 })}
@@ -43,7 +70,7 @@ export function DataTable<TData>({ table }: DataTableProps<TData>) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/20 transition-colors"
+                  className="hover:bg-muted/50 transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
