@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { buttonVariants } from "../home/animation-variants/variants";
 import { DeleteSupplierDialog } from "./delete-supplier-dialog";
 import { useState } from "react";
+import { useDeleteSupplier } from "@/hooks/use-delete-supplier";
 
 interface SupplierTableActionsProps {
   selectedIds: string[];
@@ -19,6 +20,8 @@ export default function SupplierTableActions({
   const showEditButton = selectedCount === 1;
   const showDeleteButton = selectedCount > 0;
   const isMultipleSelection = selectedCount > 1;
+
+  const { mutate: deleteSupplier } = useDeleteSupplier();
 
   return (
     <div className="pb-2 flex gap-2">
@@ -64,7 +67,7 @@ export default function SupplierTableActions({
       <DeleteSupplierDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={() => console.log("Delete supplier with id:", selectedIds)}
+        onConfirm={() => deleteSupplier({ ids: selectedIds })}
         supplierCount={selectedCount}
       />
     </div>

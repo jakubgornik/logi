@@ -8,7 +8,7 @@ export function useCreateSupplier() {
 
   return useMutation({
     mutationFn: async (data: ICreateSupplier) => {
-      const res = await api.post("/supplier/create", {
+      const res = await api.post("/supplier", {
         ...data,
       });
       return res.data;
