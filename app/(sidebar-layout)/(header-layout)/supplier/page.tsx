@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/get-current-user";
+import { SupplierTable } from "@/modules/supplier/supplier-table";
 import { redirect } from "next/navigation";
 
 export default async function SupplierPage() {
@@ -8,5 +9,9 @@ export default async function SupplierPage() {
     redirect("/signin");
   }
 
-  return <div className="h-full">Suppliers page</div>;
+  return (
+    <div>
+      <SupplierTable />
+    </div>
+  );
 }
