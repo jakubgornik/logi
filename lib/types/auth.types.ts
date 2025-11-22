@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User } from "@/prisma/client/client";
 import { NextRequest } from "next/server";
 
 export interface JWTPayload {

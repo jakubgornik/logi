@@ -2,10 +2,8 @@
 
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SupplierWithId } from "./supplier-table";
+import { ISupplier } from "./supplier.types";
 
 const formatSupplierAddress = (
   street?: string,
@@ -16,7 +14,7 @@ const formatSupplierAddress = (
   return [street, city, postalCode, country].join(", ");
 };
 
-export function useSupplierTableColumns(): ColumnDef<SupplierWithId>[] {
+export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
   return useMemo(
     () => [
       {

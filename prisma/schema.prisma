@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client"
-  output   = "client"
+    provider = "prisma-client"
+    output   = "client"
 }
 
 datasource db {
-    provider  = "postgresql"
+    provider = "postgresql"
 }
 
 model User {

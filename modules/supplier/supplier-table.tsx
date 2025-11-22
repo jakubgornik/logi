@@ -4,46 +4,38 @@ import { DataTable } from "@/components/data-table";
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
   SortingState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useSupplierTableColumns } from "./use-supplier-table-columns";
-import { SupplierFormSchema } from "./supplier-form.validation";
+import {
+  getSelectedIdsFromRowSelection,
+  mapSortingToSortBy,
+} from "./supplier-table.utils";
+import { ISupplier } from "./supplier.types";
 
-export type SupplierWithId = SupplierFormSchema & { id: string };
+interface SupplierTableProps {
+  initialData?: ISupplier[];
+}
 
-export function SupplierTable() {
+export function SupplierTable({ initialData }: SupplierTableProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
-  const selectedIds = Object.keys(rowSelection);
+  const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
+
+  const sortBy = mapSortingToSortBy(sorting);
 
   const columns = useSupplierTableColumns();
-  const data = useMemo<SupplierWithId[]>(
-    () => [
-      {
-        id: "1",
-        name: "ABC Logistics Sp. z o.o.",
-        phone: "+48 22 123 4567",
-        email: "kontakt@abclogistics.pl",
-        addressCountry: "PL",
-        addressCity: "Warszawa",
-        addressStreet: "ul. Marszałkowska 123",
-        addressPostalCode: "00-001",
-      },
-      {
-        id: "2",
-        name: "ABC Logistics Sp. z o.o.",
-        phone: "+48 22 123 4567",
-        email: "kontakt@abclogistics.pl",
-        addressCountry: "PL",
-        addressCity: "Warszawa",
-        addressStreet: "ul. Marszałkowska 123",
-        addressPostalCode: "00-001",
-      },
-    ],
-    []
+
+  const data = useMemo<ISupplier[]>(
+    () =>
+      // initialData will be fetched server side for initial render
+
+      initialData ??
+      [
+        // later replace with client side fetched data
+      ],
+    [initialData]
   );
 
   const table = useReactTable({
@@ -60,9 +52,6 @@ export function SupplierTable() {
       sorting,
     },
   });
-
-  console.log(selectedIds);
-  console.log(sorting);
 
   return (
     <div className="p-6">

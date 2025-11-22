@@ -1,7 +1,7 @@
 import passport from "./passport";
 import { NextRequest, NextResponse } from "next/server";
-import { User } from "@prisma/client";
 import { AuthenticatedHandler } from "@/lib/types/auth.types";
+import { User } from "@/prisma/client/client";
 
 function authenticateRequest(req: NextRequest): Promise<User> {
   return new Promise((resolve, reject) => {
