@@ -5,6 +5,7 @@ import {
   useReactTable,
   getCoreRowModel,
   SortingState,
+  PaginationState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useSupplierTableColumns } from "./use-supplier-table-columns";
@@ -15,6 +16,7 @@ import {
 import { ISupplier } from "./supplier.types";
 import { TableToolbar } from "@/components/filters/table-toolbar";
 import { FilterState } from "@/components/filters/filters.types";
+import Pagination from "@/components/pagination/pagination";
 
 interface SupplierTableProps {
   initialData?: ISupplier[];
@@ -23,20 +25,25 @@ interface SupplierTableProps {
 export function SupplierTable({ initialData }: SupplierTableProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
-  const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
   const [filters, setFilters] = useState<FilterState>({
     search: "",
     filters: [],
   });
-
-  const handleFiltersChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
-  };
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
 
   const sortBy = mapSortingToSortBy(sorting);
 
   const columns = useSupplierTableColumns();
 
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
+
+  // TODO
   const data = useMemo<ISupplier[]>(
     () =>
       // initialData will be fetched server side for initial render
@@ -56,13 +63,16 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     manualSorting: true,
+    onPaginationChange: setPagination,
+    manualPagination: true,
     getRowId: (row) => row.id,
     state: {
       rowSelection,
       sorting,
+      pagination,
     },
   });
-
+  console.log(pagination);
   return (
     <div className="p-6">
       <TableToolbar
@@ -72,6 +82,11 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
         omitColumnsById={["select"]}
       />
       <DataTable table={table} />
+      <Pagination
+        table={table}
+        totalCount={data?.length ?? 0}
+        pageSizeOptions={[10, 15, 20]}
+      />
     </div>
   );
 }
