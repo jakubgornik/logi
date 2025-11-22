@@ -13,6 +13,8 @@ import {
   mapSortingToSortBy,
 } from "./supplier-table.utils";
 import { ISupplier } from "./supplier.types";
+import { TableToolbar } from "@/components/filters/table-toolbar";
+import { FilterState } from "@/components/filters/filters.types";
 
 interface SupplierTableProps {
   initialData?: ISupplier[];
@@ -22,6 +24,14 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
+  const [filters, setFilters] = useState<FilterState>({
+    search: "",
+    filters: [],
+  });
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
 
   const sortBy = mapSortingToSortBy(sorting);
 
@@ -55,6 +65,12 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
 
   return (
     <div className="p-6">
+      <TableToolbar
+        table={table}
+        onFiltersChange={handleFiltersChange}
+        currentFilters={filters}
+        omitColumnsById={["select"]}
+      />
       <DataTable table={table} />
     </div>
   );

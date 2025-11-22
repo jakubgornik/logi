@@ -4,9 +4,9 @@ import { usePathname } from "next/navigation";
 
 const routeNames: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/suppliers": "Suppliers",
-  "/suppliers/create": "Create Supplier",
-  "/suppliers/edit": "Edit Supplier",
+  "/supplier": "Suppliers",
+  "/supplier/create": "Create Supplier",
+  "/supplier/edit": "Edit Supplier",
 };
 
 export default function DashboardLayout({

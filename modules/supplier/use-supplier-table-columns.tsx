@@ -40,7 +40,7 @@ export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
       },
       {
         accessorKey: "name",
-        header: "Supplier Name",
+        header: "Name",
       },
       {
         accessorKey: "phone",
