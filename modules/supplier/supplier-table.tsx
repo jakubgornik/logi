@@ -17,6 +17,7 @@ import { ISupplier } from "./supplier.types";
 import { TableToolbar } from "@/components/filters/table-toolbar";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
+import SupplierTableActions from "./supplier-table-actions";
 
 interface SupplierTableProps {
   initialData?: ISupplier[];
@@ -72,15 +73,18 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
       pagination,
     },
   });
-  console.log(pagination);
+
   return (
     <div className="p-6">
-      <TableToolbar
-        table={table}
-        onFiltersChange={handleFiltersChange}
-        currentFilters={filters}
-        omitColumnsById={["select"]}
-      />
+      <div className="flex justify-between">
+        <TableToolbar
+          table={table}
+          onFiltersChange={handleFiltersChange}
+          currentFilters={filters}
+          omitColumnsById={["select"]}
+        />
+        <SupplierTableActions selectedIds={selectedIds} />
+      </div>
       <DataTable table={table} />
       <Pagination
         table={table}

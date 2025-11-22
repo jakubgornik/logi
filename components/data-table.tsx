@@ -24,7 +24,7 @@ export function DataTable<TData>({ table }: DataTableProps<TData>) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow className="hover:bg-transparent" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -34,7 +34,7 @@ export function DataTable<TData>({ table }: DataTableProps<TData>) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="-ml-3 h-8 data-[state=open]:bg-accent hover:bg-muted/50"
+                              className="-ml-3 hover:bg-transparent"
                               onClick={header.column.getToggleSortingHandler()}
                             >
                               <span>

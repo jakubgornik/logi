@@ -18,4 +18,16 @@ const itemVariants = {
   },
 };
 
-export { containerVariants, itemVariants };
+const buttonVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: 10,
+  },
+};
+
+export { containerVariants, itemVariants, buttonVariants };
