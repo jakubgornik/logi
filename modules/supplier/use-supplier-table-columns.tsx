@@ -21,6 +21,7 @@ export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
         id: "select",
         header: ({ table }) => (
           <Checkbox
+            className="shadow-2xl"
             checked={
               table.getIsAllPageRowsSelected() ||
               (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -32,6 +33,7 @@ export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
         ),
         cell: ({ row }) => (
           <Checkbox
+            className="shadow-2xl"
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             onClick={(e) => e.stopPropagation()}
