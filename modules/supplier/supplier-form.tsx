@@ -15,17 +15,17 @@ import { ComboboxField } from "@/components/combobox-field";
 import { useCreateSupplier } from "@/hooks/use-create-supplier";
 
 interface SupplierFormProps {
-  userId: string;
+  initialData?: SupplierFormSchema;
 }
 
-export const SupplierForm = ({ userId }: SupplierFormProps) => {
+export const SupplierForm = ({ initialData }: SupplierFormProps) => {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<SupplierFormSchema>({
     resolver: zodResolver(supplierSchema),
-    defaultValues: createDefaultSupplierFormData(),
+    defaultValues: createDefaultSupplierFormData(initialData),
   });
 
   const { mutate: createSupplier } = useCreateSupplier();
