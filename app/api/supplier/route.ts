@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { routeGuard } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { supplierSchema } from "@/modules/supplier/supplier-form.validation";
-import { MultipleIdsPayload } from "@/lib/types/common.types";
+import { IdArraySchema } from "@/lib/types/common.types";
 
 export const POST = routeGuard(async (request: NextRequest) => {
   const payload = supplierSchema.safeParse(await request.json());
@@ -36,11 +36,13 @@ export const POST = routeGuard(async (request: NextRequest) => {
 });
 
 export const DELETE = routeGuard(async (request: NextRequest) => {
-  const body = (await request.json()) as MultipleIdsPayload;
+  const payload = IdArraySchema.safeParse(await request.json());
 
-  if (!body) {
+  if (!payload.success) {
     return NextResponse.json(
-      { message: "Invalid data: ids array is required" },
+      {
+        message: "Invalid data",
+      },
       { status: 400 }
     );
   }
@@ -48,12 +50,14 @@ export const DELETE = routeGuard(async (request: NextRequest) => {
   try {
     await prisma.supplier.deleteMany({
       where: {
-        id: { in: body.ids },
+        id: { in: payload.data.ids },
       },
     });
 
     return NextResponse.json(
-      { message: `${body.ids.length} supplier(s) deleted successfully` },
+      {
+        message: `${payload.data.ids.length} supplier(s) deleted successfully`,
+      },
       { status: 200 }
     );
   } catch (error) {
