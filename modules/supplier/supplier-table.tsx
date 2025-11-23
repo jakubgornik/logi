@@ -20,11 +20,12 @@ import Pagination from "@/components/pagination/pagination";
 import SupplierTableActions from "./supplier-table-actions";
 import { useGetSuppliers } from "@/hooks/use-get-supplier";
 import { useDeleteSupplier } from "@/hooks/use-delete-supplier";
+import { PaginatedResponse } from "@/lib/types/common.types";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
 interface SupplierTableProps {
-  initialData?: ISupplier[];
+  initialData?: PaginatedResponse<ISupplier>;
 }
 
 export function SupplierTable({ initialData }: SupplierTableProps) {
@@ -48,30 +49,21 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
     setFilters(newFilters);
   };
 
-  const { data } = useGetSuppliers({
-    page: pagination.pageIndex,
-    pageSize: pagination.pageSize,
-    sortBy,
-    filters: filters.filters,
-  });
+  const { data } = useGetSuppliers(
+    {
+      page: pagination.pageIndex,
+      pageSize: pagination.pageSize,
+      sortBy,
+      filters: filters.filters,
+    },
+    initialData
+  );
 
   const { mutate: deleteSupplier } = useDeleteSupplier({
     onSuccess: () => {
       setRowSelection({});
     },
   });
-
-  // TODO
-  // const data = useMemo<ISupplier[]>(
-  //   () =>
-  //     // initialData will be fetched server side for initial render
-
-  //     initialData ??
-  //     [
-  //       // later replace with client side fetched data
-  //     ],
-  //   [initialData]
-  // );
 
   const items = useMemo(() => data?.data ?? [], [data]);
   const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);

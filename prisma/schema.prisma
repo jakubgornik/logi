@@ -19,8 +19,8 @@ model User {
 model Supplier {
     id                String   @id @default(cuid())
     name              String
-    phone             String?
-    email             String?
+    phone             String
+    email             String
     addressCountry    String
     addressCity       String
     addressStreet     String
