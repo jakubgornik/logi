@@ -18,6 +18,10 @@ import { TableToolbar } from "@/components/filters/table-toolbar";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import SupplierTableActions from "./supplier-table-actions";
+import { useGetSuppliers } from "@/hooks/use-get-supplier";
+import { useDeleteSupplier } from "@/hooks/use-delete-supplier";
+
+const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
 interface SupplierTableProps {
   initialData?: ISupplier[];
@@ -44,20 +48,37 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
     setFilters(newFilters);
   };
 
-  // TODO
-  const data = useMemo<ISupplier[]>(
-    () =>
-      // initialData will be fetched server side for initial render
+  const { data } = useGetSuppliers({
+    page: pagination.pageIndex,
+    pageSize: pagination.pageSize,
+    sortBy,
+    filters: filters.filters,
+  });
 
-      initialData ??
-      [
-        // later replace with client side fetched data
-      ],
-    [initialData]
-  );
+  const { mutate: deleteSupplier } = useDeleteSupplier({
+    onSuccess: () => {
+      setRowSelection({});
+    },
+  });
+
+  // TODO
+  // const data = useMemo<ISupplier[]>(
+  //   () =>
+  //     // initialData will be fetched server side for initial render
+
+  //     initialData ??
+  //     [
+  //       // later replace with client side fetched data
+  //     ],
+  //   [initialData]
+  // );
+
+  const items = useMemo(() => data?.data ?? [], [data]);
+  const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);
+  const pageCount = useMemo(() => data?.totalPages, [data]);
 
   const table = useReactTable({
-    data,
+    data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
@@ -67,6 +88,7 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
     onPaginationChange: setPagination,
     manualPagination: true,
     getRowId: (row) => row.id,
+    pageCount,
     state: {
       rowSelection,
       sorting,
@@ -83,13 +105,20 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
           currentFilters={filters}
           omitColumnsById={["select"]}
         />
-        <SupplierTableActions selectedIds={selectedIds} />
+        <SupplierTableActions
+          selectedIds={selectedIds}
+          onDelete={() =>
+            deleteSupplier({
+              ids: selectedIds,
+            })
+          }
+        />
       </div>
       <DataTable table={table} />
       <Pagination
         table={table}
-        totalCount={data?.length ?? 0}
-        pageSizeOptions={[10, 15, 20]}
+        totalCount={totalCount}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
       />
     </div>
   );

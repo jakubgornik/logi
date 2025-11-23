@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 interface DeleteSupplierDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   supplierCount: number;
 }
 
@@ -24,7 +24,7 @@ export function DeleteSupplierDialog({
   supplierCount,
 }: DeleteSupplierDialogProps) {
   const handleConfirm = () => {
-    onConfirm();
+    onConfirm?.();
     onClose();
   };
 

@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/get-current-user";
+import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { SupplierTable } from "@/modules/supplier/supplier-table";
 import { redirect } from "next/navigation";
 
@@ -9,6 +9,7 @@ export default async function SupplierPage() {
     redirect("/signin");
   }
 
+  // mock
   const initialData = [
     {
       id: "1",

@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/get-current-user";
+import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { SupplierForm } from "@/modules/supplier/supplier-form";
 import { redirect } from "next/navigation";
 

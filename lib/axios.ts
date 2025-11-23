@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { paramsSerializer } from "./utils/params-serializer";
 
 const SIGN_IN_ROUTE = "/signin";
 
@@ -6,6 +7,7 @@ const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
   timeout: 10000,
+  paramsSerializer: (params) => paramsSerializer(params),
 });
 
 api.interceptors.response.use(

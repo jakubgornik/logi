@@ -9,10 +9,12 @@ import { useDeleteSupplier } from "@/hooks/use-delete-supplier";
 
 interface SupplierTableActionsProps {
   selectedIds: string[];
+  onDelete?: () => void;
 }
 
 export default function SupplierTableActions({
   selectedIds,
+  onDelete,
 }: SupplierTableActionsProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -20,8 +22,6 @@ export default function SupplierTableActions({
   const showEditButton = selectedCount === 1;
   const showDeleteButton = selectedCount > 0;
   const isMultipleSelection = selectedCount > 1;
-
-  const { mutate: deleteSupplier } = useDeleteSupplier();
 
   return (
     <div className="pb-2 flex gap-2">
@@ -67,7 +67,7 @@ export default function SupplierTableActions({
       <DeleteSupplierDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={() => deleteSupplier({ ids: selectedIds })}
+        onConfirm={onDelete}
         supplierCount={selectedCount}
       />
     </div>

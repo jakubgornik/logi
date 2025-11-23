@@ -1,7 +1,7 @@
-import { getCurrentUser } from "@/lib/get-current-user";
 import { SupplierForm } from "@/modules/supplier/supplier-form";
 import { redirect } from "next/navigation";
 import { SupplierFormSchema } from "@/modules/supplier/supplier-form.validation";
+import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 
 interface SupplierEditPageProps {
   params: Promise<{

@@ -1,5 +1,5 @@
+import { SortBy } from "@/lib/types/common.types";
 import { SortingState } from "@tanstack/react-table";
-import { SortBy } from "./supplier.types";
 
 export const getSelectedIdsFromRowSelection = (
   rowSelection: Record<string, boolean>
