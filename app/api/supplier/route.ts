@@ -82,18 +82,11 @@ export const GET = routeGuard(async (request: NextRequest) => {
       { status: 400 }
     );
   }
-
   const result = await getSuppliers(payload.data);
 
   if (!result.success) {
     return NextResponse.json({ message: result.error }, { status: 500 });
   }
 
-  return NextResponse.json({
-    data: result.data,
-    page: result.page,
-    pageSize: result.pageSize,
-    totalCount: result.totalCount,
-    totalPages: result.totalPages,
-  });
+  return NextResponse.json(result.data);
 });

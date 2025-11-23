@@ -26,3 +26,17 @@ export const filterSchema = z.object({
   type: z.string().optional(),
   value: z.any(),
 });
+
+export type FiltersType = z.infer<typeof filterSchema>;
+
+type SuccessResult<T> = {
+  success: true;
+  data: T;
+};
+
+type ErrorResult = {
+  success: false;
+  error: string;
+};
+
+export type ServiceResult<T> = SuccessResult<T> | ErrorResult;
