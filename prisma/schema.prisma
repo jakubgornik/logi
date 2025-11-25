@@ -7,6 +7,18 @@ datasource db {
     provider = "postgresql"
 }
 
+enum Scope {
+    IT_HARDWARE
+    OFFICE_SUPPLIES
+    CONSTRUCTION
+}
+
+enum ContractStatus {
+    DRAFT
+    ACTIVE
+    TERMINATED
+}
+
 model User {
     id        String   @id @default(cuid())
     authId    String   @unique
@@ -14,6 +26,9 @@ model User {
     name      String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt()
+
+    scopes    Scope[]
+    contracts Contract[]
 }
 
 model Supplier {
@@ -27,4 +42,32 @@ model Supplier {
     addressPostalCode String
     createdAt         DateTime @default(now())
     updatedAt         DateTime @updatedAt()
+
+    scopes    Scope[]
+    contracts Contract[]
+}
+
+model Product {
+    id        String   @id @default(cuid())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
+
+    scope Scope
+}
+
+model Contract {
+    id         String         @id @default(cuid())
+    title      String
+    status     ContractStatus @default(DRAFT)
+    supplierId String
+    userId     String
+    createdAt  DateTime       @default(now())
+    updatedAt  DateTime       @updatedAt()
+
+    supplier Supplier @relation(fields: [supplierId], references: [id])
+    user     User     @relation(fields: [userId], references: [id])
+
+    @@index([supplierId])
+    @@index([userId])
 }
