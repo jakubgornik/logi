@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { SidebarIcon } from "lucide-react";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/app-sidebar/app-sidebar";
 
 const MainContent = ({ children }: { children: React.ReactNode }) => {
   const { setOpenMobile } = useSidebar();
