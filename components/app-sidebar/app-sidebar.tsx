@@ -6,12 +6,7 @@ import { useLogout } from "@/hooks/use-logout";
 import { SidebarHeader } from "./app-sidebar-header";
 import { SidebarMenuItems } from "./app-sidebar-menu-items";
 import { SidebarFooter } from "./app-sidebar-footer";
-
-export const ROUTES = {
-  DASHBOARD: "/dashboard",
-  SUPPLIER: "/supplier",
-  SETTINGS: "/settings",
-};
+import { ROUTES } from "@/lib/routes";
 
 const SIDEBAR_MENU = [
   {

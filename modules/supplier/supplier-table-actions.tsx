@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { buttonVariants } from "../home/animation-variants/variants";
 import { DeleteSupplierDialog } from "./delete-supplier-dialog";
 import { useState } from "react";
-import { useDeleteSupplier } from "@/hooks/use-delete-supplier";
+import { useRouter } from "next/navigation";
+import { SUB_ROUTES } from "@/lib/routes";
 
 interface SupplierTableActionsProps {
   selectedIds: string[];
@@ -18,6 +19,8 @@ export default function SupplierTableActions({
 }: SupplierTableActionsProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  const router = useRouter();
+
   const selectedCount = selectedIds.length;
   const showEditButton = selectedCount === 1;
   const showDeleteButton = selectedCount > 0;
@@ -26,24 +29,6 @@ export default function SupplierTableActions({
   return (
     <div className="pb-2 flex gap-2">
       <AnimatePresence>
-        {showEditButton && (
-          <motion.div
-            key="edit"
-            variants={buttonVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10"
-              onClick={() => console.log("edit")}
-            >
-              Edit Supplier
-            </Button>
-          </motion.div>
-        )}
         {showDeleteButton && (
           <motion.div
             key="delete"
@@ -63,6 +48,34 @@ export default function SupplierTableActions({
             </Button>
           </motion.div>
         )}
+        {showEditButton && (
+          <motion.div
+            key="edit"
+            variants={buttonVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10"
+              onClick={() =>
+                router.push(SUB_ROUTES.SUPPLIER_EDIT(selectedIds[0]))
+              }
+            >
+              Edit Supplier
+            </Button>
+          </motion.div>
+        )}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10"
+          onClick={() => router.push(SUB_ROUTES.SUPPLIER_CREATE)}
+        >
+          Create Supplier
+        </Button>
       </AnimatePresence>
       <DeleteSupplierDialog
         isOpen={isDeleteDialogOpen}

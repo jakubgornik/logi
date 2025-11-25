@@ -5,7 +5,7 @@ export const mapSupplierSortToOrderBy = (
   sortBy?: SortBy[]
 ): Prisma.SupplierOrderByWithRelationInput[] => {
   if (!sortBy || sortBy.length === 0) {
-    return [{ name: "desc" }];
+    return [{ createdAt: "asc" }];
   }
 
   return sortBy.map((sort) => {

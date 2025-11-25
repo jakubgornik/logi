@@ -2,6 +2,8 @@ import { SupplierForm } from "@/modules/supplier/supplier-form";
 import { redirect } from "next/navigation";
 import { SupplierFormSchema } from "@/modules/supplier/supplier-form.validation";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
+import { getSupplier } from "@/lib/fetchers/get-supplier";
+import { IdArraySchema } from "@/lib/types/common.types";
 
 interface SupplierEditPageProps {
   params: Promise<{
@@ -18,19 +20,8 @@ export default async function SupplierEditPage({
     redirect("/signin");
   }
 
-  const mockSupplierData: SupplierFormSchema = {
-    name: "ABC Logistics Sp. z o.o.",
-    phone: "+48 22 123 4567",
-    email: "kontakt@abclogistics.pl",
-    addressCountry: "PL",
-    addressCity: "Warszawa",
-    addressStreet: "ul. Marszałkowska 123",
-    addressPostalCode: "00-001",
-  };
+  const { id } = await params;
+  const supplier = await getSupplier(id);
 
-  return (
-    <div className="h-full">
-      <SupplierForm initialData={mockSupplierData} />
-    </div>
-  );
+  return <SupplierForm initialData={supplier} supplierId={id} />;
 }

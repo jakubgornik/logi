@@ -16,9 +16,13 @@ import { useCreateSupplier } from "@/hooks/use-create-supplier";
 
 interface SupplierFormProps {
   initialData?: SupplierFormSchema;
+  supplierId?: string;
 }
 
-export const SupplierForm = ({ initialData }: SupplierFormProps) => {
+export const SupplierForm = ({
+  initialData,
+  supplierId,
+}: SupplierFormProps) => {
   const {
     control,
     handleSubmit,
@@ -28,17 +32,24 @@ export const SupplierForm = ({ initialData }: SupplierFormProps) => {
     defaultValues: createDefaultSupplierFormData(initialData),
   });
 
-  const { mutate: createSupplier } = useCreateSupplier();
-
+  const { mutate: createSupplier, isPending: isCreating } = useCreateSupplier();
+  // const { mutate: updateSupplier, isPending: isUpdating } = useUpdateSupplier();
+  const isEditMode = !!supplierId;
   const onSubmit = (data: SupplierFormSchema) => {
-    createSupplier(data);
+    if (isEditMode && supplierId) {
+      // updateSupplier({ id: supplierId, data });
+    } else {
+      createSupplier(data);
+    }
   };
 
   return (
     <div className="p-3">
       <Card>
         <CardHeader>
-          <CardTitle className="text-primary">Create Supplier</CardTitle>
+          <CardTitle className="text-primary">
+            {isEditMode ? "Edit Supplier" : "Create Supplier"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form
@@ -245,7 +256,7 @@ export const SupplierForm = ({ initialData }: SupplierFormProps) => {
             </div>
             <div className="flex justify-end">
               <Button size="lg" type="submit">
-                Create Supplier
+                {isEditMode ? "Update Supplier" : "Create Supplier"}
               </Button>
             </div>
           </form>

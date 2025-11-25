@@ -9,9 +9,5 @@ export default async function SupplierCreatePage() {
     redirect("/signin");
   }
 
-  return (
-    <div className="h-full">
-      <SupplierForm />
-    </div>
-  );
+  return <SupplierForm />;
 }
