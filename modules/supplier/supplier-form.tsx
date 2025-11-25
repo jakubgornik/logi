@@ -13,6 +13,7 @@ import {
 } from "./supplier-form.utils";
 import { ComboboxField } from "@/components/combobox-field";
 import { useCreateSupplier } from "@/hooks/use-create-supplier";
+import { useUpdateSupplier } from "@/hooks/use-update-supplier";
 
 interface SupplierFormProps {
   initialData?: SupplierFormSchema;
@@ -31,13 +32,14 @@ export const SupplierForm = ({
     resolver: zodResolver(supplierSchema),
     defaultValues: createDefaultSupplierFormData(initialData),
   });
-
-  const { mutate: createSupplier, isPending: isCreating } = useCreateSupplier();
-  // const { mutate: updateSupplier, isPending: isUpdating } = useUpdateSupplier();
   const isEditMode = !!supplierId;
+
+  const { mutate: createSupplier } = useCreateSupplier();
+  const { mutate: updateSupplier } = useUpdateSupplier();
+
   const onSubmit = (data: SupplierFormSchema) => {
     if (isEditMode && supplierId) {
-      // updateSupplier({ id: supplierId, data });
+      updateSupplier({ id: supplierId, data });
     } else {
       createSupplier(data);
     }
