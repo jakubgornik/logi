@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,19 +16,13 @@ import {
   useCreateSupplier,
   useUpdateSupplier,
 } from "@/hooks/supplier/supplier.hooks";
-import { Scope } from "@/prisma/client/enums";
 import { MultiSelectField } from "@/components/multi-select-field";
+import { SCOPE_OPTIONS } from "@/lib/shared/consts";
 
 interface SupplierFormProps {
   initialData?: SupplierFormSchema;
   supplierId?: string;
 }
-
-const scopeOptions = [
-  { label: "IT Hardware", value: Scope.IT_HARDWARE },
-  { label: "Office Supplies", value: Scope.OFFICE_SUPPLIES },
-  { label: "Construction", value: Scope.CONSTRUCTION },
-];
 
 export const SupplierForm = ({
   initialData,
@@ -276,7 +270,7 @@ export const SupplierForm = ({
                     control={control}
                     render={({ field }) => (
                       <MultiSelectField
-                        options={scopeOptions}
+                        options={SCOPE_OPTIONS}
                         value={field.value}
                         onChange={field.onChange}
                         placeholder="Select scopes"
