@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { AuthVariant as AuthFormFooterProps } from "./auth-form.types";
+import { ROUTES } from "@/lib/routes";
 
 const AUTH_FOOTER = {
   signIn: {
     text: "Don't have an account?",
     linkText: "Sign up",
-    href: "/signup",
+    href: ROUTES.SIGN_UP,
   },
   signUp: {
     text: "Already have an account?",
     linkText: "Sign in",
-    href: "/signin",
+    href: ROUTES.SIGN_IN,
   },
 } as const;
 

@@ -1,9 +1,8 @@
 import { SupplierForm } from "@/modules/supplier/supplier-form";
 import { redirect } from "next/navigation";
-import { SupplierFormSchema } from "@/modules/supplier/supplier-form.validation";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getSupplier } from "@/lib/fetchers/get-supplier";
-import { IdArraySchema } from "@/lib/types/common.types";
+import { ROUTES } from "@/lib/routes";
 
 interface SupplierEditPageProps {
   params: Promise<{
@@ -17,7 +16,7 @@ export default async function SupplierEditPage({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/signin");
+    redirect(ROUTES.SIGN_IN);
   }
 
   const { id } = await params;

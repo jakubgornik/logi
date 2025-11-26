@@ -1,3 +1,4 @@
+import { Scope } from "@/prisma/client/enums";
 import { z } from "zod";
 
 export const supplierSchema = z.object({
@@ -8,6 +9,7 @@ export const supplierSchema = z.object({
   addressCity: z.string().min(1, "City is required"),
   addressStreet: z.string().min(1, "Street address is required"),
   addressPostalCode: z.string().min(1, "Postal code is required"),
+  scopes: z.array(z.enum(Scope)).min(1, "At least one scope is required"),
 });
 
 export type SupplierFormSchema = z.infer<typeof supplierSchema>;

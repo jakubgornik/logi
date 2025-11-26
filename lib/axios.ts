@@ -1,7 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { paramsSerializer } from "./utils/params-serializer";
-
-const SIGN_IN_ROUTE = "/signin";
+import { ROUTES } from "./routes";
 
 const api = axios.create({
   baseURL: "/api",
@@ -16,9 +15,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       if (
         typeof window !== "undefined" &&
-        window.location.pathname !== SIGN_IN_ROUTE
+        window.location.pathname !== ROUTES.SIGN_IN
       ) {
-        window.location.href = SIGN_IN_ROUTE;
+        window.location.href = ROUTES.SIGN_IN;
       }
     }
     return Promise.reject(error);

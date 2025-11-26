@@ -40,3 +40,8 @@ type ErrorResult = {
 };
 
 export type ServiceResult<T> = SuccessResult<T> | ErrorResult;
+
+export type Option = {
+  label: string;
+  value: string;
+};

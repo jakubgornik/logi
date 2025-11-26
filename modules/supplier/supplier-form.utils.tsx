@@ -11,6 +11,7 @@ export const createDefaultSupplierFormData = (
   addressCity: data?.addressCity || "",
   addressStreet: data?.addressStreet || "",
   addressPostalCode: data?.addressPostalCode || "",
+  scopes: data?.scopes || [],
 });
 
 export function getCountryFlag(countryCode: string) {

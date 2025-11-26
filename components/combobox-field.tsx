@@ -64,8 +64,11 @@ export function ComboboxField({
           onBlur={onBlur}
           id={id}
           aria-invalid={ariaInvalid}
+          tabIndex={0}
           className={cn(
-            "flex h-9 w-full items-center justify-between rounded-md px-3 py-1 border border-input bg-transparent shadow-xs text-base text-foreground md:text-sm cursor-pointer outline-none aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+            "flex h-9 w-full items-center justify-between rounded-md px-3 py-1 border border-input bg-transparent shadow-xs text-foreground md:text-sm cursor-pointer transition-[border-color,box-shadow] outline-none",
+            "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+            "aria-invalid:ring-destructive/20 aria-invalid:border-destructive",
             !value && "text-muted-foreground"
           )}
           onClick={() => setOpen(true)}
