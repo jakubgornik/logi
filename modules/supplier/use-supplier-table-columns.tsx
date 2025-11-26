@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ISupplier } from "./supplier.types";
+import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 
 const formatSupplierAddress = (
   street?: string,
@@ -43,6 +45,14 @@ export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
       {
         accessorKey: "name",
         header: "Name",
+        cell: ({ row }) => (
+          <Link
+            className="hover:underline"
+            href={`${ROUTES.SUPPLIER}/${row.original.id}`}
+          >
+            {row.original.name}
+          </Link>
+        ),
       },
       {
         accessorKey: "phone",

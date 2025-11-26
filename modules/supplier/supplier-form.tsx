@@ -12,8 +12,10 @@ import {
   createDefaultSupplierFormData,
 } from "./supplier-form.utils";
 import { ComboboxField } from "@/components/combobox-field";
-import { useCreateSupplier } from "@/hooks/use-create-supplier";
-import { useUpdateSupplier } from "@/hooks/use-update-supplier";
+import {
+  useCreateSupplier,
+  useUpdateSupplier,
+} from "@/hooks/supplier/supplier.hooks";
 
 interface SupplierFormProps {
   initialData?: SupplierFormSchema;
