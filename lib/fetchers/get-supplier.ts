@@ -1,5 +1,4 @@
 import { cache } from "react";
-import { ISupplier } from "@/modules/supplier/supplier.types";
 import { Supplier } from "@/prisma/client/client";
 import { prisma } from "../prisma";
 
