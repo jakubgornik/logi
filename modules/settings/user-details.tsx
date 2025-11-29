@@ -49,9 +49,7 @@ export const UserDetailsCard = ({ user }: UserDetailsCardProps) => {
           className="flex gap-1 flex-row items-center px-12 py-2"
         >
           <UserCog className="h-4 w-4" />
-          <Link href={SUB_ROUTES.SETTINGS_UPDATE(user.id)}>
-            Update user profile
-          </Link>
+          <Link href={SUB_ROUTES.SETTINGS_UPDATE}>Update user profile</Link>
         </Button>
       </div>
       <ScopesList scopes={user.scopes} />

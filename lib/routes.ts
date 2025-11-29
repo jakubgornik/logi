@@ -9,7 +9,7 @@ export const ROUTES = {
 export const SUB_ROUTES = {
   SUPPLIER_CREATE: `${ROUTES.SUPPLIER}/create`,
   SUPPLIER_EDIT: (id: string) => `${ROUTES.SUPPLIER}/edit/${id}`,
-  SETTINGS_UPDATE: (id: string) => `${ROUTES.SETTINGS}/update/${id}`,
+  SETTINGS_UPDATE: `${ROUTES.SETTINGS}/update`,
 };
 
 export const routeNames: Record<string, string> = {
@@ -19,4 +19,5 @@ export const routeNames: Record<string, string> = {
   "/supplier/edit/[id]": "Edit Supplier",
   "/supplier/[id]": "Supplier Details",
   "/settings": "User settings",
+  "/settings/update": "Update User",
 };
