@@ -1,4 +1,3 @@
-import { User } from "@/prisma/client/client";
 import { Scope } from "@/prisma/client/enums";
 import { z } from "zod";
 

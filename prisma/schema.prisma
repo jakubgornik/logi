@@ -14,8 +14,8 @@ enum Scope {
 }
 
 enum ContractStatus {
-    DRAFT
     ACTIVE
+    EXPIRED
     TERMINATED
 }
 
@@ -62,7 +62,7 @@ model Product {
 model Contract {
     id         String         @id @default(cuid())
     title      String
-    status     ContractStatus @default(DRAFT)
+    status     ContractStatus
     validUntil DateTime
     supplierId String
     userId     String
