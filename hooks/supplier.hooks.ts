@@ -6,7 +6,10 @@ import {
 } from "@/lib/types/common.types";
 import { SupplierFormSchema as ICreateSupplier } from "@/modules/supplier/supplier-form.validation";
 import { SupplierFormSchema as IUpdateSupplier } from "@/modules/supplier/supplier-form.validation";
-import { ISupplier, ISupplierQuery } from "@/modules/supplier/supplier.types";
+import {
+  ISupplierWithId,
+  ISupplierQuery,
+} from "@/modules/supplier/supplier.types";
 import {
   keepPreviousData,
   useMutation,
@@ -18,7 +21,7 @@ import { useRouter } from "next/navigation";
 
 const useGetSuppliers = (
   query: Partial<ISupplierQuery>,
-  initialData?: PaginatedResponse<ISupplier>
+  initialData?: PaginatedResponse<ISupplierWithId>
 ) => {
   const isFirstPage = query.page === 0;
   const hasNoFilters = !query.filters || query.filters.length === 0;
@@ -31,9 +34,12 @@ const useGetSuppliers = (
   return useQuery({
     queryKey: ["supplier", query],
     queryFn: async () => {
-      const res = await api.get<PaginatedResponse<ISupplier>>("/supplier", {
-        params: query,
-      });
+      const res = await api.get<PaginatedResponse<ISupplierWithId>>(
+        "/supplier",
+        {
+          params: query,
+        }
+      );
       return res.data;
     },
     initialData: shouldUseInitialData ? initialData : undefined,

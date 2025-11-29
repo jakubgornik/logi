@@ -9,7 +9,7 @@ interface RouteParams {
 
 export const PUT = routeGuard<RouteParams>(
   async (request: NextRequest, { params }) => {
-    const { id } = await params;
+    const { id } = params;
     const payload = userSchema.safeParse(await request.json());
 
     if (!payload.success) {

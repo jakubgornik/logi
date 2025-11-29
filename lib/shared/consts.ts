@@ -23,6 +23,8 @@ export const SCOPE_OPTIONS = Object.values(Scope).map((scope) => ({
   value: scope,
 }));
 
+export type ScopeOption = (typeof SCOPE_OPTIONS)[number];
+
 export const PRODUCTS = [
   { name: "Laptop", scope: Scope.IT_HARDWARE },
   { name: "Monitor", scope: Scope.IT_HARDWARE },

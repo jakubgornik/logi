@@ -9,7 +9,7 @@ interface RouteParams {
 
 export const PUT = routeGuard<RouteParams>(
   async (request: NextRequest, { user, params }) => {
-    const { id } = await params;
+    const { id } = params;
 
     const payload = supplierSchema.safeParse(await request.json());
 

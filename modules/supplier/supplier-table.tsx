@@ -13,7 +13,7 @@ import {
   getSelectedIdsFromRowSelection,
   mapSortingToSortBy,
 } from "./supplier-table.utils";
-import { ISupplier } from "./supplier.types";
+import { ISupplierWithId } from "./supplier.types";
 import { TableToolbar } from "@/components/filters/table-toolbar";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
@@ -24,7 +24,7 @@ import { useDeleteSupplier, useGetSuppliers } from "@/hooks/supplier.hooks";
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
 interface SupplierTableProps {
-  initialData?: PaginatedResponse<ISupplier>;
+  initialData?: PaginatedResponse<ISupplierWithId>;
 }
 
 export function SupplierTable({ initialData }: SupplierTableProps) {

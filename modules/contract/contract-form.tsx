@@ -20,8 +20,14 @@ import {
   contractSchema,
   createDefaultContractFormData,
 } from "@/modules/contract/contract-form.utils";
+import { ISupplierWithId } from "../supplier/supplier.types";
+import { FilteredSupplierSelect } from "@/components/filtered-supplier-select";
 
-export const ContractForm = () => {
+interface ContractFormProps {
+  suppliers: ISupplierWithId[];
+}
+
+export const ContractForm = ({ suppliers }: ContractFormProps) => {
   const {
     control,
     handleSubmit,
@@ -33,9 +39,7 @@ export const ContractForm = () => {
 
   const onSubmit = (data: ContractFormSchema) => {
     // createContract({data});
-    console.log(data);
   };
-
   const isDateDisabled = (date: Date) => {
     return date < new Date(new Date().setHours(0, 0, 0, 0));
   };
@@ -46,7 +50,13 @@ export const ContractForm = () => {
         <CardHeader>
           <CardTitle className="text-primary">Create Contract</CardTitle>
         </CardHeader>
+
         <CardContent>
+          <div className="mb-3 p-2 rounded-lg bg-cyan-800/20 border border-dashed border-primary text-sm">
+            Please review all contract details carefully before submission. You
+            are only allowed to register a contract with a supplier that has the
+            same scope.
+          </div>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
@@ -120,6 +130,31 @@ export const ContractForm = () => {
                   />
                   <FieldError
                     errors={[errors.validUntil]}
+                    className="text-xs text-destructive"
+                  />
+                </Field>
+                <Field className="col-span-2">
+                  <FieldLabel
+                    className="font-semibold text-muted-foreground"
+                    htmlFor="supplierId"
+                  >
+                    Select Supplier
+                  </FieldLabel>
+                  <Controller
+                    name="supplierId"
+                    control={control}
+                    render={({ field }) => (
+                      <FilteredSupplierSelect
+                        suppliers={suppliers}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        ariaInvalid={!!errors.supplierId}
+                        placeholder="Select supplier"
+                      />
+                    )}
+                  />
+                  <FieldError
+                    errors={[errors.supplierId]}
                     className="text-xs text-destructive"
                   />
                 </Field>

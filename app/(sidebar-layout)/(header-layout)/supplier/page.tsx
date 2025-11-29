@@ -11,7 +11,9 @@ export default async function SupplierPage() {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const suppliers = await getSuppliers({});
+  const suppliers = await getSuppliers({
+    userId: user.id,
+  });
 
   return (
     <div>

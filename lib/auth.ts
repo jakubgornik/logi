@@ -19,8 +19,9 @@ function authenticateRequest(req: NextRequest): Promise<User> {
 }
 
 export const routeGuard = <TParams>(handler: AuthenticatedHandler<TParams>) => {
-  return async (req: NextRequest, { params }: { params: TParams }) => {
+  return async (req: NextRequest, props: { params: Promise<TParams> }) => {
     try {
+      const params = await props.params;
       const user = await authenticateRequest(req);
 
       return handler(req, { user, params });
