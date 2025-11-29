@@ -11,6 +11,7 @@ import { SCOPE_OPTIONS } from "@/lib/shared/consts";
 import { UserFormSchema, userSchema } from "./user-form.validation";
 import { createDefaultUserFormData } from "./user-form.utils";
 import { User } from "@/prisma/client/client";
+import { useUpdateUser } from "@/hooks/user.hooks";
 
 interface UserFormProps {
   user: User;
@@ -26,9 +27,9 @@ export const UserForm = ({ user }: UserFormProps) => {
     defaultValues: createDefaultUserFormData(user),
   });
 
-  //   const { mutate: updateUser } = useUpdateUser();
+  const { mutate: updateUser } = useUpdateUser();
   const onSubmit = (data: UserFormSchema) => {
-    // updateUser({ id: userId, data });
+    updateUser({ id: user.id, data });
   };
 
   return (

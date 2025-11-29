@@ -1,5 +1,5 @@
 import { SupplierFormSchema } from "./supplier-form.validation";
-import { countries as countryData } from "countries-list";
+import { countries } from "countries-list";
 
 export const createDefaultSupplierFormData = (
   data?: SupplierFormSchema
@@ -22,10 +22,15 @@ export function getCountryFlag(countryCode: string) {
   return String.fromCodePoint(...codePoints);
 }
 
-export const countryOptions = Object.entries(countryData)
+export const countryOptions = Object.entries(countries)
   .map(([code, country]) => ({
     value: code,
     label: country.name,
     icon: <span className="text-lg leading-none">{getCountryFlag(code)}</span>,
   }))
   .sort((a, b) => a.label.localeCompare(b.label));
+
+export const mapCountryCodeToName = (countryCode: string) => {
+  const country = countries[countryCode as keyof typeof countries];
+  return country.name;
+};

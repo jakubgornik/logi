@@ -6,15 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ISupplier } from "./supplier.types";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
-
-const formatSupplierAddress = (
-  street?: string,
-  city?: string,
-  postalCode?: string,
-  country?: string
-): string => {
-  return [street, city, postalCode, country].join(", ");
-};
+import { formatSupplierAddress } from "@/lib/utils/format-supplier-address";
 
 export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
   return useMemo(
@@ -47,7 +39,7 @@ export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
         header: "Name",
         cell: ({ row }) => (
           <Link
-            className="hover:underline"
+            className="hover:underline font-semibold"
             href={`${ROUTES.SUPPLIER}/${row.original.id}`}
           >
             {row.original.name}
@@ -65,13 +57,22 @@ export function useSupplierTableColumns(): ColumnDef<ISupplier>[] {
       {
         id: "address",
         header: "Address",
-        accessorFn: (row) =>
-          formatSupplierAddress(
-            row.addressStreet,
-            row.addressCity,
-            row.addressPostalCode,
-            row.addressCountry
-          ),
+        cell: ({ row }) => {
+          const address = formatSupplierAddress(
+            row.original.addressStreet,
+            row.original.addressCity,
+            row.original.addressPostalCode,
+            row.original.addressCountry
+          );
+          return (
+            <span
+              className="block max-w-[140px] lg:max-w-full truncate"
+              title={address}
+            >
+              {address}
+            </span>
+          );
+        },
       },
     ],
     []

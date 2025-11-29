@@ -16,6 +16,31 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
+const useGetSuppliers = (
+  query: Partial<ISupplierQuery>,
+  initialData?: PaginatedResponse<ISupplier>
+) => {
+  const isFirstPage = query.page === 0;
+  const hasNoFilters = !query.filters || query.filters.length === 0;
+  const matchesInitialPageSize =
+    initialData && query.pageSize === initialData.pageSize;
+
+  const shouldUseInitialData =
+    isFirstPage && hasNoFilters && matchesInitialPageSize;
+
+  return useQuery({
+    queryKey: ["supplier", query],
+    queryFn: async () => {
+      const res = await api.get<PaginatedResponse<ISupplier>>("/supplier", {
+        params: query,
+      });
+      return res.data;
+    },
+    initialData: shouldUseInitialData ? initialData : undefined,
+    placeholderData: keepPreviousData,
+  });
+};
+
 const useCreateSupplier = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -53,31 +78,6 @@ const useDeleteSupplier = (
         options.onSuccess(...args);
       }
     },
-  });
-};
-
-const useGetSuppliers = (
-  query: Partial<ISupplierQuery>,
-  initialData?: PaginatedResponse<ISupplier>
-) => {
-  const isFirstPage = query.page === 0;
-  const hasNoFilters = !query.filters || query.filters.length === 0;
-  const matchesInitialPageSize =
-    initialData && query.pageSize === initialData.pageSize;
-
-  const shouldUseInitialData =
-    isFirstPage && hasNoFilters && matchesInitialPageSize;
-
-  return useQuery({
-    queryKey: ["supplier", query],
-    queryFn: async () => {
-      const res = await api.get<PaginatedResponse<ISupplier>>("/supplier", {
-        params: query,
-      });
-      return res.data;
-    },
-    initialData: shouldUseInitialData ? initialData : undefined,
-    placeholderData: keepPreviousData,
   });
 };
 

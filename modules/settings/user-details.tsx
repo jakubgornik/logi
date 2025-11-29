@@ -40,18 +40,6 @@ export const UserDetailsCard = ({ user }: UserDetailsCardProps) => {
           </div>
         </CardContent>
       </Card>
-      <div className="rounded-md border border-dashed p-4 flex flex-col gap-3 items-center text-center bg-muted/30">
-        <p className="text-xs text-muted-foreground">
-          Want to update your personal data or scopes?
-        </p>
-        <Button
-          variant="outline"
-          className="flex gap-1 flex-row items-center px-12 py-2"
-        >
-          <UserCog className="h-4 w-4" />
-          <Link href={SUB_ROUTES.SETTINGS_UPDATE}>Update user profile</Link>
-        </Button>
-      </div>
       <ScopesList scopes={user.scopes} />
     </div>
   );

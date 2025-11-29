@@ -19,10 +19,7 @@ import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import SupplierTableActions from "./supplier-table-actions";
 import { PaginatedResponse } from "@/lib/types/common.types";
-import {
-  useDeleteSupplier,
-  useGetSuppliers,
-} from "@/hooks/supplier/supplier.hooks";
+import { useDeleteSupplier, useGetSuppliers } from "@/hooks/supplier.hooks";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 

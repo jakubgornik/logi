@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useDeleteSupplier } from "@/hooks/supplier/supplier.hooks";
+import { useDeleteSupplier } from "@/hooks/supplier.hooks";
 import { ROUTES, SUB_ROUTES } from "@/lib/routes";
 import { useRouter } from "next/navigation";
 
