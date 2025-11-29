@@ -6,7 +6,7 @@ import { IdArraySchema } from "@/lib/types/common.types";
 import { supplierQuerySchema } from "@/modules/supplier/supplier.types";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
 
-export const POST = routeGuard(async (request: NextRequest) => {
+export const POST = routeGuard(async (request: NextRequest, { user }) => {
   const payload = supplierSchema.safeParse(await request.json());
 
   if (!payload.success) {
@@ -22,6 +22,7 @@ export const POST = routeGuard(async (request: NextRequest) => {
     await prisma.supplier.create({
       data: {
         ...payload.data,
+        userId: user.id,
       },
     });
 
@@ -37,7 +38,7 @@ export const POST = routeGuard(async (request: NextRequest) => {
   }
 });
 
-export const DELETE = routeGuard(async (request: NextRequest) => {
+export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
   const payload = IdArraySchema.safeParse(await request.json());
 
   if (!payload.success) {
@@ -53,6 +54,7 @@ export const DELETE = routeGuard(async (request: NextRequest) => {
     await prisma.supplier.deleteMany({
       where: {
         id: { in: payload.data.ids },
+        userId: user.id,
       },
     });
 
@@ -70,7 +72,7 @@ export const DELETE = routeGuard(async (request: NextRequest) => {
   }
 });
 
-export const GET = routeGuard(async (request: NextRequest) => {
+export const GET = routeGuard(async (request: NextRequest, { user }) => {
   const searchParams = Object.fromEntries(request.nextUrl.searchParams);
   const payload = supplierQuerySchema.safeParse(searchParams);
 
@@ -82,7 +84,10 @@ export const GET = routeGuard(async (request: NextRequest) => {
       { status: 400 }
     );
   }
-  const result = await getSuppliers(payload.data);
+  const result = await getSuppliers({
+    userId: user.id,
+    ...payload.data,
+  });
 
   if (!result.success) {
     return NextResponse.json({ message: result.error }, { status: 500 });

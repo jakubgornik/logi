@@ -2,6 +2,7 @@ import { Prisma } from "@/prisma/client/client";
 import { FiltersType } from "../types/common.types";
 
 export const mapSupplierFiltersToWhere = (
+  userId: string,
   filters?: FiltersType[]
 ): Prisma.SupplierWhereInput => {
   const where: Prisma.SupplierWhereInput = {};
@@ -62,5 +63,8 @@ export const mapSupplierFiltersToWhere = (
     where.AND = and;
   }
 
-  return where;
+  return {
+    ...where,
+    userId: userId,
+  };
 };

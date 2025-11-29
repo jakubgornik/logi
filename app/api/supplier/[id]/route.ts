@@ -8,7 +8,7 @@ interface RouteParams {
 }
 
 export const PUT = routeGuard<RouteParams>(
-  async (request: NextRequest, { params }) => {
+  async (request: NextRequest, { user, params }) => {
     const { id } = await params;
 
     const payload = supplierSchema.safeParse(await request.json());
@@ -19,7 +19,7 @@ export const PUT = routeGuard<RouteParams>(
 
     try {
       const updatedSupplier = await prisma.supplier.update({
-        where: { id },
+        where: { id, userId: user.id },
         data: payload.data,
       });
 

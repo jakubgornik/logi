@@ -7,17 +7,18 @@ import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 
 export const getSuppliers = cache(
   async ({
+    userId,
     page = 0,
     pageSize = 10,
     sortBy = [],
     filters = [],
-  }: Partial<ISupplierQuery>): Promise<
+  }: Partial<ISupplierQuery> & { userId: string }): Promise<
     ServiceResult<PaginatedResponse<ISupplier>>
   > => {
     const skip = page * pageSize;
     const take = pageSize;
     const orderBy = mapSupplierSortToOrderBy(sortBy);
-    const where = mapSupplierFiltersToWhere(filters);
+    const where = mapSupplierFiltersToWhere(userId, filters);
 
     try {
       const [data, totalCount] = await prisma.$transaction([
