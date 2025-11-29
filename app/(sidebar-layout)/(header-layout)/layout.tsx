@@ -1,5 +1,6 @@
 "use client";
 
+import { normalizePath } from "@/lib/utils/normalize-path";
 import { usePathname } from "next/navigation";
 
 const routeNames: Record<string, string> = {
@@ -16,19 +17,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-
-  const isId = (segment: string) => {
-    return /^\d+$/.test(segment) || segment.length > 15;
-  };
-
-  const normalizedPath =
-    "/" +
-    pathname
-      .split("/")
-      .map((segment) => (isId(segment) ? "[id]" : segment))
-      .join("/");
-
-  const pageTitle = routeNames[normalizedPath] || "Page";
+  const pageTitle = routeNames[normalizePath(pathname)];
 
   return (
     <>
