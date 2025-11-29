@@ -3,8 +3,8 @@ import { Separator } from "@/components/ui/separator";
 import { Building2, Mail, MapPin, Phone } from "lucide-react";
 import { Supplier } from "@/prisma/client/client";
 import { formatSupplierAddress } from "@/lib/utils/format-supplier-address";
-import { SupplierScopesList } from "./supplier-scopes-list";
 import { SupplierDetailsCardPreview } from "./supplier-details-card-preview";
+import { ScopesList } from "./scopes-list";
 
 interface SupplierDetailsProps {
   supplier: Supplier;
@@ -53,7 +53,7 @@ export const SupplierDetailsCard = ({ supplier }: SupplierDetailsProps) => {
           </div>
         </CardContent>
       </Card>
-      <SupplierScopesList scopes={supplier.scopes} />
+      <ScopesList scopes={supplier.scopes} />
     </div>
   );
 };

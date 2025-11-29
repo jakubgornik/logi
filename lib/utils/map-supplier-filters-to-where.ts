@@ -1,4 +1,3 @@
-import { ISupplierQuery } from "@/modules/supplier/supplier.types";
 import { Prisma } from "@/prisma/client/client";
 import { FiltersType } from "../types/common.types";
 

@@ -23,6 +23,9 @@ export const getCurrentUser = cache(async () => {
       where: {
         id: currentUser.userId,
       },
+      include: {
+        contracts: true,
+      },
     });
 
     return user;

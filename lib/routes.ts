@@ -9,4 +9,14 @@ export const ROUTES = {
 export const SUB_ROUTES = {
   SUPPLIER_CREATE: `${ROUTES.SUPPLIER}/create`,
   SUPPLIER_EDIT: (id: string) => `${ROUTES.SUPPLIER}/edit/${id}`,
+  SETTINGS_UPDATE: (id: string) => `${ROUTES.SETTINGS}/update/${id}`,
+};
+
+export const routeNames: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/supplier": "Suppliers",
+  "/supplier/create": "Create Supplier",
+  "/supplier/edit/[id]": "Edit Supplier",
+  "/supplier/[id]": "Supplier Details",
+  "/settings": "User settings",
 };

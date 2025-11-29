@@ -11,11 +11,13 @@ export default async function SupplierPage() {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const result = await getSuppliers({});
+  const suppliers = await getSuppliers({});
 
   return (
     <div>
-      <SupplierTable initialData={result.success ? result.data : undefined} />
+      <SupplierTable
+        initialData={suppliers.success ? suppliers.data : undefined}
+      />
     </div>
   );
 }

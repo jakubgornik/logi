@@ -3,11 +3,11 @@ import { Card } from "@/components/ui/card";
 import { SCOPES } from "@/lib/shared/consts";
 import { Scope } from "@/prisma/client/enums";
 
-interface ScopeItemProps {
+interface ScopesListItemProps {
   scope: Scope;
 }
 
-export const SupplierScopesItem = ({ scope }: ScopeItemProps) => {
+export const ScopesListItem = ({ scope }: ScopesListItemProps) => {
   return (
     <Card>
       <div className="flex flex-row w-full items-center gap-3 py-2 px-12">

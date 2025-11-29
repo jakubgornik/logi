@@ -1,15 +1,8 @@
 "use client";
 
+import { routeNames } from "@/lib/routes";
 import { normalizePath } from "@/lib/utils/normalize-path";
 import { usePathname } from "next/navigation";
-
-const routeNames: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/supplier": "Suppliers",
-  "/supplier/create": "Create Supplier",
-  "/supplier/edit/[id]": "Edit Supplier",
-  "/supplier/[id]": "Supplier Details",
-};
 
 export default function DashboardLayout({
   children,
