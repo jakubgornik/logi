@@ -1,18 +1,11 @@
 import z from "zod";
+import { jsonParse } from "../utils/json-parse";
 
 export const IdArraySchema = z.object({
   ids: z.array(z.string()),
 });
 
 export type MultipleIdsPayload = z.infer<typeof IdArraySchema>;
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  totalCount: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
 
 export const sortBySchema = z.object({
   field: z.string(),
@@ -28,6 +21,27 @@ export const filterSchema = z.object({
 });
 
 export type FiltersType = z.infer<typeof filterSchema>;
+
+export const baseQuerySchema = z.object({
+  search: z.string().optional(),
+  sortBy: jsonParse(z.array(sortBySchema)).optional(),
+  filters: jsonParse(z.array(filterSchema)).optional(),
+});
+
+export const paginatedQuerySchema = baseQuerySchema.extend({
+  page: z.coerce.number().int().min(0).default(0),
+  pageSize: z.coerce.number().int().min(1).default(10),
+});
+
+export type PaginatedQuery = z.infer<typeof paginatedQuerySchema>;
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
 
 type SuccessResult<T> = {
   success: true;

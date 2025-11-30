@@ -10,6 +10,7 @@ export interface JWTPayload {
 export interface AuthenticatedRouteContext<TParams = Record<string, string>> {
   user: User;
   params: TParams;
+  searchParams: Record<string, string>;
 }
 
 export type AuthenticatedHandler<TParams = Record<string, string>> = (

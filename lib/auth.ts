@@ -21,10 +21,11 @@ function authenticateRequest(req: NextRequest): Promise<User> {
 export const routeGuard = <TParams>(handler: AuthenticatedHandler<TParams>) => {
   return async (req: NextRequest, props: { params: Promise<TParams> }) => {
     try {
-      const params = await props.params;
       const user = await authenticateRequest(req);
+      const params = await props.params;
+      const searchParams = Object.fromEntries(req.nextUrl.searchParams);
 
-      return handler(req, { user, params });
+      return handler(req, { user, params, searchParams });
     } catch (error) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }

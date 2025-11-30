@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { getContracts } from "@/lib/fetchers/get-contracts";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { ROUTES, SUB_ROUTES } from "@/lib/routes";
 import { LucideDock } from "lucide-react";
@@ -12,6 +13,8 @@ export default async function DashboardPage() {
     redirect(ROUTES.SIGN_IN);
   }
 
+  const contracts = await getContracts({ userId: user.id });
+  console.log(contracts);
   return (
     <div className="p-6">
       <Button

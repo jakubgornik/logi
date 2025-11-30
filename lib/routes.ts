@@ -20,7 +20,7 @@ export const routeNames: Record<string, string> = {
   "/supplier/create": "Create Supplier",
   "/supplier/edit/[id]": "Edit Supplier",
   "/supplier/[id]": "Supplier Details",
-  "/settings": "User settings",
+  "/settings": "Settings",
   "/settings/update": "Update User",
   "/contract": "Contracts",
   "/contract/create": "Create Contract",

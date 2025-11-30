@@ -4,6 +4,7 @@ import {
   MultipleIdsPayload,
   PaginatedResponse,
 } from "@/lib/types/common.types";
+import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 import { SupplierFormSchema as ICreateSupplier } from "@/modules/supplier/supplier-form.validation";
 import { SupplierFormSchema as IUpdateSupplier } from "@/modules/supplier/supplier-form.validation";
 import {
@@ -23,15 +24,6 @@ const useGetSuppliers = (
   query: Partial<ISupplierQuery>,
   initialData?: PaginatedResponse<ISupplierWithId>
 ) => {
-  const isFirstPage = query.page === 0;
-  const hasNoFilters = !query.filters || query.filters.length === 0;
-  const hasNoSorting = !query.sortBy || query.sortBy.length === 0;
-  const matchesInitialPageSize =
-    initialData && query.pageSize === initialData.pageSize;
-
-  const shouldUseInitialData =
-    isFirstPage && hasNoFilters && hasNoSorting && matchesInitialPageSize;
-
   return useQuery({
     queryKey: ["supplier", query],
     queryFn: async () => {
@@ -43,7 +35,9 @@ const useGetSuppliers = (
       );
       return res.data;
     },
-    initialData: shouldUseInitialData ? initialData : undefined,
+    initialData: shouldUseInitialData(query, initialData)
+      ? initialData
+      : undefined,
     placeholderData: keepPreviousData,
   });
 };

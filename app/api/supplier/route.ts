@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { routeGuard } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { supplierSchema } from "@/modules/supplier/supplier-form.validation";
-import { IdArraySchema } from "@/lib/types/common.types";
-import { supplierQuerySchema } from "@/modules/supplier/supplier.types";
+import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
 
 export const POST = routeGuard(async (request: NextRequest, { user }) => {
@@ -72,9 +71,8 @@ export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
   }
 });
 
-export const GET = routeGuard(async (request: NextRequest, { user }) => {
-  const searchParams = Object.fromEntries(request.nextUrl.searchParams);
-  const payload = supplierQuerySchema.safeParse(searchParams);
+export const GET = routeGuard(async (_, { user, searchParams }) => {
+  const payload = paginatedQuerySchema.safeParse(searchParams);
 
   if (!payload.success) {
     return NextResponse.json(
