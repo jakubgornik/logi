@@ -25,11 +25,12 @@ const useGetSuppliers = (
 ) => {
   const isFirstPage = query.page === 0;
   const hasNoFilters = !query.filters || query.filters.length === 0;
+  const hasNoSorting = !query.sortBy || query.sortBy.length === 0;
   const matchesInitialPageSize =
     initialData && query.pageSize === initialData.pageSize;
 
   const shouldUseInitialData =
-    isFirstPage && hasNoFilters && matchesInitialPageSize;
+    isFirstPage && hasNoFilters && hasNoSorting && matchesInitialPageSize;
 
   return useQuery({
     queryKey: ["supplier", query],
