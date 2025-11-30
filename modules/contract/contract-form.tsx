@@ -15,13 +15,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import {
-  ContractFormSchema,
-  contractSchema,
-  createDefaultContractFormData,
-} from "@/modules/contract/contract-form.utils";
 import { ISupplierWithId } from "../supplier/supplier.types";
 import { FilteredSupplierSelect } from "@/components/filtered-supplier-select";
+import { useCreateContract } from "@/hooks/contract.hooks";
+import {
+  contractFormSchema,
+  ContractFormSchema,
+} from "./contract-form.validation";
+import { createDefaultContractFormData } from "./contract-form.utils";
 
 interface ContractFormProps {
   suppliers: ISupplierWithId[];
@@ -33,12 +34,14 @@ export const ContractForm = ({ suppliers }: ContractFormProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<ContractFormSchema>({
-    resolver: zodResolver(contractSchema),
+    resolver: zodResolver(contractFormSchema),
     defaultValues: createDefaultContractFormData(),
   });
 
+  const { mutate: createContract } = useCreateContract();
+
   const onSubmit = (data: ContractFormSchema) => {
-    // createContract({data});
+    createContract(data);
   };
   const isDateDisabled = (date: Date) => {
     return date < new Date(new Date().setHours(0, 0, 0, 0));
