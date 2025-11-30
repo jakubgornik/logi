@@ -18,6 +18,7 @@ export default async function CreateContractPage() {
   });
 
   const suppliers = result.success ? result.data.data : [];
+  const userScopes = user.scopes || [];
 
-  return <ContractForm suppliers={suppliers} />;
+  return <ContractForm suppliers={suppliers} userScopes={userScopes} />;
 }

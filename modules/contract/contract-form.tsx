@@ -23,12 +23,14 @@ import {
   ContractFormSchema,
 } from "./contract-form.validation";
 import { createDefaultContractFormData } from "./contract-form.utils";
+import { Scope } from "@/prisma/client/enums";
 
 interface ContractFormProps {
   suppliers: ISupplierWithId[];
+  userScopes: Scope[];
 }
 
-export const ContractForm = ({ suppliers }: ContractFormProps) => {
+export const ContractForm = ({ suppliers, userScopes }: ContractFormProps) => {
   const {
     control,
     handleSubmit,
@@ -148,6 +150,7 @@ export const ContractForm = ({ suppliers }: ContractFormProps) => {
                     control={control}
                     render={({ field }) => (
                       <FilteredSupplierSelect
+                        userScopes={userScopes}
                         suppliers={suppliers}
                         value={field.value}
                         onValueChange={field.onChange}

@@ -27,6 +27,7 @@ interface SupplierSelectProps {
   value: string;
   onValueChange: (supplierId: string) => void;
   ariaInvalid: boolean;
+  userScopes: Scope[];
 }
 
 export function FilteredSupplierSelect({
@@ -35,6 +36,7 @@ export function FilteredSupplierSelect({
   onValueChange,
   placeholder,
   ariaInvalid,
+  userScopes,
 }: SupplierSelectProps) {
   const [openFilter, setOpenFilter] = useState(false);
   const [search, setSearch] = useState("");
@@ -98,10 +100,12 @@ export function FilteredSupplierSelect({
             </div>
           </div>
           <div className="border-b">
-            <FilterHeader title="Filter by Scope" />
+            <FilterHeader title="Filter by active scope" />
             <ScrollArea className="h-[100px]">
               <div className="px-3 py-2 flex flex-col gap-2">
-                {SCOPE_OPTIONS.map((scope) => (
+                {SCOPE_OPTIONS.filter((option) =>
+                  userScopes.includes(option.value)
+                ).map((scope) => (
                   <div key={scope.value} className="flex items-center gap-2">
                     <Checkbox
                       id={`scope-${scope.value}`}
