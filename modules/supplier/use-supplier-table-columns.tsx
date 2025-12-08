@@ -41,6 +41,7 @@ export function useSupplierTableColumns(): ColumnDef<ISupplierWithId>[] {
           <Link
             className="hover:underline font-semibold"
             href={`${ROUTES.SUPPLIER}/${row.original.id}`}
+            onClick={(e) => e.stopPropagation()}
           >
             {row.original.name}
           </Link>
