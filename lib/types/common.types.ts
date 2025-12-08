@@ -59,3 +59,10 @@ export type Option = {
   label: string;
   value: string;
 };
+
+export interface Notification {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+}
