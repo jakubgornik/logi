@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Scope } from "@/prisma/client/client";
+import { Scope, Supplier } from "@/prisma/client/client";
 import { SCOPES, SCOPE_OPTIONS } from "@/lib/shared/consts";
-import { ISupplierWithId } from "@/modules/supplier/supplier.types";
 import { useMemo, useState } from "react";
 import { mapCountryCodeToName } from "@/modules/supplier/supplier-form.utils";
 import { Badge } from "./ui/badge";
@@ -22,7 +21,7 @@ import { filterSuppliers } from "@/modules/contract/contract-form.utils";
 import { useDebounce } from "use-debounce";
 
 interface SupplierSelectProps {
-  suppliers: ISupplierWithId[];
+  suppliers: Supplier[];
   placeholder: string;
   value: string;
   onValueChange: (supplierId: string) => void;
@@ -164,7 +163,7 @@ const FilterHeader = ({ title }: FilterHeaderProps) => {
 };
 
 interface SupplierItemProps {
-  supplier: ISupplierWithId;
+  supplier: Supplier;
   isSelected: boolean;
   onSelect: () => void;
 }

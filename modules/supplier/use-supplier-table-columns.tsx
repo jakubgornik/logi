@@ -3,12 +3,12 @@
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ISupplierWithId } from "./supplier.types";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { formatSupplierAddress } from "@/lib/utils/format-supplier-address";
+import { Supplier } from "@/prisma/client/client";
 
-export function useSupplierTableColumns(): ColumnDef<ISupplierWithId>[] {
+export function useSupplierTableColumns(): ColumnDef<Supplier>[] {
   return useMemo(
     () => [
       {

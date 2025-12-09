@@ -1,14 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
-import {
-  IContractQuery,
-  IContractWithId,
-} from "@/modules/contract/contract.types";
+import { IContractQuery } from "@/modules/contract/contract.types";
+import { Contract } from "@/prisma/client/client";
 
 type ContractArgs = Partial<IContractQuery> & {
   userId: string;
-  fetchAll?: boolean;
 };
 
 export const getContracts = cache(
@@ -18,10 +15,7 @@ export const getContracts = cache(
     pageSize = 10,
     sortBy = [],
     filters = [],
-    fetchAll = false,
-  }: ContractArgs): Promise<
-    ServiceResult<PaginatedResponse<IContractWithId>>
-  > => {
+  }: ContractArgs): Promise<ServiceResult<PaginatedResponse<Contract>>> => {
     const skip = page * pageSize;
     const take = pageSize;
 
@@ -47,7 +41,7 @@ export const getContracts = cache(
         }),
       ]);
 
-      const totalPages = fetchAll ? 1 : Math.ceil(totalCount / pageSize);
+      const totalPages = Math.ceil(totalCount / pageSize);
 
       return {
         success: true,
@@ -55,8 +49,8 @@ export const getContracts = cache(
           data,
           totalCount,
           totalPages,
-          page: fetchAll ? 0 : page,
-          pageSize: fetchAll ? totalCount : pageSize,
+          page,
+          pageSize,
         },
       };
     } catch (error) {

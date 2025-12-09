@@ -7,10 +7,8 @@ import {
 import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 import { SupplierFormSchema as ICreateSupplier } from "@/modules/supplier/supplier-form.validation";
 import { SupplierFormSchema as IUpdateSupplier } from "@/modules/supplier/supplier-form.validation";
-import {
-  ISupplierWithId,
-  ISupplierQuery,
-} from "@/modules/supplier/supplier.types";
+import { ISupplierQuery } from "@/modules/supplier/supplier.types";
+import { Supplier } from "@/prisma/client/client";
 import {
   keepPreviousData,
   useMutation,
@@ -22,17 +20,14 @@ import { useRouter } from "next/navigation";
 
 const useGetSuppliers = (
   query: Partial<ISupplierQuery>,
-  initialData?: PaginatedResponse<ISupplierWithId>
+  initialData?: PaginatedResponse<Supplier>
 ) => {
   return useQuery({
     queryKey: ["supplier", query],
     queryFn: async () => {
-      const res = await api.get<PaginatedResponse<ISupplierWithId>>(
-        "/supplier",
-        {
-          params: query,
-        }
-      );
+      const res = await api.get<PaginatedResponse<Supplier>>("/supplier", {
+        params: query,
+      });
       return res.data;
     },
     initialData: shouldUseInitialData(query, initialData)

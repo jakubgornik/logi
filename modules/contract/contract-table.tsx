@@ -8,26 +8,22 @@ import {
   PaginationState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { useSupplierTableColumns } from "./use-supplier-table-columns";
-import {
-  getSelectedIdsFromRowSelection,
-  mapSortingToSortBy,
-} from "./supplier-table.utils";
 import { TableToolbar } from "@/components/filters/table-toolbar";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
-import SupplierTableActions from "./supplier-table-actions";
 import { PaginatedResponse } from "@/lib/types/common.types";
-import { useDeleteSupplier, useGetSuppliers } from "@/hooks/supplier.hooks";
-import { Supplier } from "@/prisma/client/client";
+import { useGetContracts } from "@/hooks/contract.hooks";
+import { useContractsTableColumns } from "./use-contracts-table-columns";
+import { Contract } from "@/prisma/client/client";
+import { getSelectedIdsFromRowSelection } from "../supplier/supplier-table.utils";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
-interface SupplierTableProps {
-  initialData?: PaginatedResponse<Supplier>;
+interface ContractTableProps {
+  initialData?: PaginatedResponse<Contract>;
 }
 
-export function SupplierTable({ initialData }: SupplierTableProps) {
+export function ContractTable({ initialData }: ContractTableProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<FilterState>({
@@ -40,29 +36,23 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
   });
   const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
 
-  const sortBy = mapSortingToSortBy(sorting);
+  //   const sortBy = mapSortingToSortBy(sorting);
 
-  const columns = useSupplierTableColumns();
+  const columns = useContractsTableColumns();
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  const { data } = useGetSuppliers(
+  const { data } = useGetContracts(
     {
       page: pagination.pageIndex,
       pageSize: pagination.pageSize,
-      sortBy,
-      filters: filters.filters,
+      //   sortBy,
+      //   filters: filters.filters,
     },
     initialData
   );
-
-  const { mutate: deleteSupplier } = useDeleteSupplier({
-    onSuccess: () => {
-      setRowSelection({});
-    },
-  });
 
   const items = useMemo(() => data?.data ?? [], [data]);
   const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);
@@ -95,14 +85,6 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
           onFiltersChange={handleFiltersChange}
           currentFilters={filters}
           omitColumnsById={["select"]}
-        />
-        <SupplierTableActions
-          selectedIds={selectedIds}
-          onDelete={() =>
-            deleteSupplier({
-              ids: selectedIds,
-            })
-          }
         />
       </div>
       <DataTable table={table} />

@@ -2,11 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 import { mapSupplierSortToOrderBy } from "../utils/map-supplier-sort-to-order-by";
 import { mapSupplierFiltersToWhere } from "../utils/map-supplier-filters-to-where";
-import {
-  ISupplierWithId,
-  ISupplierQuery,
-} from "@/modules/supplier/supplier.types";
+import { ISupplierQuery } from "@/modules/supplier/supplier.types";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
+import { Supplier } from "@/prisma/client/client";
 
 type SupplierArgs = Partial<ISupplierQuery> & {
   userId: string;
@@ -21,9 +19,7 @@ export const getSuppliers = cache(
     sortBy = [],
     filters = [],
     fetchAll = false,
-  }: SupplierArgs): Promise<
-    ServiceResult<PaginatedResponse<ISupplierWithId>>
-  > => {
+  }: SupplierArgs): Promise<ServiceResult<PaginatedResponse<Supplier>>> => {
     const skip = fetchAll ? undefined : page * pageSize;
     const take = fetchAll ? undefined : pageSize;
 

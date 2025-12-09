@@ -1,6 +1,6 @@
 import { Scope } from "@/prisma/client/enums";
-import { ISupplierWithId } from "../supplier/supplier.types";
 import { ContractFormSchema } from "./contract-form.validation";
+import { Supplier } from "@/prisma/client/browser";
 
 export const isTodayOrFuture = (date: Date): boolean => {
   const today = new Date();
@@ -17,10 +17,10 @@ export const createDefaultContractFormData = (): ContractFormSchema => {
 };
 
 export const filterSuppliers = (
-  suppliers: ISupplierWithId[],
+  suppliers: Supplier[],
   search: string,
   selectedScopes: Scope[]
-): ISupplierWithId[] => {
+): Supplier[] => {
   const normalizedSearch = search.toLowerCase().trim();
 
   return suppliers.filter((supplier) => {

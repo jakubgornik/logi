@@ -15,7 +15,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { ISupplierWithId } from "../supplier/supplier.types";
 import { FilteredSupplierSelect } from "@/components/filtered-supplier-select";
 import { useCreateContract } from "@/hooks/contract.hooks";
 import {
@@ -24,9 +23,10 @@ import {
 } from "./contract-form.validation";
 import { createDefaultContractFormData } from "./contract-form.utils";
 import { Scope } from "@/prisma/client/enums";
+import { Supplier } from "@/prisma/client/browser";
 
 interface ContractFormProps {
-  suppliers: ISupplierWithId[];
+  suppliers: Supplier[];
   userScopes: Scope[];
 }
 

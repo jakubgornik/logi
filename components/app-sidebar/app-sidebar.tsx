@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, useSidebar } from "@/components/ui/sidebar";
-import { HomeIcon, Indent, Settings } from "lucide-react";
+import { HomeIcon, Indent, Folder, Settings } from "lucide-react";
 import { useLogout } from "@/hooks/use-logout";
 import { SidebarHeader } from "./app-sidebar-header";
 import { SidebarMenuItems } from "./app-sidebar-menu-items";
@@ -18,6 +18,11 @@ const SIDEBAR_MENU = [
     title: "Suppliers",
     url: ROUTES.SUPPLIER,
     icon: Indent,
+  },
+  {
+    title: "Contracts",
+    url: ROUTES.CONTRACT,
+    icon: Folder,
   },
   {
     title: "Settings",
