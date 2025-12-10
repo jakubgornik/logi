@@ -5,7 +5,12 @@ import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 import { ContractFormSchema as ICreateContract } from "@/modules/contract/contract-form.validation";
 import { IContractQuery } from "@/modules/contract/contract.types";
 import { Contract } from "@/prisma/client/client";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 const useGetContracts = (
@@ -29,6 +34,7 @@ const useGetContracts = (
 
 const useCreateContract = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: ICreateContract) => {
@@ -38,7 +44,8 @@ const useCreateContract = () => {
       return res.data;
     },
     onSuccess: () => {
-      router.push(ROUTES.DASHBOARD);
+      queryClient.invalidateQueries({ queryKey: ["contract"] });
+      router.push(ROUTES.CONTRACT);
     },
   });
 };

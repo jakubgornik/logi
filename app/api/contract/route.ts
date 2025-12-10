@@ -45,7 +45,6 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       data: {
         ...payload.data,
         userId: user.id,
-        status: "ACTIVE",
       },
     });
 

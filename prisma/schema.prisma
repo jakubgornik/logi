@@ -13,12 +13,6 @@ enum Scope {
     CONSTRUCTION
 }
 
-enum ContractStatus {
-    ACTIVE
-    EXPIRED
-    TERMINATED
-}
-
 model User {
     id        String   @id @default(cuid())
     authId    String   @unique
@@ -60,14 +54,13 @@ model Product {
 }
 
 model Contract {
-    id         String         @id @default(cuid())
+    id         String   @id @default(cuid())
     title      String
-    status     ContractStatus
     validUntil DateTime
     supplierId String
     userId     String
-    createdAt  DateTime       @default(now())
-    updatedAt  DateTime       @updatedAt()
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt()
 
     supplier Supplier @relation(fields: [supplierId], references: [id])
     user     User     @relation(fields: [userId], references: [id])

@@ -8,7 +8,6 @@ import {
   PaginationState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { TableToolbar } from "@/components/filters/table-toolbar";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import { PaginatedResponse } from "@/lib/types/common.types";
@@ -35,8 +34,6 @@ export function ContractTable({ initialData }: ContractTableProps) {
     pageSize: 10,
   });
   const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
-
-  //   const sortBy = mapSortingToSortBy(sorting);
 
   const columns = useContractsTableColumns();
 
@@ -79,14 +76,6 @@ export function ContractTable({ initialData }: ContractTableProps) {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between">
-        <TableToolbar
-          table={table}
-          onFiltersChange={handleFiltersChange}
-          currentFilters={filters}
-          omitColumnsById={["select"]}
-        />
-      </div>
       <DataTable table={table} />
       <Pagination
         table={table}
