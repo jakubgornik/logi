@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
-import { mapSupplierSortToOrderBy } from "../utils/map-supplier-sort-to-order-by";
-import { mapSupplierFiltersToWhere } from "../utils/map-supplier-filters-to-where";
 import { ISupplierQuery } from "@/modules/supplier/supplier.types";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { Supplier } from "@/prisma/client/client";
+import { mapSupplierSortToOrderBy } from "../utils/mappers/map-supplier-sort-to-order-by";
+import { mapSupplierFiltersToWhere } from "../utils/mappers/map-supplier-filters-to-where";
 
 type SupplierArgs = Partial<ISupplierQuery> & {
   userId: string;

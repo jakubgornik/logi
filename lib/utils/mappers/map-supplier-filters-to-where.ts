@@ -1,5 +1,5 @@
+import { FiltersType } from "@/lib/types/common.types";
 import { Prisma } from "@/prisma/client/client";
-import { FiltersType } from "../types/common.types";
 
 export const mapSupplierFiltersToWhere = (
   userId: string,

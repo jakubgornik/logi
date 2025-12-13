@@ -16,6 +16,7 @@ export const GET = routeGuard(async (_, { user, searchParams }) => {
       { status: 400 }
     );
   }
+
   const result = await getContracts({
     userId: user.id,
     ...payload.data,

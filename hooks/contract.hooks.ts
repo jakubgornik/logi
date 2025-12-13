@@ -25,10 +25,10 @@ const useGetContracts = (
       });
       return res.data;
     },
+    placeholderData: keepPreviousData,
     initialData: shouldUseInitialData(query, initialData)
       ? initialData
       : undefined,
-    placeholderData: keepPreviousData,
   });
 };
 

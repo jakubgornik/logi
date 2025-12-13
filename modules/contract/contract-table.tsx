@@ -14,9 +14,21 @@ import { PaginatedResponse } from "@/lib/types/common.types";
 import { useGetContracts } from "@/hooks/contract.hooks";
 import { useContractsTableColumns } from "./use-contracts-table-columns";
 import { Contract } from "@/prisma/client/client";
-import { getSelectedIdsFromRowSelection } from "../supplier/supplier-table.utils";
+import {
+  getSelectedIdsFromRowSelection,
+  mapSortingToSortBy,
+} from "../supplier/supplier-table.utils";
+import { TableToolbar } from "@/components/filters/table-toolbar";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
+
+const additionalFilters = [
+  {
+    id: "validityDays",
+    label: "Validity Days",
+    type: "numberRange" as const,
+  },
+];
 
 interface ContractTableProps {
   initialData?: PaginatedResponse<Contract>;
@@ -37,6 +49,8 @@ export function ContractTable({ initialData }: ContractTableProps) {
 
   const columns = useContractsTableColumns();
 
+  const sortBy = mapSortingToSortBy(sorting);
+
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
@@ -45,8 +59,8 @@ export function ContractTable({ initialData }: ContractTableProps) {
     {
       page: pagination.pageIndex,
       pageSize: pagination.pageSize,
-      //   sortBy,
-      //   filters: filters.filters,
+      sortBy,
+      filters: filters.filters,
     },
     initialData
   );
@@ -76,6 +90,13 @@ export function ContractTable({ initialData }: ContractTableProps) {
 
   return (
     <div className="p-6">
+      <TableToolbar
+        table={table}
+        onFiltersChange={handleFiltersChange}
+        currentFilters={filters}
+        omitColumnsById={["select", "validUntil"]}
+        additionalFilters={additionalFilters}
+      />
       <DataTable table={table} />
       <Pagination
         table={table}

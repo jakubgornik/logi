@@ -74,17 +74,17 @@ export function useContractsTableColumns(): ColumnDef<Contract>[] {
         ),
       },
       {
-        id: "status",
-        header: "Status",
-        cell: ({ row }) => (
-          <ContractStatusCell validUntil={row.original.validUntil} />
-        ),
-      },
-      {
         accessorKey: "validUntil",
         header: "Time Remaining",
         cell: ({ row }) => (
           <ContractTimeRemainingCell validUntil={row.original.validUntil} />
+        ),
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: ({ row }) => (
+          <ContractStatusCell validUntil={row.original.validUntil} />
         ),
       },
     ],
