@@ -5,11 +5,24 @@ export type SelectOption = {
   value: string;
 };
 
+export type NumberRangeValue = {
+  min: string;
+  max: string;
+};
+
 export type loaderType = () => Promise<SelectOption[] | undefined>;
 
-export type AvailableFilterTypes = "text" | "dateRange" | "select";
+export type AvailableFilterTypes =
+  | "text"
+  | "dateRange"
+  | "select"
+  | "numberRange";
 
-export type AvailableValueTypes = string | DateRange | string[];
+export type AvailableValueTypes =
+  | string
+  | DateRange
+  | string[]
+  | NumberRangeValue;
 
 export interface FilterDefinition {
   column: string;

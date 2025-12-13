@@ -1,4 +1,8 @@
-import { FilterDefinition, FilterRule } from "./filters.types";
+import {
+  FilterDefinition,
+  FilterRule,
+  NumberRangeValue,
+} from "./filters.types";
 import { DateRange } from "react-day-picker";
 
 export const isDateRangeColumn = (columnId: string): boolean => {
@@ -20,20 +24,29 @@ const isStringArray = (value: unknown): value is string[] => {
   );
 };
 
+const isNumberRange = (value: unknown): value is NumberRangeValue => {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    ("min" in value || "max" in value)
+  );
+};
+
 export const formatFilterValue = (
   filter: FilterRule
-): string | DateRange | string[] | null => {
+): string | DateRange | string[] | NumberRangeValue | null => {
   const { value } = filter;
 
   if (typeof value === "string") return value;
   if (isDateRange(value)) return value;
   if (isStringArray(value)) return value;
+  if (isNumberRange(value)) return value;
 
   return null;
 };
 
 const isValidFilterValue = (value: unknown): boolean => {
-  if (value === undefined || value === "") return false;
+  if (value === undefined || value === null || value === "") return false;
   if (Array.isArray(value)) return value.length > 0;
   return true;
 };

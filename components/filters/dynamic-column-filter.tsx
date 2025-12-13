@@ -11,10 +11,12 @@ import {
   FilterColumn,
   FilterRule,
   FilterState,
+  NumberRangeValue,
 } from "./filters.types";
 import { formatColumnLabel, processFilters } from "./filters.utils";
 import { MultiselectFilter } from "./multi-select-filter";
 import { Button } from "@/components/ui/button";
+import { NumberRangeFilter } from "./number-range-filter";
 
 interface DynamicColumnFilterProps<TData> {
   table: Table<TData>;
@@ -83,16 +85,19 @@ export function DynamicColumnFilter<TData>({
     const columnConfig = availableColumns.find((col) => col.id === columnId);
     const label = columnConfig?.label || columnId;
 
+    let initialValue: AvailableValueTypes = "";
+    if (type === "select") initialValue = [];
+    if (type === "numberRange") initialValue = { min: "", max: "" };
+
     const newFilter: FilterRule = {
       id: columnId,
       label: label,
       type,
-      value: type === "text" ? "" : type === "select" ? [] : undefined,
+      value: initialValue,
       loader: columnConfig?.loader,
     };
-    const updatedFilters = [...filters, newFilter];
 
-    setFilters(updatedFilters);
+    setFilters([...filters, newFilter]);
   };
 
   const updateFilter = (filterId: string, value?: AvailableValueTypes) => {
@@ -121,7 +126,6 @@ export function DynamicColumnFilter<TData>({
         />
       );
     }
-
     if (filter.type === "select") {
       return (
         <MultiselectFilter
@@ -135,7 +139,17 @@ export function DynamicColumnFilter<TData>({
         />
       );
     }
-
+    if (filter.type === "numberRange") {
+      return (
+        <NumberRangeFilter
+          key={filter.id}
+          label={filter.label}
+          value={filter.value as NumberRangeValue}
+          onChange={(value) => updateFilter(filter.id, value)}
+          onRemove={() => removeFilter(filter.id)}
+        />
+      );
+    }
     return (
       <FilterChip
         label={filter.label}
@@ -146,7 +160,6 @@ export function DynamicColumnFilter<TData>({
       />
     );
   };
-
   return (
     <div className="flex items-center gap-3 flex-wrap pb-2">
       {exportFn && (
