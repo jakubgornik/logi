@@ -100,7 +100,9 @@ export function FilteredSupplierSelect({
           </div>
           <div className="border-b">
             <FilterHeader title="Filter by active scope" />
-            <ScrollArea className="h-[100px]">
+            <ScrollArea
+              className={`${SCOPE_OPTIONS.length === 0 ? "" : "h-20"}`}
+            >
               <div className="px-3 py-2 flex flex-col gap-2">
                 {SCOPE_OPTIONS.filter((option) =>
                   userScopes.includes(option.value)

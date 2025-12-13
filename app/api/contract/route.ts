@@ -42,6 +42,42 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
   }
 
   try {
+    const [contractUser, contractSupplier] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: user.id },
+        select: { scopes: true },
+      }),
+      prisma.supplier.findUnique({
+        where: { id: payload.data.supplierId },
+        select: { scopes: true },
+      }),
+    ]);
+
+    if (!contractUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    if (!contractSupplier) {
+      return NextResponse.json(
+        { message: "Supplier not found" },
+        { status: 404 }
+      );
+    }
+
+    const hasMatchingScope = contractUser.scopes.some((scope) =>
+      contractSupplier.scopes.includes(scope)
+    );
+
+    if (!hasMatchingScope) {
+      return NextResponse.json(
+        {
+          message:
+            "Cannot create contract: User and supplier have no common capabilities",
+        },
+        { status: 403 }
+      );
+    }
+
     await prisma.contract.create({
       data: {
         ...payload.data,
