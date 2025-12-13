@@ -7,7 +7,7 @@ import {
   SortingState,
   PaginationState,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { useSupplierTableColumns } from "./use-supplier-table-columns";
 import {
   getSelectedIdsFromRowSelection,
@@ -25,9 +25,10 @@ const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
 interface SupplierTableProps {
   initialData?: PaginatedResponse<Supplier>;
+  children?: ReactNode;
 }
 
-export function SupplierTable({ initialData }: SupplierTableProps) {
+export function SupplierTable({ initialData, children }: SupplierTableProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<FilterState>({
@@ -112,6 +113,7 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
         totalCount={totalCount}
         pageSizeOptions={PAGE_SIZE_OPTIONS}
       />
+      {children}
     </div>
   );
 }

@@ -16,16 +16,14 @@ export const DashboardTile = ({
   return (
     <Card className="flex flex-col shadow-sm w-full transition-all hover:scale-[1.02] hover:shadow-md">
       {(title || Icon) && (
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-5 pb-2">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 px-3 pb-2">
           {title && (
             <CardTitle className="text-base font-medium">{title}</CardTitle>
           )}
           {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
         </CardHeader>
       )}
-      <CardContent className="p-5 pt-0 flex flex-col flex-1">
-        {children}
-      </CardContent>
+      <CardContent className="flex flex-col flex-1">{children}</CardContent>
     </Card>
   );
 };

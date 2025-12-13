@@ -2,7 +2,6 @@ import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
 import { ROUTES } from "@/lib/routes";
 import { ContractForm } from "@/modules/contract/contract-form";
-import { get } from "http";
 import { redirect } from "next/navigation";
 
 export default async function CreateContractPage() {
