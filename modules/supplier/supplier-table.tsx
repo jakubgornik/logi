@@ -46,6 +46,7 @@ export function SupplierTable({ initialData }: SupplierTableProps) {
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
+    setRowSelection({});
   };
 
   const { data } = useGetSuppliers(

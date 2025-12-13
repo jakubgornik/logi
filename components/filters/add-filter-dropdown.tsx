@@ -43,7 +43,7 @@ export function AddFilterDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[200px]">
-        <DropdownMenuLabel>Select Column</DropdownMenuLabel>
+        <DropdownMenuLabel>Select Filter</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {hasAvailableColumns ? (
           filterColumns.map((column) => (

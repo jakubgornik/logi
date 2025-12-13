@@ -53,6 +53,7 @@ export function ContractTable({ initialData }: ContractTableProps) {
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
+    setRowSelection({});
   };
 
   const { data } = useGetContracts(
