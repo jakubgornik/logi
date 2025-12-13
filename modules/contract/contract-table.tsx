@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import { PaginatedResponse } from "@/lib/types/common.types";
-import { useGetContracts } from "@/hooks/contract.hooks";
+import { useDeleteContract, useGetContracts } from "@/hooks/contract.hooks";
 import { useContractsTableColumns } from "./use-contracts-table-columns";
 import { Contract } from "@/prisma/client/client";
 import {
@@ -90,6 +90,12 @@ export function ContractTable({ initialData }: ContractTableProps) {
     },
   });
 
+  const { mutate: deleteSupplier } = useDeleteContract({
+    onSuccess: () => {
+      setRowSelection({});
+    },
+  });
+
   return (
     <div className="p-6">
       <div className="flex justify-between">
@@ -102,7 +108,11 @@ export function ContractTable({ initialData }: ContractTableProps) {
         />
         <ContractTableActions
           selectedIds={selectedIds}
-          onDelete={() => console.log("delete")}
+          onDelete={() =>
+            deleteSupplier({
+              ids: selectedIds,
+            })
+          }
         />
       </div>
       <DataTable table={table} />

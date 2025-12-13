@@ -1,7 +1,7 @@
 import { routeGuard } from "@/lib/auth";
 import { getContracts } from "@/lib/fetchers/get-contracts";
 import { prisma } from "@/lib/prisma";
-import { paginatedQuerySchema } from "@/lib/types/common.types";
+import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { contractApiSchema } from "@/modules/contract/contract-form.validation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -88,6 +88,40 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
     return NextResponse.json(
       { message: "Contract created successfully" },
       { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+});
+
+export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
+  const payload = IdArraySchema.safeParse(await request.json());
+
+  if (!payload.success) {
+    return NextResponse.json(
+      {
+        message: "Invalid data",
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.contract.deleteMany({
+      where: {
+        id: { in: payload.data.ids },
+        userId: user.id,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: `${payload.data.ids.length} contract(s) deleted successfully`,
+      },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
