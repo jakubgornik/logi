@@ -34,3 +34,10 @@ export const mapCountryCodeToName = (countryCode: string) => {
   const country = countries[countryCode as keyof typeof countries];
   return country.name;
 };
+
+export const getCountryCodeByName = (name: string) => {
+  const entry = Object.entries(countries).find(
+    ([_, country]) => country.name === name
+  );
+  return entry ? entry[0] : null;
+};

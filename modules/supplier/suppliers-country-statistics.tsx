@@ -2,6 +2,7 @@ import { CustomAccordion } from "@/components/custom-accordion";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
 import { mapCountryCodeToName } from "./supplier-form.utils";
+import { CountryDistributionChart } from "./countries-of-origin-distribution";
 
 export default async function SuppliersCountryStatistics() {
   const user = await getCurrentUser();
@@ -23,9 +24,9 @@ export default async function SuppliersCountryStatistics() {
   );
 
   return (
-    <div className="py-4">
-      <CustomAccordion label="Suppliers country of origin statistics">
-        {JSON.stringify(countriesData)}
+    <div className="pt-8">
+      <CustomAccordion label="Countries of Origin">
+        <CountryDistributionChart data={countriesData} />
       </CustomAccordion>
     </div>
   );
