@@ -19,6 +19,7 @@ import {
   mapSortingToSortBy,
 } from "../supplier/supplier-table.utils";
 import { TableToolbar } from "@/components/filters/table-toolbar";
+import { ContractTableActions } from "./contract-table-actions";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
@@ -91,13 +92,19 @@ export function ContractTable({ initialData }: ContractTableProps) {
 
   return (
     <div className="p-6">
-      <TableToolbar
-        table={table}
-        onFiltersChange={handleFiltersChange}
-        currentFilters={filters}
-        omitColumnsById={["select", "validUntil"]}
-        additionalFilters={additionalFilters}
-      />
+      <div className="flex justify-between">
+        <TableToolbar
+          table={table}
+          onFiltersChange={handleFiltersChange}
+          currentFilters={filters}
+          omitColumnsById={["select", "validUntil"]}
+          additionalFilters={additionalFilters}
+        />
+        <ContractTableActions
+          selectedIds={selectedIds}
+          onDelete={() => console.log("delete")}
+        />
+      </div>
       <DataTable table={table} />
       <Pagination
         table={table}

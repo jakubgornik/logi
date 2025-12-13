@@ -3,26 +3,25 @@
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { buttonVariants } from "../home/animation-variants/variants";
-import { DeleteSupplierDialog } from "./delete-supplier-dialog";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SUB_ROUTES } from "@/lib/routes";
+import { DeleteContractDialog } from "./delete-contract-dialog";
 
-interface SupplierTableActionsProps {
+interface ContractTableActionsProps {
   selectedIds: string[];
   onDelete?: () => void;
 }
 
-export const SupplierTableActions = ({
+export const ContractTableActions = ({
   selectedIds,
   onDelete,
-}: SupplierTableActionsProps) => {
+}: ContractTableActionsProps) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const router = useRouter();
 
   const selectedCount = selectedIds.length;
-  const showEditButton = selectedCount === 1;
   const showDeleteButton = selectedCount > 0;
   const isMultipleSelection = selectedCount > 1;
 
@@ -43,28 +42,8 @@ export const SupplierTableActions = ({
               className="h-10"
               onClick={() => setIsDeleteDialogOpen(true)}
             >
-              Delete {selectedCount === 1 ? "" : selectedCount} Supplier
+              Delete {selectedCount === 1 ? "" : selectedCount} Contract
               {isMultipleSelection ? "s" : ""}
-            </Button>
-          </motion.div>
-        )}
-        {showEditButton && (
-          <motion.div
-            key="edit"
-            variants={buttonVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10"
-              onClick={() =>
-                router.push(SUB_ROUTES.SUPPLIER_EDIT(selectedIds[0]))
-              }
-            >
-              Edit Supplier
             </Button>
           </motion.div>
         )}
@@ -72,16 +51,16 @@ export const SupplierTableActions = ({
           variant="outline"
           size="sm"
           className="h-10"
-          onClick={() => router.push(SUB_ROUTES.SUPPLIER_CREATE)}
+          onClick={() => router.push(SUB_ROUTES.CONTRACT_CREATE)}
         >
-          Create Supplier
+          Create Contract
         </Button>
       </AnimatePresence>
-      <DeleteSupplierDialog
+      <DeleteContractDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={onDelete}
-        supplierCount={selectedCount}
+        contractCount={selectedCount}
       />
     </div>
   );

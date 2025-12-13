@@ -10,19 +10,19 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-interface DeleteSupplierDialogProps {
+interface DeleteContractDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm?: () => void;
-  supplierCount: number;
+  contractCount: number;
 }
 
-export const DeleteSupplierDialog = ({
+export const DeleteContractDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  supplierCount,
-}: DeleteSupplierDialogProps) => {
+  contractCount,
+}: DeleteContractDialogProps) => {
   const handleConfirm = () => {
     onConfirm?.();
     onClose();
@@ -33,11 +33,12 @@ export const DeleteSupplierDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Delete Supplier{supplierCount > 1 ? "s" : ""}
+            Delete Contract{contractCount > 1 ? "s" : ""}
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete supplier? This action cannot be
-            undone.
+            Are you sure you want to delete{" "}
+            {contractCount > 1 ? "these contracts" : "this contract"}? This
+            action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
