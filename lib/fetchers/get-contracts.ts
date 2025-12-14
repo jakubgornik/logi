@@ -2,13 +2,24 @@ import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { IContractQuery } from "@/modules/contract/contract.types";
-import { Contract } from "@/prisma/client/client";
+import { Contract, Prisma } from "@/prisma/client/client";
 import { mapContractSortToOrderBy } from "../utils/mappers/map-contract-sort-to-order-by";
 import { mapContractFiltersToWhere } from "../utils/mappers/map-contract-filters-to-where";
 
 type ContractArgs = Partial<IContractQuery> & {
   userId: string;
+  fetchAll?: boolean;
 };
+
+type ContractWithSupplier = Prisma.ContractGetPayload<{
+  include: {
+    supplier: {
+      select: {
+        scopes: true;
+      };
+    };
+  };
+}>;
 
 export const getContracts = cache(
   async ({
@@ -17,11 +28,13 @@ export const getContracts = cache(
     pageSize = 10,
     sortBy = [],
     filters = [],
-  }: ContractArgs): Promise<ServiceResult<PaginatedResponse<Contract>>> => {
-    const skip = page * pageSize;
-    const take = pageSize;
+    fetchAll = false,
+  }: ContractArgs): Promise<
+    ServiceResult<PaginatedResponse<ContractWithSupplier>>
+  > => {
+    const skip = fetchAll ? undefined : page * pageSize;
+    const take = fetchAll ? undefined : pageSize;
 
-    console.log(filters);
     const orderBy = mapContractSortToOrderBy(sortBy);
     const where = mapContractFiltersToWhere(userId, filters);
 
@@ -32,13 +45,19 @@ export const getContracts = cache(
           orderBy,
           skip,
           take,
+          include: {
+            supplier: {
+              select: {
+                scopes: true,
+              },
+            },
+          },
         }),
         prisma.contract.count({
           where,
         }),
       ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
+      const totalPages = fetchAll ? 1 : Math.ceil(totalCount / pageSize);
 
       return {
         success: true,
@@ -46,8 +65,8 @@ export const getContracts = cache(
           data,
           totalCount,
           totalPages,
-          page,
-          pageSize,
+          page: fetchAll ? 0 : page,
+          pageSize: fetchAll ? totalCount : pageSize,
         },
       };
     } catch (error) {

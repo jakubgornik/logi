@@ -20,6 +20,7 @@ import {
 } from "../supplier/supplier-table.utils";
 import { TableToolbar } from "@/components/filters/table-toolbar";
 import { ContractTableActions } from "./contract-table-actions";
+import { IContractWithSupplier } from "./contract.types";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
@@ -32,7 +33,7 @@ const additionalFilters = [
 ];
 
 interface ContractTableProps {
-  initialData?: PaginatedResponse<Contract>;
+  initialData?: PaginatedResponse<IContractWithSupplier>;
 }
 
 export function ContractTable({ initialData }: ContractTableProps) {

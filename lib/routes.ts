@@ -26,4 +26,6 @@ export const routeNames: Record<string, string> = {
   "/settings/update": "Update User",
   "/contract": "Contracts",
   "/contract/create": "Create Contract",
+  "/product": "Products",
+  "/product/create": "Create Product",
 };
