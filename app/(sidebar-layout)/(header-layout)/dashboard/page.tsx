@@ -1,8 +1,7 @@
-import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { ROUTES, SUB_ROUTES } from "@/lib/routes";
-import { FilePlus, Truck, Bell, CheckCircle2 } from "lucide-react";
+import { FilePlus, Truck, Bell, CheckCircle2, Package } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Notification } from "@/lib/types/common.types";
 import { DashboardActionTile } from "@/modules/dashboard/dashboard-action-tile";
@@ -39,9 +38,17 @@ export default async function DashboardPage() {
             actionLabel="Register Supplier"
             actionHref={SUB_ROUTES.SUPPLIER_CREATE}
           />
+          <DashboardActionTile
+            title="Products"
+            icon={Package}
+            contentHeader="Add Product"
+            contentDescription="Register a new product."
+            actionLabel="Add Product"
+            actionHref={SUB_ROUTES.PRODUCT_CREATE}
+          />
           <DashboardTile title="Notifications" icon={Bell}>
             {/* todo refactor */}
-            <ScrollArea className="h-[250px]">
+            <ScrollArea className="h-[180px]">
               {notifications.length > 0 ? (
                 <div className="p-5 flex flex-col gap-4">
                   {notifications.map((item) => (
@@ -70,15 +77,6 @@ export default async function DashboardPage() {
                 </div>
               )}
             </ScrollArea>
-          </DashboardTile>
-          <DashboardTile>
-            <div className="p-4 flex justify-center items-center">
-              <Calendar
-                mode="single"
-                selected={today}
-                className="rounded-md border bg-card shadow-sm"
-              />
-            </div>
           </DashboardTile>
         </div>
       </CustomAccordion>
