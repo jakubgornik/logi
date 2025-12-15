@@ -18,6 +18,7 @@ import { IContractWithSupplier } from "../contract/contract.types";
 import { ProductFormSchema, productSchema } from "./product-form.validation";
 import { PRODUCTS } from "@/lib/shared/consts";
 import { Scope } from "@/prisma/client/enums";
+import { useAddProducts } from "@/hooks/product.hooks";
 
 interface ProductFormProps {
   contracts: IContractWithSupplier[];
@@ -64,8 +65,10 @@ export const ProductForm = ({ contracts, userScopes }: ProductFormProps) => {
     return commonScopes.length > 0;
   }, [selectedContract, commonScopes]);
 
+  const { mutate: addProduct } = useAddProducts();
+
   const onSubmit = (data: ProductFormSchema) => {
-    console.log(data);
+    addProduct(data);
   };
 
   return (
