@@ -1,10 +1,10 @@
 import { getContracts } from "@/lib/fetchers/get-contracts";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { ROUTES } from "@/lib/routes";
-import { ProductForm } from "@/modules/product/product-form";
+import { InventoryForm } from "@/modules/inventory/inventory-form";
 import { redirect } from "next/navigation";
 
-export default async function CreateProductPage() {
+export default async function CreateInventoryPage() {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -17,5 +17,5 @@ export default async function CreateProductPage() {
 
   const contracts = result.success ? result.data.data : [];
 
-  return <ProductForm contracts={contracts} userScopes={user.scopes} />;
+  return <InventoryForm contracts={contracts} userScopes={user.scopes} />;
 }

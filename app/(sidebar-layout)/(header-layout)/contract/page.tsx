@@ -16,10 +16,8 @@ export default async function ContractPage() {
   });
 
   return (
-    <div>
-      <ContractTable
-        initialData={contracts.success ? contracts.data : undefined}
-      />
-    </div>
+    <ContractTable
+      initialData={contracts.success ? contracts.data : undefined}
+    />
   );
 }

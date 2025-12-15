@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { IContractQuery } from "@/modules/contract/contract.types";
-import { Contract, Prisma } from "@/prisma/client/client";
+import { Prisma } from "@/prisma/client/client";
 import { mapContractSortToOrderBy } from "../utils/mappers/map-contract-sort-to-order-by";
 import { mapContractFiltersToWhere } from "../utils/mappers/map-contract-filters-to-where";
 

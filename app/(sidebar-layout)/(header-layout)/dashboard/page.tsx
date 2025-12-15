@@ -16,7 +16,6 @@ export default async function DashboardPage() {
   }
 
   const notifications: Notification[] = [];
-  const today = new Date();
 
   return (
     <div className="p-6">
@@ -39,12 +38,12 @@ export default async function DashboardPage() {
             actionHref={SUB_ROUTES.SUPPLIER_CREATE}
           />
           <DashboardActionTile
-            title="Products"
+            title="Inventory"
             icon={Package}
-            contentHeader="Add Product"
+            contentHeader="Add Product to Inventory"
             contentDescription="Register a new product."
             actionLabel="Add Product"
-            actionHref={SUB_ROUTES.PRODUCT_CREATE}
+            actionHref={SUB_ROUTES.INVENTORY_CREATE}
           />
           <DashboardTile title="Notifications" icon={Bell}>
             {/* todo refactor */}

@@ -15,25 +15,31 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useMemo } from "react";
 import { IContractWithSupplier } from "../contract/contract.types";
-import { ProductFormSchema, productSchema } from "./product-form.validation";
 import { PRODUCTS } from "@/lib/shared/consts";
 import { Scope } from "@/prisma/client/enums";
-import { useAddProducts } from "@/hooks/product.hooks";
+import { useAddInventory } from "@/hooks/inventory.hooks";
+import {
+  InventoryFormSchema,
+  inventorySchema,
+} from "./inventory-form.validation";
 
-interface ProductFormProps {
+interface InventoryFormProps {
   contracts: IContractWithSupplier[];
   userScopes: Scope[];
 }
 
-export const ProductForm = ({ contracts, userScopes }: ProductFormProps) => {
+export const InventoryForm = ({
+  contracts,
+  userScopes,
+}: InventoryFormProps) => {
   const {
     control,
     handleSubmit,
     watch,
     setValue,
     formState: { errors },
-  } = useForm<ProductFormSchema>({
-    resolver: zodResolver(productSchema),
+  } = useForm<InventoryFormSchema>({
+    resolver: zodResolver(inventorySchema),
     defaultValues: {
       contractId: "",
       name: "",
@@ -65,10 +71,10 @@ export const ProductForm = ({ contracts, userScopes }: ProductFormProps) => {
     return commonScopes.length > 0;
   }, [selectedContract, commonScopes]);
 
-  const { mutate: addProduct } = useAddProducts();
+  const { mutate: addProductToInventory } = useAddInventory();
 
-  const onSubmit = (data: ProductFormSchema) => {
-    addProduct(data);
+  const onSubmit = (data: InventoryFormSchema) => {
+    addProductToInventory(data);
   };
 
   return (

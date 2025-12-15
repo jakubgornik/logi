@@ -25,8 +25,8 @@ const SIDEBAR_MENU = [
     icon: Folder,
   },
   {
-    title: "Products",
-    url: ROUTES.PRODUCT,
+    title: "Inventory",
+    url: ROUTES.INVENTORY,
     icon: Package,
   },
   {
