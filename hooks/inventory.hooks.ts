@@ -2,22 +2,27 @@ import api from "@/lib/axios";
 import { ROUTES } from "@/lib/routes";
 import { PaginatedResponse } from "@/lib/types/common.types";
 import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
-import { IInventoryQuery } from "@/modules/inventory/inventory.types";
-import { Inventory } from "@/prisma/client/client";
+import {
+  IInventoryQuery,
+  IInventoryWithProduct,
+} from "@/modules/inventory/inventory.types";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { InventoryFormSchema as IAddInventory } from "@/modules/inventory/inventory-form.validation";
 
 const useGetInventory = (
   query: Partial<IInventoryQuery>,
-  initialData?: PaginatedResponse<Inventory>
+  initialData?: PaginatedResponse<IInventoryWithProduct>
 ) => {
   return useQuery({
     queryKey: ["inventory", query],
     queryFn: async () => {
-      const res = await api.get<PaginatedResponse<Inventory>>("/inventory", {
-        params: query,
-      });
+      const res = await api.get<PaginatedResponse<IInventoryWithProduct>>(
+        "/inventory",
+        {
+          params: query,
+        }
+      );
       return res.data;
     },
     placeholderData: keepPreviousData,

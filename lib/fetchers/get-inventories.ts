@@ -1,8 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
-import { Inventory } from "@/prisma/client/client";
+import { Inventory, Prisma } from "@/prisma/client/client";
 import { IInventoryQuery } from "@/modules/inventory/inventory.types";
+
+export type InventoryWithProduct = Prisma.InventoryGetPayload<{
+  include: {
+    product: true;
+  };
+}>;
 
 type InventoryArgs = Partial<IInventoryQuery> & {
   userId: string;
@@ -17,10 +23,13 @@ export const getInventories = cache(
     sortBy = [],
     filters = [],
     fetchAll = false,
-  }: InventoryArgs): Promise<ServiceResult<PaginatedResponse<Inventory>>> => {
+  }: InventoryArgs): Promise<
+    ServiceResult<PaginatedResponse<InventoryWithProduct>>
+  > => {
     const skip = fetchAll ? undefined : page * pageSize;
     const take = fetchAll ? undefined : pageSize;
 
+    // todo: implement sorting and filtering
     // const orderBy = mapContractSortToOrderBy(sortBy);
     // const where = mapContractFiltersToWhere(userId, filters);
 
@@ -35,6 +44,9 @@ export const getInventories = cache(
           },
           skip,
           take,
+          include: {
+            product: true,
+          },
         }),
         prisma.inventory.count({
           where: {

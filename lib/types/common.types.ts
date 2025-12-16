@@ -1,5 +1,6 @@
 import z from "zod";
 import { jsonParse } from "../utils/json-parse";
+import { Scope } from "@/prisma/client/enums";
 
 export const IdArraySchema = z.object({
   ids: z.array(z.string()),
@@ -66,3 +67,11 @@ export interface Notification {
   description: string;
   time: string;
 }
+
+export type IProduct = {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  scope: Scope;
+};
