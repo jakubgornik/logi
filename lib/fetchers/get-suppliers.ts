@@ -3,8 +3,8 @@ import { cache } from "react";
 import { ISupplierQuery } from "@/modules/supplier/supplier.types";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { Supplier } from "@/prisma/client/client";
-import { mapSupplierSortToOrderBy } from "../utils/mappers/map-supplier-sort-to-order-by";
-import { mapSupplierFiltersToWhere } from "../utils/mappers/map-supplier-filters-to-where";
+import { mapSupplierSortToOrderBy } from "../utils/mappers/supplier/map-supplier-sort-to-order-by";
+import { mapSupplierFiltersToWhere } from "../utils/mappers/supplier/map-supplier-filters-to-where";
 
 type SupplierArgs = Partial<ISupplierQuery> & {
   userId: string;

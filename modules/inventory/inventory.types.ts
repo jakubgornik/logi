@@ -8,7 +8,6 @@ export type IInventoryWithProduct = {
   quantity: number;
   userId: string;
   productId: string;
-  createdAt: Date;
   updatedAt: Date;
   product: IProduct;
 };

@@ -34,6 +34,8 @@ export const mapContractFiltersToWhere = (
             });
           }
           break;
+        default:
+          break;
       }
     });
   }

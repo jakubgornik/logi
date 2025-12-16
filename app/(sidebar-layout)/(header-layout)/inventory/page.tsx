@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getInventories } from "@/lib/fetchers/get-inventories";
 import { ROUTES } from "@/lib/routes";
+import { InventoryTable } from "@/modules/inventory/inventory-table";
 import { redirect } from "next/navigation";
 
 export default async function InventoryPage() {
@@ -13,6 +14,10 @@ export default async function InventoryPage() {
   const inventories = await getInventories({
     userId: user.id,
   });
-  console.log(inventories.success ? inventories.data : []);
-  return <></>;
+
+  return (
+    <InventoryTable
+      initialData={inventories.success ? inventories.data : undefined}
+    />
+  );
 }

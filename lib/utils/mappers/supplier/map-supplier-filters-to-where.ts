@@ -55,6 +55,8 @@ export const mapSupplierFiltersToWhere = (
             ],
           });
           break;
+        default:
+          break;
       }
     });
   }

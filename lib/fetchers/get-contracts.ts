@@ -3,8 +3,8 @@ import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { IContractQuery } from "@/modules/contract/contract.types";
 import { Prisma } from "@/prisma/client/client";
-import { mapContractSortToOrderBy } from "../utils/mappers/map-contract-sort-to-order-by";
-import { mapContractFiltersToWhere } from "../utils/mappers/map-contract-filters-to-where";
+import { mapContractSortToOrderBy } from "../utils/mappers/contract/map-contract-sort-to-order-by";
+import { mapContractFiltersToWhere } from "../utils/mappers/contract/map-contract-filters-to-where";
 
 type ContractArgs = Partial<IContractQuery> & {
   userId: string;

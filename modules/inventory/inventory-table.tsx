@@ -11,33 +11,19 @@ import { useMemo, useState } from "react";
 import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import { PaginatedResponse } from "@/lib/types/common.types";
-import { useDeleteContract, useGetContracts } from "@/hooks/contract.hooks";
-import { useContractsTableColumns } from "./use-contracts-table-columns";
-import { Contract } from "@/prisma/client/client";
-import {
-  getSelectedIdsFromRowSelection,
-  mapSortingToSortBy,
-} from "../supplier/supplier-table.utils";
+import { mapSortingToSortBy } from "../supplier/supplier-table.utils";
 import { TableToolbar } from "@/components/filters/table-toolbar";
-import { ContractTableActions } from "./contract-table-actions";
-import { IContractWithSupplier } from "./contract.types";
+import { useGetInventory } from "@/hooks/inventory.hooks";
+import { IInventoryWithProduct } from "./inventory.types";
+import { useInventoryTableColumns } from "./use-inventory-table-columns";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
-const additionalFilters = [
-  {
-    id: "validityDays",
-    label: "Validity Days",
-    type: "numberRange" as const,
-  },
-];
-
-interface ContractTableProps {
-  initialData?: PaginatedResponse<IContractWithSupplier>;
+interface InventoryTableProps {
+  initialData?: PaginatedResponse<IInventoryWithProduct>;
 }
 
-export function ContractTable({ initialData }: ContractTableProps) {
-  const [rowSelection, setRowSelection] = useState({});
+export function InventoryTable({ initialData }: InventoryTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<FilterState>({
     search: "",
@@ -47,18 +33,16 @@ export function ContractTable({ initialData }: ContractTableProps) {
     pageIndex: 0,
     pageSize: 10,
   });
-  const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
 
-  const columns = useContractsTableColumns();
+  const columns = useInventoryTableColumns();
 
   const sortBy = mapSortingToSortBy(sorting);
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
-    setRowSelection({});
   };
 
-  const { data } = useGetContracts(
+  const { data } = useGetInventory(
     {
       page: pagination.pageIndex,
       pageSize: pagination.pageSize,
@@ -76,8 +60,6 @@ export function ContractTable({ initialData }: ContractTableProps) {
     data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     manualSorting: true,
     onPaginationChange: setPagination,
@@ -85,15 +67,8 @@ export function ContractTable({ initialData }: ContractTableProps) {
     getRowId: (row) => row.id,
     pageCount,
     state: {
-      rowSelection,
       sorting,
       pagination,
-    },
-  });
-
-  const { mutate: deleteSupplier } = useDeleteContract({
-    onSuccess: () => {
-      setRowSelection({});
     },
   });
 
@@ -104,19 +79,10 @@ export function ContractTable({ initialData }: ContractTableProps) {
           table={table}
           onFiltersChange={handleFiltersChange}
           currentFilters={filters}
-          omitColumnsById={["select", "validUntil"]}
-          additionalFilters={additionalFilters}
-        />
-        <ContractTableActions
-          selectedIds={selectedIds}
-          onDelete={() =>
-            deleteSupplier({
-              ids: selectedIds,
-            })
-          }
+          omitColumnsById={["select"]}
         />
       </div>
-      <DataTable table={table} enableRowSelection />
+      <DataTable table={table} />
       <Pagination
         table={table}
         totalCount={totalCount}

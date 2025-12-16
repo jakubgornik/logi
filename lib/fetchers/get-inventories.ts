@@ -3,6 +3,8 @@ import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { Inventory, Prisma } from "@/prisma/client/client";
 import { IInventoryQuery } from "@/modules/inventory/inventory.types";
+import { mapInventorySortToOrderBy } from "../utils/mappers/inventory/map-inventory-sort-to-order-by";
+import { mapInventoryFiltersToWhere } from "../utils/mappers/inventory/map-inventory-filters-to-where";
 
 export type InventoryWithProduct = Prisma.InventoryGetPayload<{
   include: {
@@ -29,19 +31,14 @@ export const getInventories = cache(
     const skip = fetchAll ? undefined : page * pageSize;
     const take = fetchAll ? undefined : pageSize;
 
-    // todo: implement sorting and filtering
-    // const orderBy = mapContractSortToOrderBy(sortBy);
-    // const where = mapContractFiltersToWhere(userId, filters);
+    const orderBy = mapInventorySortToOrderBy(sortBy);
+    const where = mapInventoryFiltersToWhere(userId, filters);
 
     try {
       const [data, totalCount] = await prisma.$transaction([
         prisma.inventory.findMany({
-          where: {
-            userId: userId,
-          },
-          orderBy: {
-            quantity: "desc",
-          },
+          where,
+          orderBy,
           skip,
           take,
           include: {
@@ -49,9 +46,7 @@ export const getInventories = cache(
           },
         }),
         prisma.inventory.count({
-          where: {
-            userId: userId,
-          },
+          where,
         }),
       ]);
       const totalPages = fetchAll ? 1 : Math.ceil(totalCount / pageSize);

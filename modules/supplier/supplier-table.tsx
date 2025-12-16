@@ -107,7 +107,7 @@ export function SupplierTable({ initialData, children }: SupplierTableProps) {
           }
         />
       </div>
-      <DataTable table={table} />
+      <DataTable table={table} enableRowSelection />
       <Pagination
         table={table}
         totalCount={totalCount}

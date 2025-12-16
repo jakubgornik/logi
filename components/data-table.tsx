@@ -15,9 +15,13 @@ import {
 
 interface DataTableProps<TData> {
   table: TableType<TData>;
+  enableRowSelection?: boolean;
 }
 
-export function DataTable<TData>({ table }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  table,
+  enableRowSelection = false,
+}: DataTableProps<TData>) {
   return (
     <div className="space-y-4">
       <div className="rounded-md border border-border bg-card">
@@ -70,8 +74,11 @@ export function DataTable<TData>({ table }: DataTableProps<TData>) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/50 transition-colors"
-                  onClick={() => row.toggleSelected()}
+                  className={cn(
+                    "hover:bg-muted/50 transition-colors",
+                    enableRowSelection ? "cursor-pointer" : ""
+                  )}
+                  onClick={() => enableRowSelection && row.toggleSelected()}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
