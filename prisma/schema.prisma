@@ -14,17 +14,45 @@ enum Scope {
 }
 
 model User {
-    id        String   @id @default(cuid())
-    authId    String   @unique
-    email     String   @unique
-    name      String?
+    id         String  @id @default(cuid())
+    authId     String  @unique
+    email      String  @unique
+    name       String?
+    isCustomer Boolean @default(false)
+
+    customerName      String?
+    addressCountry    String?
+    addressCity       String?
+    addressStreet     String?
+    addressPostalCode String?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt()
 
-    suppliers Supplier[]
-    scopes    Scope[]
-    contracts Contract[]
-    inventory Inventory[]
+    suppliers         Supplier[]
+    scopes            Scope[]
+    contracts         Contract[]
+    inventory         Inventory[]
+    customers         Customer[]  @relation("SellerToCustomer")
+    recordsAsCustomer Customer[]  @relation("LinkedAppUser")
+}
+
+model Customer {
+    id        String  @id @default(cuid())
+    sellerId  String
+    appUserId String?
+
+    customerName      String?
+    addressCountry    String?
+    addressCity       String?
+    addressStreet     String?
+    addressPostalCode String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
+
+    seller     User  @relation("SellerToCustomer", fields: [sellerId], references: [id])
+    linkedUser User? @relation("LinkedAppUser", fields: [appUserId], references: [id])
 }
 
 model Supplier {
