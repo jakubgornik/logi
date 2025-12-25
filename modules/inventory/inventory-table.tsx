@@ -16,6 +16,9 @@ import { TableToolbar } from "@/components/filters/table-toolbar";
 import { useGetInventory } from "@/hooks/inventory.hooks";
 import { IInventoryWithProduct } from "./inventory.types";
 import { useInventoryTableColumns } from "./use-inventory-table-columns";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { SUB_ROUTES } from "@/lib/routes";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
@@ -33,6 +36,8 @@ export function InventoryTable({ initialData }: InventoryTableProps) {
     pageIndex: 0,
     pageSize: 10,
   });
+
+  const router = useRouter();
 
   const columns = useInventoryTableColumns();
 
@@ -81,6 +86,16 @@ export function InventoryTable({ initialData }: InventoryTableProps) {
           currentFilters={filters}
           omitColumnsById={["select"]}
         />
+        <div className="pb-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10"
+            onClick={() => router.push(SUB_ROUTES.INVENTORY_CREATE)}
+          >
+            Add Product to Inventory
+          </Button>
+        </div>
       </div>
       <DataTable table={table} />
       <Pagination

@@ -22,20 +22,20 @@ export default async function DashboardPage() {
       <CustomAccordion label="Quick actions" defaultOpen>
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 justify-items-center xl:justify-items-start">
           <DashboardActionTile
-            title="Contracts"
-            icon={FilePlus}
-            contentHeader="New Contract"
-            contentDescription="Draft a new agreement."
-            actionLabel="Create Contract"
-            actionHref={SUB_ROUTES.CONTRACT_CREATE}
-          />
-          <DashboardActionTile
             title="Suppliers"
             icon={Truck}
             contentHeader="New Supplier"
             contentDescription="Register a new vendor."
             actionLabel="Register Supplier"
             actionHref={SUB_ROUTES.SUPPLIER_CREATE}
+          />
+          <DashboardActionTile
+            title="Contracts"
+            icon={FilePlus}
+            contentHeader="New Contract"
+            contentDescription="Draft a new agreement."
+            actionLabel="Create Contract"
+            actionHref={SUB_ROUTES.CONTRACT_CREATE}
           />
           <DashboardActionTile
             title="Inventory"

@@ -6,7 +6,12 @@ import {
   IInventoryQuery,
   IInventoryWithProduct,
 } from "@/modules/inventory/inventory.types";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { InventoryFormSchema as IAddInventory } from "@/modules/inventory/inventory-form.validation";
 
@@ -34,6 +39,7 @@ const useGetInventory = (
 
 const useAddInventory = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: IAddInventory) => {
@@ -43,6 +49,7 @@ const useAddInventory = () => {
       return res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
       router.push(ROUTES.INVENTORY);
     },
   });
