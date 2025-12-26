@@ -6,6 +6,7 @@ export const ROUTES = {
   SIGN_UP: "/signup",
   CONTRACT: "/contract",
   INVENTORY: "/inventory",
+  CUSTOMER: "/customer",
 };
 
 export const SUB_ROUTES = {
@@ -14,6 +15,7 @@ export const SUB_ROUTES = {
   SETTINGS_UPDATE: `${ROUTES.SETTINGS}/update`,
   CONTRACT_CREATE: `${ROUTES.CONTRACT}/create`,
   INVENTORY_CREATE: `${ROUTES.INVENTORY}/create`,
+  CUSTOMER_CREATE: `${ROUTES.CUSTOMER}/create`,
 };
 
 export const routeNames: Record<string, string> = {
@@ -28,4 +30,6 @@ export const routeNames: Record<string, string> = {
   "/contract/create": "Create Contract",
   "/inventory": "Inventory",
   "/inventory/create": "Add to Inventory",
+  "/customer": "Customers",
+  "/customer/create": "Create Customer",
 };

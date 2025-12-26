@@ -1,7 +1,14 @@
 "use client";
 
 import { Sidebar, SidebarContent, useSidebar } from "@/components/ui/sidebar";
-import { HomeIcon, Indent, Folder, Settings, Package } from "lucide-react";
+import {
+  HomeIcon,
+  Indent,
+  Folder,
+  Settings,
+  Package,
+  PersonStanding,
+} from "lucide-react";
 import { useLogout } from "@/hooks/use-logout";
 import { SidebarHeader } from "./app-sidebar-header";
 import { SidebarMenuItems } from "./app-sidebar-menu-items";
@@ -15,6 +22,11 @@ const SIDEBAR_MENU = [
     icon: HomeIcon,
   },
   {
+    title: "Inventory",
+    url: ROUTES.INVENTORY,
+    icon: Package,
+  },
+  {
     title: "Suppliers",
     url: ROUTES.SUPPLIER,
     icon: Indent,
@@ -25,9 +37,9 @@ const SIDEBAR_MENU = [
     icon: Folder,
   },
   {
-    title: "Inventory",
-    url: ROUTES.INVENTORY,
-    icon: Package,
+    title: "Customers",
+    url: ROUTES.CUSTOMER,
+    icon: PersonStanding,
   },
   {
     title: "Settings",
