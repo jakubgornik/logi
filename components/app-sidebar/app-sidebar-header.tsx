@@ -8,7 +8,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import clsx from "clsx";
 import { SidebarIcon } from "lucide-react";
 
 interface SidebarHeaderProps {
@@ -23,8 +22,8 @@ export function SidebarHeader({ onToggle }: SidebarHeaderProps) {
       <SidebarGroup className={cn(open && !isMobile && "border-b")}>
         {open ? (
           <SidebarGroupLabel
-            className={clsx(
-              "flex items-center w-full",
+            className={cn(
+              "flex items-center w-full p-0",
               isMobile ? "justify-center" : "justify-between"
             )}
           >
@@ -33,13 +32,21 @@ export function SidebarHeader({ onToggle }: SidebarHeaderProps) {
                 <h1 className="text-lg font-extrabold text-primary">Logi</h1>
               </div>
             )}
-            <Button size="icon" onClick={onToggle} className="h-8 w-8">
+            <Button
+              size="icon"
+              onClick={onToggle}
+              className={cn("h-8", isMobile ? "w-full" : "w-8")}
+            >
               <SidebarIcon />
             </Button>
           </SidebarGroupLabel>
         ) : (
           <div className="w-full flex justify-center items-center">
-            <Button size="icon" onClick={onToggle} className="h-8 w-8">
+            <Button
+              size="icon"
+              onClick={onToggle}
+              className={cn("h-8", isMobile ? "w-full" : "w-8")}
+            >
               <SidebarIcon />
             </Button>
           </div>

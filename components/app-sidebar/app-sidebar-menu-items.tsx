@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export interface MenuItem {
   title: string;
@@ -23,8 +24,8 @@ interface SidebarMenuItemsProps {
 }
 
 export function SidebarMenuItems({ items }: SidebarMenuItemsProps) {
-  const { state, isMobile } = useSidebar();
   const pathname = usePathname();
+  const { state, isMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -37,12 +38,17 @@ export function SidebarMenuItems({ items }: SidebarMenuItemsProps) {
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
-                  tooltip={item.title}
-                  className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                  tooltip={state === "collapsed" ? item.title : undefined}
+                  className={cn(
+                    "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground",
+                    isMobile && "justify-center"
+                  )}
                 >
                   <Link href={item.url}>
                     <item.icon />
-                    <span>{item.title}</span>
+                    <span className={isMobile ? "hidden" : ""}>
+                      {item.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

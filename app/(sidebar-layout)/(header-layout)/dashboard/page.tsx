@@ -1,7 +1,14 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { ROUTES, SUB_ROUTES } from "@/lib/routes";
-import { FilePlus, Truck, Bell, CheckCircle2, Package } from "lucide-react";
+import {
+  FilePlus,
+  Truck,
+  Bell,
+  CheckCircle2,
+  Package,
+  PersonStanding,
+} from "lucide-react";
 import { redirect } from "next/navigation";
 import { Notification } from "@/lib/types/common.types";
 import { DashboardActionTile } from "@/modules/dashboard/dashboard-action-tile";
@@ -22,6 +29,14 @@ export default async function DashboardPage() {
       <CustomAccordion label="Quick actions" defaultOpen>
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 justify-items-center xl:justify-items-start">
           <DashboardActionTile
+            title="Inventory"
+            icon={Package}
+            contentHeader="Add Product to Inventory"
+            contentDescription="Register a new product."
+            actionLabel="Add Product"
+            actionHref={SUB_ROUTES.INVENTORY_CREATE}
+          />
+          <DashboardActionTile
             title="Suppliers"
             icon={Truck}
             contentHeader="New Supplier"
@@ -38,12 +53,12 @@ export default async function DashboardPage() {
             actionHref={SUB_ROUTES.CONTRACT_CREATE}
           />
           <DashboardActionTile
-            title="Inventory"
-            icon={Package}
-            contentHeader="Add Product to Inventory"
-            contentDescription="Register a new product."
-            actionLabel="Add Product"
-            actionHref={SUB_ROUTES.INVENTORY_CREATE}
+            title="Customers"
+            icon={PersonStanding}
+            contentHeader="Add Customer"
+            contentDescription="Register a new customer."
+            actionLabel="Add Customer"
+            actionHref={SUB_ROUTES.CUSTOMER_CREATE}
           />
           <DashboardTile title="Notifications" icon={Bell}>
             {/* todo refactor */}

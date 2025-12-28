@@ -3,11 +3,11 @@
 import { Sidebar, SidebarContent, useSidebar } from "@/components/ui/sidebar";
 import {
   HomeIcon,
-  Indent,
-  Folder,
   Settings,
   Package,
   PersonStanding,
+  Truck,
+  FilePlus,
 } from "lucide-react";
 import { useLogout } from "@/hooks/use-logout";
 import { SidebarHeader } from "./app-sidebar-header";
@@ -29,12 +29,12 @@ const SIDEBAR_MENU = [
   {
     title: "Suppliers",
     url: ROUTES.SUPPLIER,
-    icon: Indent,
+    icon: Truck,
   },
   {
     title: "Contracts",
     url: ROUTES.CONTRACT,
-    icon: Folder,
+    icon: FilePlus,
   },
   {
     title: "Customers",
