@@ -57,7 +57,7 @@ export const ContractForm = ({ suppliers, userScopes }: ContractFormProps) => {
         </CardHeader>
 
         <CardContent>
-          <div className="mb-3 p-2 rounded-lg bg-cyan-800/20 border border-dashed border-primary text-sm">
+          <div className="mb-3 p-2 rounded-lg border border-primary/50 bg-primary/5 text-sm">
             Please review all contract details carefully before submission. You
             are only allowed to register a contract with a supplier that has the
             same scope.
@@ -108,7 +108,7 @@ export const ContractForm = ({ suppliers, userScopes }: ContractFormProps) => {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal bg-background/35",
                               !field.value && "text-muted-foreground",
                               errors.validUntil &&
                                 "border-destructive text-destructive"

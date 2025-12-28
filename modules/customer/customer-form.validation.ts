@@ -10,77 +10,52 @@ export const customerSchema = z
     addressStreet: z.string().optional(),
     addressPostalCode: z.string().optional(),
   })
-  .refine(
-    (data) => {
-      if (data.isAppUser) {
-        return !!data.appUserId;
+  .superRefine((data, ctx) => {
+    if (data.isAppUser) {
+      if (!data.appUserId) {
+        ctx.addIssue({
+          code: "custom",
+          message: "App user ID is required when selecting an app user",
+          path: ["appUserId"],
+        });
       }
-      return true;
-    },
-    {
-      message: "App user ID is required when selecting an app user",
-      path: ["appUserId"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (!data.isAppUser) {
-        return !!data.customerName;
+    } else {
+      if (!data.customerName) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Customer name is required",
+          path: ["customerName"],
+        });
       }
-      return true;
-    },
-    {
-      message: "Customer name is required",
-      path: ["customerName"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (!data.isAppUser) {
-        return !!data.addressCountry;
+      if (!data.addressCountry) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Country is required",
+          path: ["addressCountry"],
+        });
       }
-      return true;
-    },
-    {
-      message: "Country is required",
-      path: ["addressCountry"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (!data.isAppUser) {
-        return !!data.addressCity;
+      if (!data.addressCity) {
+        ctx.addIssue({
+          code: "custom",
+          message: "City is required",
+          path: ["addressCity"],
+        });
       }
-      return true;
-    },
-    {
-      message: "City is required",
-      path: ["addressCity"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (!data.isAppUser) {
-        return !!data.addressStreet;
+      if (!data.addressStreet) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Street is required",
+          path: ["addressStreet"],
+        });
       }
-      return true;
-    },
-    {
-      message: "Street is required",
-      path: ["addressStreet"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (!data.isAppUser) {
-        return !!data.addressPostalCode;
+      if (!data.addressPostalCode) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Postal code is required",
+          path: ["addressPostalCode"],
+        });
       }
-      return true;
-    },
-    {
-      message: "Postal code is required",
-      path: ["addressPostalCode"],
     }
-  );
+  });
 
 export type CustomerFormSchema = z.infer<typeof customerSchema>;
