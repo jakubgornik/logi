@@ -19,6 +19,7 @@ import {
   mapSortingToSortBy,
 } from "../supplier/supplier-table.utils";
 import { useCustomerTableColumns } from "./use-customer-table-columns";
+import { CustomerTableActions } from "./customer-table-actions";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
@@ -66,8 +67,6 @@ export function CustomerTable({ initialData, children }: CustomerTableProps) {
   const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);
   const pageCount = useMemo(() => data?.totalPages, [data]);
 
-  console.log(filters);
-
   const table = useReactTable({
     data: items,
     columns,
@@ -95,6 +94,14 @@ export function CustomerTable({ initialData, children }: CustomerTableProps) {
           onFiltersChange={handleFiltersChange}
           currentFilters={filters}
           omitColumnsById={["select"]}
+        />
+        <CustomerTableActions
+          selectedIds={selectedIds}
+          onDelete={() =>
+            deleteCustomer({
+              ids: selectedIds,
+            })
+          }
         />
       </div>
       <DataTable table={table} enableRowSelection />
