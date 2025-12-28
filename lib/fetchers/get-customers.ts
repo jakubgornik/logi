@@ -3,6 +3,8 @@ import { cache } from "react";
 import { PaginatedResponse, ServiceResult } from "@/lib/types/common.types";
 import { Customer } from "@/prisma/client/client";
 import { ICustomerQuery } from "@/modules/customer/customer.types";
+import { mapCustomerFiltersToWhere } from "../utils/mappers/customer/map-customer-filters-to-where";
+import { mapCustomerSortToOrderBy } from "../utils/mappers/customer/map-customer-sort-to-order-by";
 
 type CustomerArgs = Partial<ICustomerQuery> & {
   userId: string;
@@ -21,30 +23,19 @@ export const getCustomers = cache(
     const skip = fetchAll ? undefined : page * pageSize;
     const take = fetchAll ? undefined : pageSize;
 
-    // todo
-    // const orderBy = mapCustomerSortToOrderBy(sortBy);
-    // const where = mapCustomerFiltersToWhere(userId, filters);
+    const orderBy = mapCustomerSortToOrderBy(sortBy);
+    const where = mapCustomerFiltersToWhere(userId, filters);
 
     try {
       const [data, totalCount] = await prisma.$transaction([
         prisma.customer.findMany({
-          where: {
-            seller: {
-              id: userId,
-            },
-          },
-          orderBy: {
-            customerName: "asc",
-          },
+          where,
+          orderBy,
           skip,
           take,
         }),
         prisma.customer.count({
-          where: {
-            seller: {
-              id: userId,
-            },
-          },
+          where,
         }),
       ]);
 

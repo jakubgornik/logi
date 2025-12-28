@@ -1,7 +1,7 @@
-import { useGetCustomers } from "@/hooks/customer.hooks";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getCustomers } from "@/lib/fetchers/get-customers";
 import { ROUTES } from "@/lib/routes";
+import { CustomerTable } from "@/modules/customer/customer-table";
 import { redirect } from "next/navigation";
 
 export default async function CustomerPage() {
@@ -11,8 +11,9 @@ export default async function CustomerPage() {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const result = await getCustomers({ userId: user.id });
-  const customers = result.success ? result.data : [];
+  const customer = await getCustomers({ userId: user.id });
 
-  return <></>;
+  return (
+    <CustomerTable initialData={customer.success ? customer.data : undefined} />
+  );
 }

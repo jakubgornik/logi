@@ -1,6 +1,7 @@
 import { routeGuard } from "@/lib/auth";
+import { getCustomers } from "@/lib/fetchers/get-customers";
 import { prisma } from "@/lib/prisma";
-import { IdArraySchema } from "@/lib/types/common.types";
+import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { customerSchema } from "@/modules/customer/customer-form.validation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -99,4 +100,27 @@ export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
       { status: 500 }
     );
   }
+});
+
+export const GET = routeGuard(async (_, { user, searchParams }) => {
+  const payload = paginatedQuerySchema.safeParse(searchParams);
+
+  if (!payload.success) {
+    return NextResponse.json(
+      {
+        message: "Invalid query parameters",
+      },
+      { status: 400 }
+    );
+  }
+  const result = await getCustomers({
+    userId: user.id,
+    ...payload.data,
+  });
+
+  if (!result.success) {
+    return NextResponse.json({ message: result.error }, { status: 500 });
+  }
+
+  return NextResponse.json(result.data);
 });
