@@ -1,6 +1,9 @@
 import api from "@/lib/axios";
 import { ROUTES } from "@/lib/routes";
-import { PaginatedResponse } from "@/lib/types/common.types";
+import {
+  MultipleIdsPayload,
+  PaginatedResponse,
+} from "@/lib/types/common.types";
 import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 import { CustomerFormSchema as ICreateCustomer } from "@/modules/customer/customer-form.validation";
 import { ICustomerQuery } from "@/modules/customer/customer.types";
@@ -9,6 +12,7 @@ import { Customer } from "@/prisma/client/client";
 import {
   keepPreviousData,
   useMutation,
+  UseMutationOptions,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -51,4 +55,26 @@ const useGetCustomers = (
   });
 };
 
-export { useCreateCustomer, useGetCustomers };
+const useDeleteCustomer = (
+  options?: UseMutationOptions<unknown, Error, MultipleIdsPayload>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: MultipleIdsPayload) => {
+      const res = await api.delete("/customer", {
+        data,
+      });
+      return res.data;
+    },
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: ["customer"] });
+      if (options?.onSuccess) {
+        options.onSuccess(...args);
+      }
+    },
+  });
+};
+
+export { useCreateCustomer, useGetCustomers, useDeleteCustomer };

@@ -1,5 +1,6 @@
 import { routeGuard } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { IdArraySchema } from "@/lib/types/common.types";
 import { customerSchema } from "@/modules/customer/customer-form.validation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -59,7 +60,40 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+});
+
+export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
+  const payload = IdArraySchema.safeParse(await request.json());
+
+  if (!payload.success) {
+    return NextResponse.json(
+      {
+        message: "Invalid data",
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.customer.deleteMany({
+      where: {
+        id: { in: payload.data.ids },
+        sellerId: user.id,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: `${payload.data.ids.length} customer(s) deleted successfully`,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
