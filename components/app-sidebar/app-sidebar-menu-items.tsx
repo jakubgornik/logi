@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { LucideIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export interface MenuItem {
   title: string;
@@ -23,25 +24,30 @@ interface SidebarMenuItemsProps {
 
 export function SidebarMenuItems({ items }: SidebarMenuItemsProps) {
   const { state, isMobile } = useSidebar();
+  const pathname = usePathname();
 
   return (
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                className={isMobile ? "justify-center" : ""}
-                tooltip={state === "collapsed" ? item.title : undefined}
-              >
-                <Link href={item.url}>
-                  <item.icon />
-                  <span className={isMobile ? "hidden" : ""}>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            const isActive = pathname === item.url;
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={item.title}
+                  className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                >
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
