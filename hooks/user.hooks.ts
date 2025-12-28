@@ -3,6 +3,7 @@ import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { UserFormSchema as IUpdateUser } from "@/modules/settings/user-form.validation";
 import { ROUTES } from "@/lib/routes";
+import { AppUserSearchResult } from "@/modules/customer/customer.types";
 
 function useCurrentUser() {
   return useQuery({
@@ -32,4 +33,20 @@ const useUpdateUser = () => {
   });
 };
 
-export { useCurrentUser, useUpdateUser };
+const useGetAppUsersToLink = (query: { search?: string }) => {
+  return useQuery({
+    queryKey: ["user", query],
+    queryFn: async () => {
+      const res = await api.get<AppUserSearchResult[]>(
+        "/user/link-to-customer",
+        {
+          params: query,
+        }
+      );
+      return res.data;
+    },
+    enabled: !!query.search,
+  });
+};
+
+export { useCurrentUser, useUpdateUser, useGetAppUsersToLink };
