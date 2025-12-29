@@ -6,13 +6,11 @@ import { TransactionFormSteps } from "./transaction-form";
 interface TransactionFormFooterProps {
   currentStep: TransactionFormSteps;
   onBack: () => void;
-  onNext: () => void;
 }
 
 export function TransactionFormFooter({
   currentStep,
   onBack,
-  onNext,
 }: TransactionFormFooterProps) {
   const isFirstStep = currentStep === TransactionFormSteps.DETAILS;
   const isLastStep = currentStep === TransactionFormSteps.SUMMARY;
@@ -25,7 +23,7 @@ export function TransactionFormFooter({
         </Button>
       )}
       {!isLastStep && (
-        <Button size="lg" variant="secondary" onClick={onNext} type="button">
+        <Button size="lg" variant="secondary" type="submit">
           Save & Continue
         </Button>
       )}

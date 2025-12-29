@@ -1,11 +1,20 @@
 "use client";
 
+import { useMemo, useCallback, useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryState, parseAsStringEnum } from "nuqs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stepper } from "@/components/stepper";
-import { useQueryState, parseAsStringEnum } from "nuqs";
-import { useCallback, useState } from "react";
-import { canVisitStep } from "./transaction-form.utils";
 import { TransactionFormFooter } from "./transaction-form-footer";
+import { TransactionDetailsStep } from "./transaction-details-step";
+import {
+  TransactionFormSchema,
+  createDetailsSchema,
+  customerSchema,
+} from "./transaction-form.validation";
+import { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
+import { canVisitStep } from "./transaction-form.utils";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -13,7 +22,7 @@ export enum TransactionFormSteps {
   SUMMARY = "summary",
 }
 
-export const STEPS = [
+const STEPS: TransactionFormSteps[] = [
   TransactionFormSteps.DETAILS,
   TransactionFormSteps.CUSTOMER,
   TransactionFormSteps.SUMMARY,
@@ -31,8 +40,11 @@ const prevStepMap: Partial<Record<TransactionFormSteps, TransactionFormSteps>> =
     [TransactionFormSteps.SUMMARY]: TransactionFormSteps.CUSTOMER,
   };
 
-// todo
-export const TransactionForm = () => {
+interface TransactionFormProps {
+  inventories: InventoryWithProduct[];
+}
+
+export const TransactionForm = ({ inventories }: TransactionFormProps) => {
   const [currentStep, setCurrentStep] = useQueryState<TransactionFormSteps>(
     "step",
     parseAsStringEnum<TransactionFormSteps>(
@@ -42,6 +54,47 @@ export const TransactionForm = () => {
   const [completedSteps, setCompletedSteps] = useState<
     Set<TransactionFormSteps>
   >(new Set());
+
+  const currentSchema = useMemo(() => {
+    switch (currentStep) {
+      case TransactionFormSteps.DETAILS:
+        return createDetailsSchema(inventories);
+      case TransactionFormSteps.CUSTOMER:
+        return customerSchema;
+      default:
+        return createDetailsSchema(inventories);
+    }
+  }, [currentStep, inventories]);
+
+  const methods = useForm<TransactionFormSchema>({
+    resolver: currentSchema ? (zodResolver(currentSchema) as any) : undefined,
+    defaultValues: {
+      items: [{ productId: "", quantity: 0 }],
+      name: "",
+    },
+    mode: "onChange",
+  });
+
+  const { handleSubmit, getValues } = methods;
+
+  const onStepSubmit = (data: TransactionFormSchema) => {
+    setCompletedSteps((prev) => {
+      const next = new Set(prev);
+      next.add(currentStep);
+      return next;
+    });
+    if (currentStep === TransactionFormSteps.SUMMARY) {
+      console.log("confirm", data);
+    } else {
+      const nextStep = nextStepMap[currentStep];
+      if (nextStep) setCurrentStep(nextStep);
+    }
+  };
+
+  const handleBack = useCallback(() => {
+    const prev = prevStepMap[currentStep];
+    if (prev) setCurrentStep(prev);
+  }, [currentStep, setCurrentStep]);
 
   const checkStepValidity = useCallback(
     (stepId: string) => {
@@ -53,35 +106,6 @@ export const TransactionForm = () => {
     },
     [completedSteps]
   );
-
-  const handleNextStep = useCallback(() => {
-    setCompletedSteps((prev) => {
-      const next = new Set(prev);
-      next.add(currentStep);
-      return next;
-    });
-
-    const nextStep = nextStepMap[currentStep];
-    if (nextStep) setCurrentStep(nextStep);
-  }, [currentStep, setCurrentStep]);
-
-  const handlePrevStep = useCallback(() => {
-    const prev = prevStepMap[currentStep];
-    if (prev) setCurrentStep(prev);
-  }, [currentStep, setCurrentStep]);
-
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case TransactionFormSteps.DETAILS:
-        return <div>Details Form Step</div>;
-      case TransactionFormSteps.CUSTOMER:
-        return <div>Customer Form Step</div>;
-      case TransactionFormSteps.SUMMARY:
-        return <div>Summary Step</div>;
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="p-3">
@@ -100,16 +124,29 @@ export const TransactionForm = () => {
           }}
         />
         <CardContent>
-          <form className="flex flex-col gap-4">
-            {renderStepContent()}
-            <div className="flex justify-end gap-2">
+          <FormProvider {...methods}>
+            <form
+              onSubmit={handleSubmit(onStepSubmit)}
+              className="flex flex-col gap-4"
+            >
+              {currentStep === TransactionFormSteps.DETAILS && (
+                <TransactionDetailsStep inventories={inventories} />
+              )}
+              {currentStep === TransactionFormSteps.CUSTOMER && (
+                <h3 className="font-bold mb-2">Customer step</h3>
+              )}
+              {currentStep === TransactionFormSteps.SUMMARY && (
+                <div className="bg-muted p-4 rounded-md text-sm font-mono">
+                  <h3 className="font-bold mb-2">Summary step</h3>
+                  <pre>{JSON.stringify(getValues(), null, 2)}</pre>
+                </div>
+              )}
               <TransactionFormFooter
                 currentStep={currentStep}
-                onBack={handlePrevStep}
-                onNext={handleNextStep}
+                onBack={handleBack}
               />
-            </div>
-          </form>
+            </form>
+          </FormProvider>
         </CardContent>
       </Card>
     </div>
