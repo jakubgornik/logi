@@ -8,6 +8,7 @@ import {
   PersonStanding,
   Truck,
   FilePlus,
+  BadgeCent,
 } from "lucide-react";
 import { useLogout } from "@/hooks/use-logout";
 import { SidebarHeader } from "./app-sidebar-header";
@@ -22,11 +23,6 @@ const SIDEBAR_MENU = [
     icon: HomeIcon,
   },
   {
-    title: "Inventory",
-    url: ROUTES.INVENTORY,
-    icon: Package,
-  },
-  {
     title: "Suppliers",
     url: ROUTES.SUPPLIER,
     icon: Truck,
@@ -37,9 +33,19 @@ const SIDEBAR_MENU = [
     icon: FilePlus,
   },
   {
+    title: "Inventory",
+    url: ROUTES.INVENTORY,
+    icon: Package,
+  },
+  {
     title: "Customers",
     url: ROUTES.CUSTOMER,
     icon: PersonStanding,
+  },
+  {
+    title: "Transactions",
+    url: ROUTES.TRANSACTION,
+    icon: BadgeCent,
   },
   {
     title: "Settings",

@@ -7,6 +7,7 @@ export const ROUTES = {
   CONTRACT: "/contract",
   INVENTORY: "/inventory",
   CUSTOMER: "/customer",
+  TRANSACTION: "/transaction",
 };
 
 export const SUB_ROUTES = {
@@ -16,6 +17,7 @@ export const SUB_ROUTES = {
   CONTRACT_CREATE: `${ROUTES.CONTRACT}/create`,
   INVENTORY_CREATE: `${ROUTES.INVENTORY}/create`,
   CUSTOMER_CREATE: `${ROUTES.CUSTOMER}/create`,
+  TRANSACTION_CREATE: `${ROUTES.TRANSACTION}/create`,
 };
 
 export const routeNames: Record<string, string> = {
@@ -32,4 +34,6 @@ export const routeNames: Record<string, string> = {
   "/inventory/create": "Add to Inventory",
   "/customer": "Customers",
   "/customer/create": "Create Customer",
+  "/transaction": "Transactions",
+  "/transaction/create": "Create Transaction",
 };
