@@ -14,12 +14,12 @@ enum Scope {
 }
 
 model User {
-    id         String  @id @default(cuid())
-    authId     String  @unique
-    email      String  @unique
-    name       String?
-    isCustomer Boolean @default(false)
+    id     String  @id @default(cuid())
+    authId String  @unique
+    email  String  @unique
+    name   String?
 
+    isCustomer        Boolean @default(false)
     customerName      String?
     addressCountry    String?
     addressCity       String?
@@ -33,8 +33,9 @@ model User {
     scopes            Scope[]
     contracts         Contract[]
     inventory         Inventory[]
-    customers         Customer[]  @relation("SellerToCustomer")
-    recordsAsCustomer Customer[]  @relation("LinkedAppUser")
+    transactions      Transaction[]
+    customers         Customer[]    @relation("SellerToCustomer")
+    recordsAsCustomer Customer[]    @relation("LinkedAppUser")
 }
 
 model Customer {
@@ -51,8 +52,9 @@ model Customer {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt()
 
-    seller     User  @relation("SellerToCustomer", fields: [sellerId], references: [id])
-    linkedUser User? @relation("LinkedAppUser", fields: [appUserId], references: [id])
+    seller       User          @relation("SellerToCustomer", fields: [sellerId], references: [id])
+    linkedUser   User?         @relation("LinkedAppUser", fields: [appUserId], references: [id])
+    transactions Transaction[]
 }
 
 model Supplier {
@@ -71,16 +73,6 @@ model Supplier {
     user      User       @relation(fields: [userId], references: [id])
     scopes    Scope[]
     contracts Contract[]
-}
-
-model Product {
-    id        String   @id @default(cuid())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt()
-
-    scope     Scope
-    inventory Inventory[]
 }
 
 model Contract {
@@ -111,4 +103,49 @@ model Inventory {
 
     @@unique([userId, productId])
     @@index([userId])
+}
+
+model Product {
+    id        String   @id @default(cuid())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
+
+    scope            Scope
+    inventory        Inventory[]
+    transactionItems TransactionItem[]
+}
+
+enum TransactionStatus {
+    DRAFT
+    CONFIRMED
+}
+
+model Transaction {
+    id         String            @id @default(cuid())
+    sellerId   String
+    customerId String?
+    status     TransactionStatus @default(DRAFT)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
+
+    seller   User              @relation(fields: [sellerId], references: [id])
+    customer Customer?         @relation(fields: [customerId], references: [id])
+    items    TransactionItem[]
+
+    @@index([sellerId])
+    @@index([customerId])
+}
+
+model TransactionItem {
+    id            String @id @default(cuid())
+    transactionId String
+    productId     String
+    quantity      Int
+
+    transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+    product     Product     @relation(fields: [productId], references: [id])
+
+    @@index([transactionId])
 }
