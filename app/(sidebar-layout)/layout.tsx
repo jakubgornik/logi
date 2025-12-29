@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SidebarIcon } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar/app-sidebar";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const MainContent = ({ children }: { children: React.ReactNode }) => {
   const { setOpenMobile } = useSidebar();
@@ -36,9 +37,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <MainContent>{children}</MainContent>
-    </SidebarProvider>
+    <NuqsAdapter>
+      <SidebarProvider>
+        <AppSidebar />
+        <MainContent>{children}</MainContent>
+      </SidebarProvider>
+    </NuqsAdapter>
   );
 }
