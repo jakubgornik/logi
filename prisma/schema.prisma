@@ -125,6 +125,7 @@ model Transaction {
     id         String            @id @default(cuid())
     sellerId   String
     customerId String?
+    name       String
     status     TransactionStatus @default(DRAFT)
 
     createdAt DateTime @default(now())
