@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryState, parseAsStringEnum } from "nuqs";
@@ -15,6 +15,9 @@ import {
 } from "./transaction-form.validation";
 import { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
 import { canVisitStep } from "./transaction-form.utils";
+import { Customer, Transaction } from "@/prisma/client/client";
+import { TransactionCustomerStep } from "./transaction-customer-step";
+import { useRefreshWarning } from "@/hooks/use-refresh-warning";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -42,9 +45,15 @@ const prevStepMap: Partial<Record<TransactionFormSteps, TransactionFormSteps>> =
 
 interface TransactionFormProps {
   inventories: InventoryWithProduct[];
+  customers: Customer[];
+  transaction?: Transaction;
 }
 
-export const TransactionForm = ({ inventories }: TransactionFormProps) => {
+export const TransactionForm = ({
+  inventories,
+  customers,
+  transaction,
+}: TransactionFormProps) => {
   const [currentStep, setCurrentStep] = useQueryState<TransactionFormSteps>(
     "step",
     parseAsStringEnum<TransactionFormSteps>(
@@ -107,6 +116,16 @@ export const TransactionForm = ({ inventories }: TransactionFormProps) => {
     [completedSteps]
   );
 
+  const isEdit = !!transaction;
+
+  useRefreshWarning(methods.formState.isDirty && !isEdit);
+
+  useEffect(() => {
+    if (currentStep !== TransactionFormSteps.DETAILS && !isEdit) {
+      setCurrentStep(TransactionFormSteps.DETAILS);
+    }
+  }, []);
+
   return (
     <div className="p-3">
       <Card>
@@ -133,7 +152,7 @@ export const TransactionForm = ({ inventories }: TransactionFormProps) => {
                 <TransactionDetailsStep inventories={inventories} />
               )}
               {currentStep === TransactionFormSteps.CUSTOMER && (
-                <h3 className="font-bold mb-2">Customer step</h3>
+                <TransactionCustomerStep customers={customers} />
               )}
               {currentStep === TransactionFormSteps.SUMMARY && (
                 <div className="bg-muted p-4 rounded-md text-sm font-mono">

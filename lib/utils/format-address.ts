@@ -1,6 +1,6 @@
 import { mapCountryCodeToName } from "@/modules/supplier/supplier-form.utils";
 
-export const formatSupplierAddress = (
+export const formatAddress = (
   street: string,
   city: string,
   postalCode: string,

@@ -5,9 +5,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
-import { formatSupplierAddress } from "@/lib/utils/format-supplier-address";
 import { Customer } from "@/prisma/client/client";
 import { Badge } from "@/components/ui/badge";
+import { formatAddress } from "@/lib/utils/format-address";
 
 export function useCustomerTableColumns(): ColumnDef<Customer>[] {
   return useMemo(
@@ -59,7 +59,7 @@ export function useCustomerTableColumns(): ColumnDef<Customer>[] {
         id: "address",
         header: "Address",
         cell: ({ row }) => {
-          const address = formatSupplierAddress(
+          const address = formatAddress(
             row.original.addressStreet!,
             row.original.addressCity!,
             row.original.addressPostalCode!,

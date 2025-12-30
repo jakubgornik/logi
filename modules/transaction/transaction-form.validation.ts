@@ -13,9 +13,12 @@ const itemSchema = z.object({
 const baseTransactionSchema = z.object({
   name: z.string().min(1, "Transaction name is required"),
   items: z.array(itemSchema),
+  customerId: z.string().optional(),
 });
 
-export const customerSchema = baseTransactionSchema.extend({});
+export const customerSchema = baseTransactionSchema.extend({
+  customerId: z.string().min(1, "Please select a customer"),
+});
 
 export type TransactionFormSchema = z.infer<typeof baseTransactionSchema>;
 

@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Building2, Mail, MapPin, Phone } from "lucide-react";
 import { Supplier } from "@/prisma/client/client";
-import { formatSupplierAddress } from "@/lib/utils/format-supplier-address";
 import { SupplierDetailsCardPreview } from "./supplier-details-card-preview";
 import { ScopesList } from "./scopes-list";
+import { formatAddress } from "@/lib/utils/format-address";
 
 interface SupplierDetailsProps {
   supplier: Supplier;
@@ -42,7 +42,7 @@ export const SupplierDetailsCard = ({ supplier }: SupplierDetailsProps) => {
             <div className="flex items-center gap-3">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <span>
-                {formatSupplierAddress(
+                {formatAddress(
                   supplier.addressStreet,
                   supplier.addressCity,
                   supplier.addressPostalCode,
