@@ -1,7 +1,7 @@
 import { routeGuard } from "@/lib/auth";
 import { getTransactions } from "@/lib/fetchers/get-transactions";
 import { prisma } from "@/lib/prisma";
-import { paginatedQuerySchema } from "@/lib/types/common.types";
+import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { baseTransactionSchema } from "@/modules/transaction/transaction-form.validation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -75,4 +75,38 @@ export const GET = routeGuard(async (_, { user, searchParams }) => {
   }
 
   return NextResponse.json(result.data);
+});
+
+export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
+  const payload = IdArraySchema.safeParse(await request.json());
+
+  if (!payload.success) {
+    return NextResponse.json(
+      {
+        message: "Invalid data",
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.transaction.deleteMany({
+      where: {
+        id: { in: payload.data.ids },
+        sellerId: user.id,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: `${payload.data.ids.length} transaction(s) deleted successfully`,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 });

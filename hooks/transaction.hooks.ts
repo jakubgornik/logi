@@ -3,13 +3,17 @@ import { ROUTES } from "@/lib/routes";
 import {
   keepPreviousData,
   useMutation,
+  UseMutationOptions,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { TransactionFormSchema } from "@/modules/transaction/transaction-form.validation";
 import { ITransactionQuery } from "@/modules/transaction/transaction.types";
-import { PaginatedResponse } from "@/lib/types/common.types";
+import {
+  MultipleIdsPayload,
+  PaginatedResponse,
+} from "@/lib/types/common.types";
 import { Transaction } from "@/prisma/client/client";
 import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 
@@ -88,9 +92,32 @@ const useGetTransactions = (
   });
 };
 
+const useDeleteTransaction = (
+  options?: UseMutationOptions<unknown, Error, MultipleIdsPayload>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: MultipleIdsPayload) => {
+      const res = await api.delete("/transaction", {
+        data,
+      });
+      return res.data;
+    },
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: ["transaction"] });
+      if (options?.onSuccess) {
+        options.onSuccess(...args);
+      }
+    },
+  });
+};
+
 export {
   useCreateTransaction,
   useUpdateTransaction,
   useConfirmTransaction,
   useGetTransactions,
+  useDeleteTransaction,
 };
