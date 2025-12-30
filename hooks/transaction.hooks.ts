@@ -1,15 +1,24 @@
 import api from "@/lib/axios";
 import { ROUTES } from "@/lib/routes";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { TransactionFormSchema } from "@/modules/transaction/transaction-form.validation";
+import { ITransactionQuery } from "@/modules/transaction/transaction.types";
+import { PaginatedResponse } from "@/lib/types/common.types";
+import { Transaction } from "@/prisma/client/client";
+import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 
 interface TransactionPayload {
   id: string;
   data: TransactionFormSchema;
 }
 
-export const useCreateTransaction = () => {
+const useCreateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -23,7 +32,7 @@ export const useCreateTransaction = () => {
   });
 };
 
-export const useUpdateTransaction = () => {
+const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -37,7 +46,7 @@ export const useUpdateTransaction = () => {
   });
 };
 
-export const useConfirmTransaction = () => {
+const useConfirmTransaction = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -55,4 +64,33 @@ export const useConfirmTransaction = () => {
       router.push(ROUTES.TRANSACTION);
     },
   });
+};
+
+const useGetTransactions = (
+  query: Partial<ITransactionQuery>,
+  initialData?: PaginatedResponse<Transaction>
+) => {
+  return useQuery({
+    queryKey: ["transaction", query],
+    queryFn: async () => {
+      const res = await api.get<PaginatedResponse<Transaction>>(
+        "/transaction",
+        {
+          params: query,
+        }
+      );
+      return res.data;
+    },
+    initialData: shouldUseInitialData(query, initialData)
+      ? initialData
+      : undefined,
+    placeholderData: keepPreviousData,
+  });
+};
+
+export {
+  useCreateTransaction,
+  useUpdateTransaction,
+  useConfirmTransaction,
+  useGetTransactions,
 };

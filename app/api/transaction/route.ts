@@ -1,5 +1,7 @@
 import { routeGuard } from "@/lib/auth";
+import { getTransactions } from "@/lib/fetchers/get-transactions";
 import { prisma } from "@/lib/prisma";
+import { paginatedQuerySchema } from "@/lib/types/common.types";
 import { baseTransactionSchema } from "@/modules/transaction/transaction-form.validation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -50,4 +52,27 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       { status: 500 }
     );
   }
+});
+
+export const GET = routeGuard(async (_, { user, searchParams }) => {
+  const payload = paginatedQuerySchema.safeParse(searchParams);
+
+  if (!payload.success) {
+    return NextResponse.json(
+      {
+        message: "Invalid query parameters",
+      },
+      { status: 400 }
+    );
+  }
+  const result = await getTransactions({
+    userId: user.id,
+    ...payload.data,
+  });
+
+  if (!result.success) {
+    return NextResponse.json({ message: result.error }, { status: 500 });
+  }
+
+  return NextResponse.json(result.data);
 });
