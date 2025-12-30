@@ -21,7 +21,8 @@ import { TransactionCustomerStep } from "./steps/transaction-customer-step";
 import { TransactionSummaryStep } from "./steps/transaction-summary-step";
 import {
   useConfirmTransaction,
-  useUpsertTransaction,
+  useCreateTransaction,
+  useUpdateTransaction,
 } from "@/hooks/transaction.hooks";
 
 export enum TransactionFormSteps {
@@ -68,6 +69,11 @@ export const TransactionForm = ({
   const [completedSteps, setCompletedSteps] = useState<
     Set<TransactionFormSteps>
   >(new Set());
+  const [transactionId, setTransactionId] = useState<string | null>(
+    transaction?.id || null
+  );
+
+  const isEditMode = !!transactionId;
 
   const currentSchema = useMemo(() => {
     switch (currentStep) {
@@ -80,30 +86,40 @@ export const TransactionForm = ({
     }
   }, [currentStep, inventories]);
 
-  const isEdit = !!transaction;
-
   const methods = useForm<TransactionFormSchema>({
     resolver: currentSchema ? zodResolver(currentSchema) : undefined,
     defaultValues: {
-      name: "",
+      // todo
+      name: transaction?.name || "",
       items: [{ productId: "", quantity: 0 }],
-      customerId: "",
+      customerId: transaction?.customerId || "",
     },
     mode: "onChange",
   });
 
   const { handleSubmit } = methods;
 
+  const { mutateAsync: createTransaction } = useCreateTransaction();
+  const { mutateAsync: updateTransaction } = useUpdateTransaction();
   const { mutate: confirmTransaction } = useConfirmTransaction();
-  const { mutate: upsertTransaction } = useUpsertTransaction();
 
   const onStepSubmit = async (data: TransactionFormSchema) => {
-    if (currentStep === TransactionFormSteps.SUMMARY) {
-      confirmTransaction(data);
-      return;
-    }
     try {
-      upsertTransaction(data);
+      if (currentStep === TransactionFormSteps.SUMMARY) {
+        if (!transactionId) {
+          console.error("Missing transaction ID. Cannot confirm.");
+          return;
+        }
+        confirmTransaction({ id: transactionId, data });
+        return;
+      }
+
+      if (!transactionId) {
+        const transaction = await createTransaction(data);
+        setTransactionId(transaction.data.id);
+      } else {
+        await updateTransaction({ id: transactionId, data });
+      }
 
       setCompletedSteps((prev) => {
         const next = new Set(prev);
@@ -114,7 +130,7 @@ export const TransactionForm = ({
       const nextStep = nextStepMap[currentStep];
       if (nextStep) setCurrentStep(nextStep);
     } catch (error) {
-      console.error(error);
+      console.error("Step error:", error);
     }
   };
 
@@ -152,10 +168,14 @@ export const TransactionForm = ({
     }
   };
 
-  useRefreshWarning(methods.formState.isDirty && !isEdit);
+  useRefreshWarning(methods.formState.isDirty && !isEditMode);
 
   useEffect(() => {
-    if (currentStep !== TransactionFormSteps.DETAILS && !isEdit) {
+    if (
+      currentStep !== TransactionFormSteps.DETAILS &&
+      !transaction &&
+      !transactionId
+    ) {
       setCurrentStep(TransactionFormSteps.DETAILS);
     }
   }, []);
@@ -165,9 +185,7 @@ export const TransactionForm = ({
       <Card>
         <CardHeader>
           <CardTitle className="text-primary">
-            {isEdit
-              ? `Edit Transaction: ${transaction.name}`
-              : "Create Transaction"}
+            {isEditMode ? `Edit Transaction` : "Create Transaction"}
           </CardTitle>
         </CardHeader>
         <Stepper

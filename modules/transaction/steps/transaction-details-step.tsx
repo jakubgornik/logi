@@ -116,8 +116,8 @@ const TransactionItem = ({
   const selectedProductId = watch(`items.${index}.productId`);
   const currentItemErrors = errors.items?.[index];
 
-  const getMaxQuantity = (productId: string) => {
-    return inventories.find((i) => i.id === productId)?.quantity;
+  const getMaxQuantity = (prodId: string) => {
+    return inventories.find((i) => i.productId === prodId)?.quantity || 0;
   };
 
   const maxQuantity = getMaxQuantity(selectedProductId);
@@ -162,8 +162,9 @@ const TransactionItem = ({
                 <SelectContent>
                   {inventories.map((inventoryItem) => {
                     const isSelected = items?.some(
-                      (item, index) =>
-                        item.productId === inventoryItem.id && index !== index
+                      (item, itemIndex) =>
+                        item.productId === inventoryItem.productId &&
+                        itemIndex !== index
                     );
                     return (
                       <SelectItem

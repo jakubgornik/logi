@@ -52,7 +52,9 @@ const validateTransactionItems = (
       seenProducts.set(item.productId, index);
     }
 
-    const inventoryItem = inventories.find((inv) => inv.id === item.productId);
+    const inventoryItem = inventories.find(
+      (inv) => inv.productId === item.productId
+    );
     if (inventoryItem && item.quantity > inventoryItem.quantity) {
       ctx.addIssue({
         code: "custom",

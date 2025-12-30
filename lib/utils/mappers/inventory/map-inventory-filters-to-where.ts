@@ -5,9 +5,11 @@ export const mapInventoryFiltersToWhere = (
   userId: string,
   filters?: FiltersType[]
 ): Prisma.InventoryWhereInput => {
-  if (!filters || filters.length === 0) return {};
+  const where: Prisma.InventoryWhereInput = {
+    userId,
+  };
 
-  const where: Prisma.InventoryWhereInput = {};
+  if (!filters || filters.length === 0) return where;
 
   filters.forEach(({ column, value }) => {
     switch (column) {
@@ -30,8 +32,5 @@ export const mapInventoryFiltersToWhere = (
     }
   });
 
-  return {
-    ...where,
-    userId,
-  };
+  return where;
 };

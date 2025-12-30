@@ -17,15 +17,16 @@ import { InventoryFormSchema as IAddInventory } from "@/modules/inventory/invent
 
 const useGetInventory = (
   query: Partial<IInventoryQuery>,
+  userId: string,
   initialData?: PaginatedResponse<IInventoryWithProduct>
 ) => {
   return useQuery({
-    queryKey: ["inventory", query],
+    queryKey: ["inventory", userId, query],
     queryFn: async () => {
       const res = await api.get<PaginatedResponse<IInventoryWithProduct>>(
         "/inventory",
         {
-          params: query,
+          params: { ...query, userId },
         }
       );
       return res.data;

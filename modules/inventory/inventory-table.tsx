@@ -24,9 +24,10 @@ const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
 interface InventoryTableProps {
   initialData?: PaginatedResponse<IInventoryWithProduct>;
+  userId: string;
 }
 
-export function InventoryTable({ initialData }: InventoryTableProps) {
+export function InventoryTable({ initialData, userId }: InventoryTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<FilterState>({
     search: "",
@@ -54,6 +55,7 @@ export function InventoryTable({ initialData }: InventoryTableProps) {
       sortBy,
       filters: filters.filters,
     },
+    userId,
     initialData
   );
 
