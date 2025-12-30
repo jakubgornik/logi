@@ -13,9 +13,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { TransactionFormSchema } from "./transaction-form.validation";
 import { Customer } from "@/prisma/client/client";
 import { formatAddress } from "@/lib/utils/format-address";
+import { TransactionFormSchema } from "../transaction-form.validation";
 
 interface TransactionCustomerStepProps {
   customers: Customer[];
@@ -80,7 +80,7 @@ export const TransactionCustomerStep = ({
           </Field>
 
           {selectedCustomer && (
-            <div className="rounded-lg border bg-card text-card-foreground shadow-sm relative group animate-in fade-in-50 slide-in-from-top-2">
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm relative">
               <Button
                 type="button"
                 variant="ghost"
@@ -106,10 +106,7 @@ export const TransactionCustomerStep = ({
                     </div>
                   </div>
                   {selectedCustomer.appUserId && (
-                    <Badge
-                      variant="outline"
-                      className="text-xs border-primary/20 bg-primary/5 text-primary"
-                    >
+                    <Badge variant="outline" className="text-xs">
                       Logi App User
                     </Badge>
                   )}

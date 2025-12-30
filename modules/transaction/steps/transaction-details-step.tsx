@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { TransactionFormSchema } from "./transaction-form.validation";
+import { TransactionFormSchema } from "../transaction-form.validation";
 import { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
 
 interface TransactionDetailsStepProps {
@@ -62,7 +62,7 @@ export const TransactionDetailsStep = ({
                 <Input
                   {...field}
                   id="transactionName"
-                  placeholder="e.g. Monthly Restock, Project Alpha"
+                  placeholder="Transaction name"
                   aria-invalid={!!errors.name}
                 />
               )}

@@ -7,7 +7,6 @@ import { useQueryState, parseAsStringEnum } from "nuqs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stepper } from "@/components/stepper";
 import { TransactionFormFooter } from "./transaction-form-footer";
-import { TransactionDetailsStep } from "./transaction-details-step";
 import {
   TransactionFormSchema,
   createDetailsSchema,
@@ -16,8 +15,10 @@ import {
 import { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
 import { canVisitStep } from "./transaction-form.utils";
 import { Customer, Transaction } from "@/prisma/client/client";
-import { TransactionCustomerStep } from "./transaction-customer-step";
 import { useRefreshWarning } from "@/hooks/use-refresh-warning";
+import { TransactionDetailsStep } from "./steps/transaction-details-step";
+import { TransactionCustomerStep } from "./steps/transaction-customer-step";
+import { TransactionSummaryStep } from "./steps/transaction-summary-step";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -84,7 +85,7 @@ export const TransactionForm = ({
     mode: "onChange",
   });
 
-  const { handleSubmit, getValues } = methods;
+  const { handleSubmit } = methods;
 
   const onStepSubmit = (data: TransactionFormSchema) => {
     setCompletedSteps((prev) => {
@@ -115,6 +116,24 @@ export const TransactionForm = ({
     },
     [completedSteps]
   );
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case TransactionFormSteps.DETAILS:
+        return <TransactionDetailsStep inventories={inventories} />;
+      case TransactionFormSteps.CUSTOMER:
+        return <TransactionCustomerStep customers={customers} />;
+      case TransactionFormSteps.SUMMARY:
+        return (
+          <TransactionSummaryStep
+            inventories={inventories}
+            customers={customers}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const isEdit = !!transaction;
 
@@ -148,18 +167,7 @@ export const TransactionForm = ({
               onSubmit={handleSubmit(onStepSubmit)}
               className="flex flex-col gap-4"
             >
-              {currentStep === TransactionFormSteps.DETAILS && (
-                <TransactionDetailsStep inventories={inventories} />
-              )}
-              {currentStep === TransactionFormSteps.CUSTOMER && (
-                <TransactionCustomerStep customers={customers} />
-              )}
-              {currentStep === TransactionFormSteps.SUMMARY && (
-                <div className="bg-muted p-4 rounded-md text-sm font-mono">
-                  <h3 className="font-bold mb-2">Summary step</h3>
-                  <pre>{JSON.stringify(getValues(), null, 2)}</pre>
-                </div>
-              )}
+              {renderStep()}
               <TransactionFormFooter
                 currentStep={currentStep}
                 onBack={handleBack}
