@@ -10,21 +10,30 @@ const itemSchema = z.object({
     .refine((val) => val > 0, { message: "Quantity must be at least 1" }),
 });
 
-const draftDetailsSchema = z.object({
-  name: z.string(),
+const baseTransactionSchema = z.object({
+  name: z.string().min(1, "Transaction name is required"),
   items: z.array(itemSchema),
 });
 
-const draftCustomerSchema = z.object({});
+export const customerSchema = baseTransactionSchema.extend({});
 
-const transactionSchema = draftDetailsSchema.extend(draftCustomerSchema.shape);
-export type TransactionFormSchema = z.infer<typeof transactionSchema>;
+export type TransactionFormSchema = z.infer<typeof baseTransactionSchema>;
 
-function validateTransactionItems(
+export const createDetailsSchema = (inventories: InventoryWithProduct[]) => {
+  return baseTransactionSchema.extend({
+    items: z
+      .array(itemSchema)
+      .superRefine((items, ctx) =>
+        validateTransactionItems(items, ctx, inventories)
+      ),
+  });
+};
+
+const validateTransactionItems = (
   items: z.infer<typeof itemSchema>[],
   ctx: z.RefinementCtx,
   inventories: InventoryWithProduct[]
-) {
+) => {
   const seenProducts = new Map<string, number>();
 
   items.forEach((item, index) => {
@@ -49,19 +58,4 @@ function validateTransactionItems(
       });
     }
   });
-}
-
-export const createDetailsSchema = (inventories: InventoryWithProduct[]) => {
-  return draftDetailsSchema
-    .extend({
-      items: z
-        .array(itemSchema)
-        .superRefine((items, ctx) =>
-          validateTransactionItems(items, ctx, inventories)
-        ),
-    })
-    .extend(draftCustomerSchema.shape);
 };
-
-// todo
-export const customerSchema = draftCustomerSchema.extend({});

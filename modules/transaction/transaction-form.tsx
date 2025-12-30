@@ -67,7 +67,7 @@ export const TransactionForm = ({ inventories }: TransactionFormProps) => {
   }, [currentStep, inventories]);
 
   const methods = useForm<TransactionFormSchema>({
-    resolver: currentSchema ? (zodResolver(currentSchema) as any) : undefined,
+    resolver: currentSchema ? zodResolver(currentSchema) : undefined,
     defaultValues: {
       items: [{ productId: "", quantity: 0 }],
       name: "",
