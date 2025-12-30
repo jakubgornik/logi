@@ -10,7 +10,7 @@ const itemSchema = z.object({
     .refine((val) => val > 0, { message: "Quantity must be at least 1" }),
 });
 
-const baseTransactionSchema = z.object({
+export const baseTransactionSchema = z.object({
   name: z.string().min(1, "Transaction name is required"),
   items: z.array(itemSchema),
   customerId: z.string().optional(),

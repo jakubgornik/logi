@@ -167,8 +167,8 @@ const TransactionItem = ({
                     );
                     return (
                       <SelectItem
-                        key={inventoryItem.id}
-                        value={inventoryItem.id}
+                        key={inventoryItem.productId}
+                        value={inventoryItem.productId}
                         disabled={isSelected}
                         className={isSelected ? "opacity-50" : ""}
                       >

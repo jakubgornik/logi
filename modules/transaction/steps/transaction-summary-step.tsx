@@ -41,12 +41,10 @@ export const TransactionSummaryStep = ({
   );
 
   const items = formValues.items.map((item) => {
-    const productName = inventories.find((inv) => inv.id === item.productId)
-      ?.product.name;
-
+    const product = inventories.find((inv) => inv.productId === item.productId);
     return {
       ...item,
-      productName,
+      productName: product?.product.name,
     };
   });
 
@@ -112,10 +110,10 @@ export const TransactionSummaryStep = ({
         </Card>
       </div>
       <div className="md:col-span-1">
-        <Card className="p-0  h-full shadow-sm flex flex-col overflow-hidden">
-          <CardHeader className="bg-muted/35 px-4 pt-8 mb-0 border-b">
+        <Card className="p-0 h-full flex flex-col gap-0">
+          <CardHeader className="bg-muted/35 px-4 py-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
+              <CardTitle className="flex items-center gap-1 text-base">
                 <Package className="h-4 w-4 text-primary" />
                 Order Summary
               </CardTitle>
@@ -124,20 +122,20 @@ export const TransactionSummaryStep = ({
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="p-0 flex-1">
+          <CardContent className="p-0 border-t">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent border-b-0">
-                  <TableHead className="pl-4 h-9 text-xs uppercase w-[70%]">
-                    ProductS
+                  <TableHead className="pl-4 text-xs uppercase">
+                    Products
                   </TableHead>
-                  <TableHead className="text-right pr-4 h-9 text-xs uppercase">
+                  <TableHead className="text-right pr-4 text-xs uppercase">
                     Quantity
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item, index) => (
+                {items.map((item) => (
                   <TableRow
                     key={`${item.productId}`}
                     className="border-b-muted/50"
@@ -155,7 +153,7 @@ export const TransactionSummaryStep = ({
               </TableBody>
             </Table>
           </CardContent>
-          <div className="mt-auto border-t bg-muted/5 p-4">
+          <div className="mt-auto border-t bg-muted/5 py-2 px-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Receipt className="h-4 w-4" />

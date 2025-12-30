@@ -19,6 +19,10 @@ import { useRefreshWarning } from "@/hooks/use-refresh-warning";
 import { TransactionDetailsStep } from "./steps/transaction-details-step";
 import { TransactionCustomerStep } from "./steps/transaction-customer-step";
 import { TransactionSummaryStep } from "./steps/transaction-summary-step";
+import {
+  useConfirmTransaction,
+  useUpsertTransaction,
+} from "@/hooks/transaction.hooks";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -76,28 +80,41 @@ export const TransactionForm = ({
     }
   }, [currentStep, inventories]);
 
+  const isEdit = !!transaction;
+
   const methods = useForm<TransactionFormSchema>({
     resolver: currentSchema ? zodResolver(currentSchema) : undefined,
     defaultValues: {
-      items: [{ productId: "", quantity: 0 }],
       name: "",
+      items: [{ productId: "", quantity: 0 }],
+      customerId: "",
     },
     mode: "onChange",
   });
 
   const { handleSubmit } = methods;
 
-  const onStepSubmit = (data: TransactionFormSchema) => {
-    setCompletedSteps((prev) => {
-      const next = new Set(prev);
-      next.add(currentStep);
-      return next;
-    });
+  const { mutate: confirmTransaction } = useConfirmTransaction();
+  const { mutate: upsertTransaction } = useUpsertTransaction();
+
+  const onStepSubmit = async (data: TransactionFormSchema) => {
     if (currentStep === TransactionFormSteps.SUMMARY) {
-      console.log("confirm", data);
-    } else {
+      confirmTransaction(data);
+      return;
+    }
+    try {
+      upsertTransaction(data);
+
+      setCompletedSteps((prev) => {
+        const next = new Set(prev);
+        next.add(currentStep);
+        return next;
+      });
+
       const nextStep = nextStepMap[currentStep];
       if (nextStep) setCurrentStep(nextStep);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -135,8 +152,6 @@ export const TransactionForm = ({
     }
   };
 
-  const isEdit = !!transaction;
-
   useRefreshWarning(methods.formState.isDirty && !isEdit);
 
   useEffect(() => {
@@ -149,7 +164,11 @@ export const TransactionForm = ({
     <div className="p-3">
       <Card>
         <CardHeader>
-          <CardTitle className="text-primary">Create Transaction</CardTitle>
+          <CardTitle className="text-primary">
+            {isEdit
+              ? `Edit Transaction: ${transaction.name}`
+              : "Create Transaction"}
+          </CardTitle>
         </CardHeader>
         <Stepper
           steps={STEPS}
