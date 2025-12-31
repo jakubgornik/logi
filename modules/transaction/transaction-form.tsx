@@ -101,11 +101,21 @@ export const TransactionForm = ({
     mode: "onChange",
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, formState } = methods;
 
-  const { mutateAsync: createTransaction } = useCreateTransaction();
-  const { mutateAsync: updateTransaction } = useUpdateTransaction();
-  const { mutate: confirmTransaction } = useConfirmTransaction();
+  const { mutateAsync: createTransaction, isPending: isCreating } =
+    useCreateTransaction();
+  const { mutateAsync: updateTransaction, isPending: isUpdating } =
+    useUpdateTransaction();
+
+  const {
+    mutate: confirmTransaction,
+    isPending: isConfirming,
+    isSuccess: isConfirmed,
+  } = useConfirmTransaction();
+
+  const isLoading =
+    isCreating || isUpdating || isConfirming || formState.isSubmitting;
 
   const onStepSubmit = async (data: TransactionFormSchema) => {
     try {
@@ -172,8 +182,6 @@ export const TransactionForm = ({
     }
   };
 
-  useRefreshWarning(methods.formState.isDirty && !isEditMode);
-
   useEffect(() => {
     if (
       currentStep !== TransactionFormSteps.DETAILS &&
@@ -212,6 +220,8 @@ export const TransactionForm = ({
               <TransactionFormFooter
                 currentStep={currentStep}
                 onBack={handleBack}
+                isLoading={isLoading}
+                isSuccess={isConfirmed}
               />
             </form>
           </FormProvider>

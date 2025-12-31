@@ -2,7 +2,7 @@
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, Building2, CheckCircle2 } from "lucide-react";
+import { AlertCircle, Building2, CheckCircle2, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,13 +27,17 @@ export const UserForm = ({ user }: UserFormProps) => {
     control,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<UserFormSchema>({
     resolver: zodResolver(userSchema),
     defaultValues: createDefaultUserFormData(user),
   });
 
-  const { mutate: updateUser } = useUpdateUser();
+  const {
+    mutate: updateUser,
+    isPending: isUpdating,
+    isSuccess,
+  } = useUpdateUser();
 
   const isCustomerEnabled = watch("isCustomer");
   const isAlreadyLocked = user.isCustomer;
@@ -270,8 +274,19 @@ export const UserForm = ({ user }: UserFormProps) => {
               </div>
             )}
             <div className="flex justify-end pt-2">
-              <Button size="lg" type="submit">
-                {isAlreadyLocked ? "Update Basic Info" : "Save Changes"}
+              <Button
+                size="lg"
+                type="submit"
+                disabled={isUpdating || isSubmitting || isSuccess}
+              >
+                {(isUpdating || isSubmitting || isSuccess) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isUpdating
+                  ? "Saving..."
+                  : isAlreadyLocked
+                  ? "Update Basic Info"
+                  : "Save Changes"}
               </Button>
             </div>
           </form>

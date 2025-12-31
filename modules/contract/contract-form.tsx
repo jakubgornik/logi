@@ -3,7 +3,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,13 +34,13 @@ export const ContractForm = ({ suppliers, userScopes }: ContractFormProps) => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ContractFormSchema>({
     resolver: zodResolver(contractFormSchema),
     defaultValues: createDefaultContractFormData(),
   });
 
-  const { mutate: createContract } = useCreateContract();
+  const { mutate: createContract, isPending, isSuccess } = useCreateContract();
 
   const onSubmit = (data: ContractFormSchema) => {
     createContract(data);
@@ -167,8 +167,15 @@ export const ContractForm = ({ suppliers, userScopes }: ContractFormProps) => {
               </div>
             </div>
             <div className="flex justify-end">
-              <Button size="lg" type="submit">
-                Create Contract
+              <Button
+                size="lg"
+                type="submit"
+                disabled={isPending || isSubmitting || isSuccess}
+              >
+                {(isPending || isSubmitting || isSuccess) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isPending ? "Saving..." : "Create Contract"}
               </Button>
             </div>
           </form>

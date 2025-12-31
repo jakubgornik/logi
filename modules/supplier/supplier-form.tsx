@@ -15,6 +15,7 @@ import { ComboboxField } from "@/components/combobox-field";
 import { MultiSelectField } from "@/components/multi-select-field";
 import { SCOPE_OPTIONS } from "@/lib/shared/consts";
 import { useCreateSupplier, useUpdateSupplier } from "@/hooks/supplier.hooks";
+import { Loader2 } from "lucide-react";
 
 interface SupplierFormProps {
   initialData?: SupplierFormSchema;
@@ -28,15 +29,27 @@ export const SupplierForm = ({
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SupplierFormSchema>({
     resolver: zodResolver(supplierSchema),
     defaultValues: createDefaultSupplierFormData(initialData),
   });
   const isEditMode = !!supplierId;
 
-  const { mutate: createSupplier } = useCreateSupplier();
-  const { mutate: updateSupplier } = useUpdateSupplier();
+  const {
+    mutate: createSupplier,
+    isPending: isCreating,
+    isSuccess: isCreateSuccess,
+  } = useCreateSupplier();
+
+  const {
+    mutate: updateSupplier,
+    isPending: isUpdating,
+    isSuccess: isUpdateSuccess,
+  } = useUpdateSupplier();
+
+  const isPending = isCreating || isUpdating;
+  const isSuccess = isCreateSuccess || isUpdateSuccess;
 
   const onSubmit = (data: SupplierFormSchema) => {
     if (isEditMode && supplierId) {
@@ -283,8 +296,19 @@ export const SupplierForm = ({
               </div>
             </div>
             <div className="flex justify-end">
-              <Button size="lg" type="submit">
-                {isEditMode ? "Update Supplier" : "Create Supplier"}
+              <Button
+                size="lg"
+                type="submit"
+                disabled={isPending || isSubmitting || isSuccess}
+              >
+                {(isPending || isSubmitting || isSuccess) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isPending
+                  ? "Saving..."
+                  : isEditMode
+                  ? "Update Supplier"
+                  : "Create Supplier"}
               </Button>
             </div>
           </form>

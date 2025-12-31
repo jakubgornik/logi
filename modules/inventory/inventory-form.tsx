@@ -22,6 +22,7 @@ import {
   InventoryFormSchema,
   inventorySchema,
 } from "./inventory-form.validation";
+import { Loader2 } from "lucide-react";
 
 interface InventoryFormProps {
   contracts: IContractWithSupplier[];
@@ -37,7 +38,7 @@ export const InventoryForm = ({
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<InventoryFormSchema>({
     resolver: zodResolver(inventorySchema),
     defaultValues: {
@@ -71,7 +72,11 @@ export const InventoryForm = ({
     return commonScopes.length > 0;
   }, [selectedContract, commonScopes]);
 
-  const { mutate: addProductToInventory } = useAddInventory();
+  const {
+    mutate: addProductToInventory,
+    isSuccess,
+    isPending,
+  } = useAddInventory();
 
   const onSubmit = (data: InventoryFormSchema) => {
     addProductToInventory(data);
@@ -244,9 +249,17 @@ export const InventoryForm = ({
                 </Field>
               </div>
             </div>
+
             <div className="flex justify-end">
-              <Button size="lg" type="submit" disabled={!canAddProducts}>
-                Confirm & Add Inventory
+              <Button
+                size="lg"
+                type="submit"
+                disabled={isPending || isSubmitting || isSuccess}
+              >
+                {(isPending || isSubmitting || isSuccess) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isPending ? "Saving..." : "Confirm & Add Inventory"}
               </Button>
             </div>
           </form>
