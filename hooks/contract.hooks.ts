@@ -18,6 +18,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useNotify } from "./use-notify";
 
 const useGetContracts = (
   query: Partial<IContractQuery>,
@@ -44,6 +45,7 @@ const useGetContracts = (
 const useCreateContract = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: ICreateContract) => {
@@ -54,8 +56,10 @@ const useCreateContract = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contract"] });
+      showSuccess("Contract created successfully");
       router.push(ROUTES.CONTRACT);
     },
+    onError: (err) => showError(err),
   });
 };
 
@@ -63,6 +67,7 @@ const useDeleteContract = (
   options?: UseMutationOptions<unknown, Error, MultipleIdsPayload>
 ) => {
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: MultipleIdsPayload) => {
@@ -74,10 +79,12 @@ const useDeleteContract = (
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["contract"] });
+      showSuccess("Contracts deleted successfully");
       if (options?.onSuccess) {
         options.onSuccess(...args);
       }
     },
+    onError: (err) => showError(err),
   });
 };
 

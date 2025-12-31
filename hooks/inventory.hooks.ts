@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { InventoryFormSchema as IAddInventory } from "@/modules/inventory/inventory-form.validation";
+import { useNotify } from "./use-notify";
 
 const useGetInventory = (
   query: Partial<IInventoryQuery>,
@@ -41,6 +42,7 @@ const useGetInventory = (
 const useAddInventory = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: IAddInventory) => {
@@ -51,8 +53,10 @@ const useAddInventory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      showSuccess("Inventory added successfully");
       router.push(ROUTES.INVENTORY);
     },
+    onError: (err) => showError(err),
   });
 };
 

@@ -17,6 +17,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useNotify } from "./use-notify";
 
 const useGetSuppliers = (
   query: Partial<ISupplierQuery>,
@@ -40,6 +41,7 @@ const useGetSuppliers = (
 const useCreateSupplier = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: ICreateSupplier) => {
@@ -50,8 +52,10 @@ const useCreateSupplier = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supplier"] });
+      showSuccess("Supplier created successfully");
       router.push(ROUTES.SUPPLIER);
     },
+    onError: (err) => showError(err),
   });
 };
 
@@ -59,6 +63,7 @@ const useDeleteSupplier = (
   options?: UseMutationOptions<unknown, Error, MultipleIdsPayload>
 ) => {
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: MultipleIdsPayload) => {
@@ -70,16 +75,19 @@ const useDeleteSupplier = (
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["supplier"] });
+      showSuccess("Suppliers deleted successfully");
       if (options?.onSuccess) {
         options.onSuccess(...args);
       }
     },
+    onError: (err) => showError(err),
   });
 };
 
 const useUpdateSupplier = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: IUpdateSupplier }) => {
@@ -90,8 +98,10 @@ const useUpdateSupplier = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["supplier"] });
+      showSuccess("Supplier updated successfully");
       router.push(ROUTES.SUPPLIER);
     },
+    onError: (err) => showError(err),
   });
 };
 

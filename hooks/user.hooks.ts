@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { UserFormSchema as IUpdateUser } from "@/modules/settings/user-form.validation";
 import { ROUTES } from "@/lib/routes";
 import { AppUserSearchResult } from "@/modules/customer/customer.types";
+import { useNotify } from "./use-notify";
 
 function useCurrentUser() {
   return useQuery({
@@ -18,6 +19,7 @@ function useCurrentUser() {
 const useUpdateUser = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: IUpdateUser }) => {
@@ -28,8 +30,10 @@ const useUpdateUser = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["user"] });
+      showSuccess("User updated successfully");
       router.push(ROUTES.SETTINGS);
     },
+    onError: (err) => showError(err),
   });
 };
 

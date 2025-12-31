@@ -16,6 +16,7 @@ import {
 } from "@/lib/types/common.types";
 import { Transaction } from "@/prisma/client/client";
 import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
+import { useNotify } from "@/hooks/use-notify";
 
 interface TransactionPayload {
   id: string;
@@ -24,6 +25,7 @@ interface TransactionPayload {
 
 const useCreateTransaction = () => {
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: TransactionFormSchema) => {
@@ -32,12 +34,15 @@ const useCreateTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transaction"] });
+      showSuccess("Transaction created successfully");
     },
+    onError: (err) => showError(err),
   });
 };
 
 const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async ({ id, data }: TransactionPayload) => {
@@ -46,13 +51,16 @@ const useUpdateTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transaction"] });
+      showSuccess("Transaction updated successfully");
     },
+    onError: (err) => showError(err),
   });
 };
 
 const useConfirmTransaction = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async ({ id, data }: TransactionPayload) => {
@@ -65,8 +73,10 @@ const useConfirmTransaction = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transaction"] });
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      showSuccess("Transaction confirmed successfully");
       router.push(ROUTES.TRANSACTION);
     },
+    onError: (err) => showError(err),
   });
 };
 
@@ -96,6 +106,7 @@ const useDeleteTransaction = (
   options?: UseMutationOptions<unknown, Error, MultipleIdsPayload>
 ) => {
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useNotify();
 
   return useMutation({
     mutationFn: async (data: MultipleIdsPayload) => {
@@ -107,8 +118,15 @@ const useDeleteTransaction = (
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["transaction"] });
+      showSuccess("Transactions deleted successfully");
       if (options?.onSuccess) {
         options.onSuccess(...args);
+      }
+    },
+    onError: (err, ...args) => {
+      showError(err);
+      if (options?.onError) {
+        options.onError(err, ...args);
       }
     },
   });
