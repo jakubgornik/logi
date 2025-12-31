@@ -23,6 +23,7 @@ import {
   getSelectedIdsFromRowSelection,
   mapSortingToSortBy,
 } from "@/modules/supplier/supplier-table.utils";
+import { TransactionTableActions } from "./transaction-table-actions";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
@@ -74,6 +75,10 @@ export function TransactionTable({
   const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);
   const pageCount = useMemo(() => data?.totalPages, [data]);
 
+  const selectedTransactions = useMemo(() => {
+    return items.filter((item) => selectedIds.includes(item.id));
+  }, [items, selectedIds]);
+
   const table = useReactTable({
     data: items,
     columns,
@@ -114,6 +119,13 @@ export function TransactionTable({
           currentFilters={filters}
           omitColumnsById={["select", "status"]}
           additionalFilters={additionalFilters}
+        />
+        <TransactionTableActions
+          selectedTransactions={selectedTransactions}
+          selectedIds={selectedIds}
+          onDelete={() => {
+            deleteTransaction({ ids: selectedIds });
+          }}
         />
       </div>
       <DataTable table={table} enableRowSelection />

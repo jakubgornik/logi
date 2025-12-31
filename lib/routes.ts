@@ -18,6 +18,7 @@ export const SUB_ROUTES = {
   INVENTORY_CREATE: `${ROUTES.INVENTORY}/create`,
   CUSTOMER_CREATE: `${ROUTES.CUSTOMER}/create`,
   TRANSACTION_CREATE: `${ROUTES.TRANSACTION}/create`,
+  TRANSACTION_EDIT: (id: string) => `${ROUTES.TRANSACTION}/edit/${id}`,
 };
 
 export const routeNames: Record<string, string> = {
@@ -36,4 +37,5 @@ export const routeNames: Record<string, string> = {
   "/customer/create": "Create Customer",
   "/transaction": "Transactions",
   "/transaction/create": "Create Transaction",
+  "/transaction/edit/[id]": "Edit Transaction",
 };
