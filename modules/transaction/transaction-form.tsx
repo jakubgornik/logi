@@ -182,6 +182,10 @@ export const TransactionForm = ({
     }
   };
 
+  const shouldBlockRefresh = methods.formState.isDirty && !isConfirmed;
+
+  useRefreshWarning(shouldBlockRefresh);
+
   useEffect(() => {
     if (
       currentStep !== TransactionFormSteps.DETAILS &&
