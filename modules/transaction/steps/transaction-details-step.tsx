@@ -90,7 +90,6 @@ export const TransactionDetailsStep = ({
         type="button"
         variant="outline"
         className="w-full border-dashed"
-        disabled={items?.length >= inventories.length}
         onClick={() => append({ productId: "", quantity: 0 })}
       >
         <Plus className="mr-2 h-4 w-4" />
