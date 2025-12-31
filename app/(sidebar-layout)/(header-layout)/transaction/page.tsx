@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getTransactions } from "@/lib/fetchers/get-transactions";
 import { ROUTES } from "@/lib/routes";
+import { TransactionTable } from "@/modules/transaction/table/transaction-table";
 import { redirect } from "next/navigation";
 
 export default async function TransactionPage() {
@@ -12,5 +13,9 @@ export default async function TransactionPage() {
 
   const transactions = await getTransactions({ userId: user.id });
 
-  return <></>;
+  return (
+    <TransactionTable
+      initialData={transactions.success ? transactions.data : undefined}
+    />
+  );
 }
