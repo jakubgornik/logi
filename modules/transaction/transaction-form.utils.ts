@@ -1,3 +1,6 @@
+import { TransactionWithItems } from "@/lib/fetchers/get-transaction";
+import { TransactionFormSchema } from "./transaction-form.validation";
+
 export function canVisitStep<T>(
   targetStep: T,
   completedSteps: Set<T>,
@@ -17,3 +20,29 @@ export function canVisitStep<T>(
 
   return true;
 }
+
+export const createTransactionDefaultValues = (
+  transaction?: TransactionWithItems | null
+): TransactionFormSchema => {
+  const noItems = [{ productId: "", quantity: 0 }];
+
+  if (!transaction) {
+    return {
+      name: "",
+      customerId: "",
+      items: noItems,
+    };
+  }
+
+  return {
+    name: transaction.name,
+    customerId: transaction.customerId || "",
+    items:
+      transaction.items.length > 0
+        ? transaction.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          }))
+        : noItems,
+  };
+};

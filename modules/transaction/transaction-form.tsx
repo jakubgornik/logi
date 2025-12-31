@@ -13,7 +13,10 @@ import {
   customerSchema,
 } from "./transaction-form.validation";
 import { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
-import { canVisitStep } from "./transaction-form.utils";
+import {
+  canVisitStep,
+  createTransactionDefaultValues,
+} from "./transaction-form.utils";
 import { Customer, Transaction } from "@/prisma/client/client";
 import { useRefreshWarning } from "@/hooks/use-refresh-warning";
 import { TransactionDetailsStep } from "./steps/transaction-details-step";
@@ -24,6 +27,7 @@ import {
   useCreateTransaction,
   useUpdateTransaction,
 } from "@/hooks/transaction.hooks";
+import { TransactionWithItems } from "@/lib/fetchers/get-transaction";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -52,7 +56,7 @@ const prevStepMap: Partial<Record<TransactionFormSteps, TransactionFormSteps>> =
 interface TransactionFormProps {
   inventories: InventoryWithProduct[];
   customers: Customer[];
-  transaction?: Transaction;
+  transaction?: TransactionWithItems;
 }
 
 export const TransactionForm = ({
@@ -68,7 +72,12 @@ export const TransactionForm = ({
   );
   const [completedSteps, setCompletedSteps] = useState<
     Set<TransactionFormSteps>
-  >(new Set());
+  >(() => {
+    if (transaction) {
+      return new Set(STEPS);
+    }
+    return new Set();
+  });
   const [transactionId, setTransactionId] = useState<string | null>(
     transaction?.id || null
   );
@@ -88,12 +97,7 @@ export const TransactionForm = ({
 
   const methods = useForm<TransactionFormSchema>({
     resolver: currentSchema ? zodResolver(currentSchema) : undefined,
-    defaultValues: {
-      // todo
-      name: transaction?.name || "",
-      items: [{ productId: "", quantity: 0 }],
-      customerId: transaction?.customerId || "",
-    },
+    defaultValues: createTransactionDefaultValues(transaction),
     mode: "onChange",
   });
 

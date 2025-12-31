@@ -1,23 +1,24 @@
 import { cache } from "react";
-import { Transaction } from "@/prisma/client/client";
-import { prisma } from "../prisma";
+import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/prisma/client/client";
+
+export type TransactionWithItems = Prisma.TransactionGetPayload<{
+  include: { items: true };
+}>;
 
 export const getTransaction = cache(
-  async (id: string): Promise<Transaction> => {
+  async (id: string): Promise<TransactionWithItems | null> => {
     try {
       const transaction = await prisma.transaction.findUnique({
-        where: {
-          id: id,
+        where: { id },
+        include: {
+          items: true,
         },
       });
-
-      if (!transaction) {
-        throw new Error("Transaction not found");
-      }
-
       return transaction;
     } catch (error) {
-      throw new Error("Transaction not found");
+      console.error("Error fetching transaction:", error);
+      return null;
     }
   }
 );
