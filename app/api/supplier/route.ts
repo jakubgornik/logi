@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { supplierSchema } from "@/modules/supplier/supplier-form.validation";
 import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
+import { NotificationType } from "@/prisma/client/enums";
 
 export const POST = routeGuard(async (request: NextRequest, { user }) => {
   const payload = supplierSchema.safeParse(await request.json());
@@ -13,7 +14,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       {
         message: "Invalid data",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -22,17 +23,23 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       data: {
         ...payload.data,
         userId: user.id,
+        notifications: {
+          create: {
+            userId: user.id,
+            type: NotificationType.SUPPLIER_CREATED,
+          },
+        },
       },
     });
 
     return NextResponse.json(
       { message: "Supplier created successfully" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });
@@ -45,28 +52,52 @@ export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
       {
         message: "Invalid data",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   try {
-    await prisma.supplier.deleteMany({
+    const suppliers = await prisma.supplier.findMany({
       where: {
         id: { in: payload.data.ids },
         userId: user.id,
       },
+      select: { id: true },
+    });
+
+    if (suppliers.length === 0) {
+      return NextResponse.json(
+        { message: "No suppliers found to delete" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.supplier.deleteMany({
+        where: {
+          id: { in: payload.data.ids },
+          userId: user.id,
+        },
+      });
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          type: NotificationType.SUPPLIER_DELETED,
+        },
+      });
     });
 
     return NextResponse.json(
       {
         message: `${payload.data.ids.length} supplier(s) deleted successfully`,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
+    console.error("Delete Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });
@@ -79,7 +110,7 @@ export const GET = routeGuard(async (_, { user, searchParams }) => {
       {
         message: "Invalid query parameters",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
   const result = await getSuppliers({
