@@ -13,6 +13,17 @@ enum Scope {
     CONSTRUCTION
 }
 
+enum NotificationType {
+    SUPPLIER_CREATED
+    SUPPLIER_UPDATED
+    SUPPLIER_DELETED
+    CONTRACT_CREATED
+    CONTRACT_DELETED
+    CUSTOMER_CREATED
+    CUSTOMER_LINKED
+    CUSTOMER_DELETED
+}
+
 model User {
     id     String  @id @default(cuid())
     authId String  @unique
@@ -34,8 +45,9 @@ model User {
     contracts         Contract[]
     inventory         Inventory[]
     transactions      Transaction[]
-    customers         Customer[]    @relation("SellerToCustomer")
-    recordsAsCustomer Customer[]    @relation("LinkedAppUser")
+    customers         Customer[]     @relation("SellerToCustomer")
+    recordsAsCustomer Customer[]     @relation("LinkedAppUser")
+    notifications     Notification[]
 }
 
 model Customer {
@@ -52,9 +64,10 @@ model Customer {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt()
 
-    seller       User          @relation("SellerToCustomer", fields: [sellerId], references: [id])
-    linkedUser   User?         @relation("LinkedAppUser", fields: [appUserId], references: [id])
-    transactions Transaction[]
+    seller        User           @relation("SellerToCustomer", fields: [sellerId], references: [id])
+    linkedUser    User?          @relation("LinkedAppUser", fields: [appUserId], references: [id])
+    transactions  Transaction[]
+    notifications Notification[]
 }
 
 model Supplier {
@@ -70,9 +83,10 @@ model Supplier {
     createdAt         DateTime @default(now())
     updatedAt         DateTime @updatedAt()
 
-    user      User       @relation(fields: [userId], references: [id])
-    scopes    Scope[]
-    contracts Contract[]
+    user          User           @relation(fields: [userId], references: [id])
+    scopes        Scope[]
+    contracts     Contract[]
+    notifications Notification[]
 }
 
 model Contract {
@@ -84,8 +98,9 @@ model Contract {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt()
 
-    supplier Supplier @relation(fields: [supplierId], references: [id])
-    user     User     @relation(fields: [userId], references: [id])
+    supplier      Supplier       @relation(fields: [supplierId], references: [id])
+    user          User           @relation(fields: [userId], references: [id])
+    notifications Notification[]
 
     @@index([supplierId])
     @@index([userId])
@@ -98,8 +113,9 @@ model Inventory {
     quantity  Int      @default(0)
     updatedAt DateTime @updatedAt()
 
-    user    User    @relation(fields: [userId], references: [id])
-    product Product @relation(fields: [productId], references: [id])
+    user          User           @relation(fields: [userId], references: [id])
+    product       Product        @relation(fields: [productId], references: [id])
+    notifications Notification[]
 
     @@unique([userId, productId])
     @@index([userId])
@@ -131,9 +147,10 @@ model Transaction {
     createdAt DateTime          @default(now())
     updatedAt DateTime          @updatedAt()
 
-    seller   User              @relation(fields: [sellerId], references: [id])
-    customer Customer?         @relation(fields: [customerId], references: [id])
-    items    TransactionItem[]
+    seller        User              @relation(fields: [sellerId], references: [id])
+    customer      Customer?         @relation(fields: [customerId], references: [id])
+    items         TransactionItem[]
+    notifications Notification[]
 
     @@unique([sellerId, name])
     @@index([sellerId])
@@ -150,4 +167,26 @@ model TransactionItem {
     product     Product     @relation(fields: [productId], references: [id])
 
     @@index([transactionId])
+}
+
+model Notification {
+    id            String           @id @default(cuid())
+    userId        String
+    type          NotificationType
+    message       String?
+    createdAt     DateTime         @default(now())
+    supplierId    String?
+    contractId    String?
+    inventoryId   String?
+    transactionId String?
+    customerId    String?
+
+    user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    supplier    Supplier?    @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+    contract    Contract?    @relation(fields: [contractId], references: [id], onDelete: SetNull)
+    inventory   Inventory?   @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+    transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+    customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+    @@index([userId])
 }
