@@ -3,6 +3,7 @@ import { getContracts } from "@/lib/fetchers/get-contracts";
 import { prisma } from "@/lib/prisma";
 import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { contractApiSchema } from "@/modules/contract/contract-form.validation";
+import { NotificationType } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = routeGuard(async (_, { user, searchParams }) => {
@@ -13,7 +14,7 @@ export const GET = routeGuard(async (_, { user, searchParams }) => {
       {
         message: "Invalid query parameters",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -37,7 +38,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       {
         message: "Invalid data",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -60,12 +61,12 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
     if (!contractSupplier) {
       return NextResponse.json(
         { message: "Supplier not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const hasMatchingScope = contractUser.scopes.some((scope) =>
-      contractSupplier.scopes.includes(scope)
+      contractSupplier.scopes.includes(scope),
     );
 
     if (!hasMatchingScope) {
@@ -74,7 +75,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
           message:
             "Cannot create contract: User and supplier have no common capabilities",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -82,17 +83,24 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       data: {
         ...payload.data,
         userId: user.id,
+        notifications: {
+          create: {
+            userId: user.id,
+            type: NotificationType.CONTRACT_CREATED,
+          },
+        },
       },
     });
 
     return NextResponse.json(
       { message: "Contract created successfully" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
+    console.error("Create Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });
@@ -101,32 +109,51 @@ export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
   const payload = IdArraySchema.safeParse(await request.json());
 
   if (!payload.success) {
-    return NextResponse.json(
-      {
-        message: "Invalid data",
-      },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: "Invalid data" }, { status: 400 });
   }
 
   try {
-    await prisma.contract.deleteMany({
+    const contracts = await prisma.contract.findMany({
       where: {
         id: { in: payload.data.ids },
         userId: user.id,
       },
+      select: { id: true },
+    });
+
+    if (contracts.length === 0) {
+      return NextResponse.json(
+        { message: "No contracts found to delete" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.contract.deleteMany({
+        where: {
+          id: { in: payload.data.ids },
+          userId: user.id,
+        },
+      });
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          type: NotificationType.CONTRACT_DELETED,
+        },
+      });
     });
 
     return NextResponse.json(
       {
         message: `${payload.data.ids.length} contract(s) deleted successfully`,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
+    console.error("Delete Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });
