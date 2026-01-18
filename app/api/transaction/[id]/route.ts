@@ -1,12 +1,14 @@
 import { routeGuard } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { baseTransactionSchema } from "@/modules/transaction/transaction-form.validation";
-import { TransactionStatus } from "@/prisma/client/enums";
+import { NotificationType, TransactionStatus } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const updateSchema = baseTransactionSchema.extend({
-  status: z.enum(TransactionStatus).optional(),
+  status: z
+    .enum([TransactionStatus.DRAFT, TransactionStatus.CONFIRMED])
+    .optional(),
 });
 
 interface RouteParams {
@@ -32,14 +34,14 @@ export const PUT = routeGuard<RouteParams>(
     if (!existingTransaction || existingTransaction.sellerId !== user.id) {
       return NextResponse.json(
         { message: "Transaction not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (existingTransaction.status === TransactionStatus.CONFIRMED) {
       return NextResponse.json(
         { message: "Cannot edit a confirmed transaction." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -49,7 +51,7 @@ export const PUT = routeGuard<RouteParams>(
     if (status === TransactionStatus.CONFIRMED && !validCustomerId) {
       return NextResponse.json(
         { message: "A Customer must be selected to confirm the transaction." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -92,7 +94,7 @@ export const PUT = routeGuard<RouteParams>(
 
             if (!sellerInventory || sellerInventory.quantity < item.quantity) {
               throw new Error(
-                `Insufficient stock for product ID: ${item.productId}`
+                `Insufficient stock for product ID: ${item.productId}`,
               );
             }
 
@@ -124,6 +126,13 @@ export const PUT = routeGuard<RouteParams>(
               });
             }
           }
+          await tx.notification.create({
+            data: {
+              userId: user.id,
+              type: NotificationType.TRANSACTION_CONFIRMED,
+              transactionId: transactionId,
+            },
+          });
         } else {
           if (name !== existingTransaction.name) {
             const nameCheck = await tx.transaction.findUnique({
@@ -144,6 +153,12 @@ export const PUT = routeGuard<RouteParams>(
                   quantity: item.quantity,
                 })),
               },
+              notifications: {
+                create: {
+                  userId: user.id,
+                  type: NotificationType.TRANSACTION_UPDATED,
+                },
+              },
             },
           });
         }
@@ -159,8 +174,8 @@ export const PUT = routeGuard<RouteParams>(
       console.error("Update Error:", error);
       return NextResponse.json(
         { message: "Internal Server Error" },
-        { status: 500 }
+        { status: 500 },
       );
     }
-  }
+  },
 );

@@ -3,7 +3,7 @@ import { getTransactions } from "@/lib/fetchers/get-transactions";
 import { prisma } from "@/lib/prisma";
 import { IdArraySchema, paginatedQuerySchema } from "@/lib/types/common.types";
 import { baseTransactionSchema } from "@/modules/transaction/transaction-form.validation";
-import { TransactionStatus } from "@/prisma/client/enums";
+import { TransactionStatus, NotificationType } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = routeGuard(async (request: NextRequest, { user }) => {
@@ -22,7 +22,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
   if (existingTransaction) {
     return NextResponse.json(
       { message: "A transaction with this name already exists." },
-      { status: 409 }
+      { status: 409 },
     );
   }
 
@@ -42,6 +42,12 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
             quantity: item.quantity,
           })),
         },
+        notifications: {
+          create: {
+            userId: user.id,
+            type: NotificationType.TRANSACTION_CREATED,
+          },
+        },
       },
     });
 
@@ -50,7 +56,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
     console.error("Create Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });
@@ -60,10 +66,8 @@ export const GET = routeGuard(async (_, { user, searchParams }) => {
 
   if (!payload.success) {
     return NextResponse.json(
-      {
-        message: "Invalid query parameters",
-      },
-      { status: 400 }
+      { message: "Invalid query parameters" },
+      { status: 400 },
     );
   }
   const result = await getTransactions({
@@ -94,36 +98,51 @@ export const DELETE = routeGuard(async (request: NextRequest, { user }) => {
       select: { id: true, status: true },
     });
 
+    if (transactionsToDelete.length === 0) {
+      return NextResponse.json(
+        { message: "No transactions found" },
+        { status: 404 },
+      );
+    }
+
     const hasConfirmedTransaction = transactionsToDelete.some(
-      (t) => t.status === TransactionStatus.CONFIRMED
+      (t) => t.status === TransactionStatus.CONFIRMED,
     );
 
     if (hasConfirmedTransaction) {
       return NextResponse.json(
         { message: "Cannot delete confirmed transactions." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const result = await prisma.transaction.deleteMany({
-      where: {
-        id: { in: payload.data.ids },
-        sellerId: user.id,
-        status: TransactionStatus.DRAFT,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.transaction.deleteMany({
+        where: {
+          id: { in: payload.data.ids },
+          sellerId: user.id,
+          status: TransactionStatus.DRAFT,
+        },
+      });
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          type: NotificationType.TRANSACTION_DELETED,
+        },
+      });
     });
 
     return NextResponse.json(
       {
-        message: `${result.count} transaction(s) deleted successfully`,
+        message: `${transactionsToDelete.length} transaction(s) deleted successfully`,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Delete Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });

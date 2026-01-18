@@ -3,6 +3,7 @@ import { getInventories } from "@/lib/fetchers/get-inventories";
 import { prisma } from "@/lib/prisma";
 import { paginatedQuerySchema } from "@/lib/types/common.types";
 import { inventorySchema } from "@/modules/inventory/inventory-form.validation";
+import { NotificationType } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = routeGuard(async (request: NextRequest, { user }) => {
@@ -28,7 +29,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
         {
           message: `Product '${name}' not found for scope ${scope}`,
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -41,22 +42,35 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
       },
       update: {
         quantity: { increment: quantity },
+        notifications: {
+          create: {
+            userId: user.id,
+            type: NotificationType.INVENTORY_UPDATED,
+          },
+        },
       },
       create: {
         userId: user.id,
         productId: product.id,
         quantity: quantity,
+        notifications: {
+          create: {
+            userId: user.id,
+            type: NotificationType.INVENTORY_ADDED,
+          },
+        },
       },
     });
 
     return NextResponse.json(
       { message: "Inventory updated successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
+    console.error("Inventory Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });
@@ -66,10 +80,8 @@ export const GET = routeGuard(async (_, { user, searchParams }) => {
 
   if (!payload.success) {
     return NextResponse.json(
-      {
-        message: "Invalid query parameters",
-      },
-      { status: 400 }
+      { message: "Invalid query parameters" },
+      { status: 400 },
     );
   }
 

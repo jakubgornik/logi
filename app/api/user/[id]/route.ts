@@ -1,6 +1,7 @@
 import { routeGuard } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { userSchema } from "@/modules/settings/user-form.validation";
+import { NotificationType } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RouteParams {
@@ -19,12 +20,20 @@ export const PUT = routeGuard<RouteParams>(
     try {
       const updatedUser = await prisma.user.update({
         where: { id },
-        data: payload.data,
+        data: {
+          ...payload.data,
+          notifications: {
+            create: {
+              type: NotificationType.USER_UPDATED,
+            },
+          },
+        },
       });
 
       return NextResponse.json(updatedUser, { status: 200 });
     } catch (error) {
+      console.error("User Update Error:", error);
       return NextResponse.json({ message: "Error updating" }, { status: 500 });
     }
-  }
+  },
 );
