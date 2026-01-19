@@ -1,9 +1,10 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import { cache } from "react";
 import { COOKIE_NAME } from "@/lib/shared/consts";
-import { JWTPayload } from "@/lib/types/auth.types";
+
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export const getCurrentUser = cache(async () => {
   try {
@@ -13,20 +14,24 @@ export const getCurrentUser = cache(async () => {
     if (!token) {
       return null;
     }
+    const { payload } = await jwtVerify(token, SECRET);
 
-    const currentUser = jwt.verify(
-      token,
-      process.env.JWT_SECRET!
-    ) as JWTPayload;
+    if (!payload) {
+      throw new Error("Invalid token payload");
+    }
 
     const user = await prisma.user.findUnique({
       where: {
-        id: currentUser.userId,
+        id: payload.userId as string,
       },
       include: {
         contracts: true,
       },
     });
+
+    if (!user) {
+      throw new Error("User no longer exists");
+    }
 
     return user;
   } catch (error) {
