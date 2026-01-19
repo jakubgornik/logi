@@ -11,10 +11,10 @@ import {
   BadgeCent,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Notification } from "@/lib/types/common.types";
 import { DashboardActionTile } from "@/modules/dashboard/dashboard-action-tile";
 import { DashboardTile } from "@/modules/dashboard/dashboard-tile";
 import { CustomAccordion } from "@/components/custom-accordion";
+import { getLatestNotifications } from "@/lib/fetchers/get-latest-notifications";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -23,8 +23,8 @@ export default async function DashboardPage() {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const notifications: Notification[] = [];
-
+  const notifications = await getLatestNotifications(user.id);
+  console.log(notifications);
   return (
     <div className="p-6">
       <CustomAccordion label="Quick actions" defaultOpen>
@@ -77,18 +77,12 @@ export default async function DashboardPage() {
                   {notifications.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-start gap-3 pb-3 border-b last:border-0 last:pb-0"
+                      className="bg-muted/35 p-2 items-center rounded-md flex gap-1 border-b"
                     >
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-1 shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                       <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {item.title}
-                        </p>
                         <p className="text-xs text-muted-foreground line-clamp-2">
-                          {item.description}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground pt-1">
-                          {item.time}
+                          {item.type}
                         </p>
                       </div>
                     </div>
@@ -96,7 +90,7 @@ export default async function DashboardPage() {
                 </div>
               ) : (
                 <div className="p-5 text-center text-sm text-muted-foreground">
-                  No new notifications
+                  No new notifications in the last 24 hours.
                 </div>
               )}
             </ScrollArea>
