@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getSupplier } from "@/lib/fetchers/get-supplier";
 import { ROUTES } from "@/lib/routes";
+import { getSession } from "@/lib/fetchers/get-session";
 
 interface SupplierEditPageProps {
   params: Promise<{
@@ -13,9 +14,9 @@ interface SupplierEditPageProps {
 export default async function SupplierEditPage({
   params,
 }: SupplierEditPageProps) {
-  const user = await getCurrentUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect(ROUTES.SIGN_IN);
   }
 

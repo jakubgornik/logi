@@ -1,12 +1,12 @@
-import { getCurrentUser } from "@/lib/fetchers/get-current-user";
+import { getSession } from "@/lib/fetchers/get-session";
 import { ROUTES } from "@/lib/routes";
 import { SupplierForm } from "@/modules/supplier/supplier-form";
 import { redirect } from "next/navigation";
 
 export default async function SupplierCreatePage() {
-  const user = await getCurrentUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect(ROUTES.SIGN_IN);
   }
 

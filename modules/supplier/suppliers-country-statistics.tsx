@@ -3,12 +3,13 @@ import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
 import { mapCountryCodeToName } from "./supplier-form.utils";
 import { CountryDistributionChart } from "./countries-of-origin-distribution";
+import { getSession } from "@/lib/fetchers/get-session";
 
 export default async function SuppliersCountryStatistics() {
-  const user = await getCurrentUser();
+  const session = await getSession();
 
   const result = await getSuppliers({
-    userId: user!.id,
+    userId: session?.userId!,
     fetchAll: true,
   });
 
@@ -20,7 +21,7 @@ export default async function SuppliersCountryStatistics() {
       acc[country] = (acc[country] || 0) + 1;
       return acc;
     },
-    {}
+    {},
   );
 
   return (

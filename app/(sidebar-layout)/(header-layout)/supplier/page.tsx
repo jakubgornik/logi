@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/fetchers/get-current-user";
+import { getSession } from "@/lib/fetchers/get-session";
 import { getSuppliers } from "@/lib/fetchers/get-suppliers";
 import { ROUTES } from "@/lib/routes";
 import { SupplierTable } from "@/modules/supplier/supplier-table";
@@ -6,14 +6,14 @@ import SuppliersCountryStatistics from "@/modules/supplier/suppliers-country-sta
 import { redirect } from "next/navigation";
 
 export default async function SupplierPage() {
-  const user = await getCurrentUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect(ROUTES.SIGN_IN);
   }
 
   const suppliers = await getSuppliers({
-    userId: user.id,
+    userId: session.userId,
   });
 
   return (

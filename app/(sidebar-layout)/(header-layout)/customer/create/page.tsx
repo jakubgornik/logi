@@ -1,12 +1,12 @@
-import { getCurrentUser } from "@/lib/fetchers/get-current-user";
+import { getSession } from "@/lib/fetchers/get-session";
 import { ROUTES } from "@/lib/routes";
 import { CustomerForm } from "@/modules/customer/customer-form";
 import { redirect } from "next/navigation";
 
 export default async function CreateCustomerPage() {
-  const user = await getCurrentUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect(ROUTES.SIGN_IN);
   }
   return <CustomerForm />;

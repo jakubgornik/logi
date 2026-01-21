@@ -1,5 +1,4 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { ROUTES, SUB_ROUTES } from "@/lib/routes";
 import {
   FilePlus,
@@ -15,16 +14,17 @@ import { DashboardActionTile } from "@/modules/dashboard/dashboard-action-tile";
 import { DashboardTile } from "@/modules/dashboard/dashboard-tile";
 import { CustomAccordion } from "@/components/custom-accordion";
 import { getLatestNotifications } from "@/lib/fetchers/get-latest-notifications";
+import { getSession } from "@/lib/fetchers/get-session";
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const notifications = await getLatestNotifications(user.id);
-  console.log(notifications);
+  const notifications = await getLatestNotifications(session.userId);
+
   return (
     <div className="p-6">
       <CustomAccordion label="Quick actions" defaultOpen>
