@@ -43,6 +43,7 @@ export function useTransactionTableColumns(): ColumnDef<Transaction>[] {
               className="hover:underline font-semibold"
               href={`${ROUTES.TRANSACTION}/${row.original.id}`}
               onClick={(e) => e.stopPropagation()}
+              prefetch={false} // temporary fix for next link prefetching issues
             >
               {row.original.name}
             </Link>
@@ -65,6 +66,6 @@ export function useTransactionTableColumns(): ColumnDef<Transaction>[] {
         },
       },
     ],
-    []
+    [],
   );
 }

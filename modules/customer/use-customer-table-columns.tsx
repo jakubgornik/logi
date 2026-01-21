@@ -44,6 +44,7 @@ export function useCustomerTableColumns(): ColumnDef<Customer>[] {
               className="hover:underline font-semibold"
               href={`${ROUTES.CUSTOMER}/${row.original.id}`}
               onClick={(e) => e.stopPropagation()}
+              prefetch={false} // temporary fix for next link prefetching issues
             >
               {row.original.customerName}
             </Link>
@@ -63,7 +64,7 @@ export function useCustomerTableColumns(): ColumnDef<Customer>[] {
             row.original.addressStreet!,
             row.original.addressCity!,
             row.original.addressPostalCode!,
-            row.original.addressCountry!
+            row.original.addressCountry!,
           );
           return (
             <span
@@ -76,6 +77,6 @@ export function useCustomerTableColumns(): ColumnDef<Customer>[] {
         },
       },
     ],
-    []
+    [],
   );
 }
