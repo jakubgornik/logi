@@ -5,7 +5,7 @@ import { ROUTES } from "./routes";
 const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
-  timeout: 10000,
+  timeout: 15000,
   paramsSerializer: (params) => paramsSerializer(params),
 });
 
@@ -21,7 +21,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

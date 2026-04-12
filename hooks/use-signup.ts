@@ -16,7 +16,7 @@ export function useSignUp() {
     },
     onSuccess: () => {
       showSuccess("Account created successfully. Please sign in.");
-      router.push(ROUTES.SIGN_IN);
+      router.replace(ROUTES.SIGN_IN);
     },
     onError: (error) => showError(error),
   });

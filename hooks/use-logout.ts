@@ -9,7 +9,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: () => api.post("/auth/logout"),
     onSuccess: () => {
-      router.push(ROUTES.SIGN_IN);
+      router.replace(ROUTES.SIGN_IN);
     },
   });
 }

@@ -5,6 +5,7 @@ import api from "@/lib/axios";
 import { auth } from "@/lib/firebase";
 import { AuthenticationForm } from "@/modules/auth/auth-form.validation";
 import { useNotify } from "./use-notify";
+import { ROUTES } from "@/lib/routes";
 
 export function useSignIn() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export function useSignIn() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         data.email,
-        data.password
+        data.password,
       );
 
       const idToken = await userCredential.user.getIdToken();
@@ -25,7 +26,8 @@ export function useSignIn() {
     },
     onSuccess: () => {
       showSuccess("Signed in successfully");
-      router.push("/dashboard");
+      router.replace(ROUTES.DASHBOARD);
+      router.refresh();
     },
     onError: (error) => showError(error),
   });
