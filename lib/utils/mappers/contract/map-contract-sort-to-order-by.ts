@@ -2,7 +2,7 @@ import { Prisma } from "@/prisma/client/client";
 import { SortBy } from "@/lib/types/common.types";
 
 export const mapContractSortToOrderBy = (
-  sortBy?: SortBy[]
+  sortBy?: SortBy[],
 ): Prisma.ContractOrderByWithRelationInput[] => {
   if (!sortBy || sortBy.length === 0) {
     return [{ createdAt: "asc" }];
@@ -12,7 +12,7 @@ export const mapContractSortToOrderBy = (
     switch (sort.field) {
       case "title":
         return {
-          name: sort.direction,
+          title: sort.direction,
         } as Prisma.ContractOrderByWithRelationInput;
       case "validUntil":
         return {
@@ -20,7 +20,7 @@ export const mapContractSortToOrderBy = (
         } as Prisma.ContractOrderByWithRelationInput;
       default:
         return {
-          name: sort.direction,
+          title: sort.direction,
         } as Prisma.ContractOrderByWithRelationInput;
     }
   });

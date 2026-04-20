@@ -2,7 +2,7 @@ import { Prisma } from "@/prisma/client/client";
 import { SortBy } from "@/lib/types/common.types";
 
 export const mapInventorySortToOrderBy = (
-  sortBy?: SortBy[]
+  sortBy?: SortBy[],
 ): Prisma.InventoryOrderByWithRelationInput[] => {
   if (!sortBy || sortBy.length === 0) {
     return [
@@ -22,7 +22,7 @@ export const mapInventorySortToOrderBy = (
             name: sort.direction,
           },
         } as Prisma.InventoryOrderByWithRelationInput;
-      case "qantity":
+      case "quantity":
         return {
           quantity: sort.direction,
         } as Prisma.ContractOrderByWithRelationInput;
