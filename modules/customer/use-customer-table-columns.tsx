@@ -40,14 +40,9 @@ export function useCustomerTableColumns(): ColumnDef<Customer>[] {
         header: "Customer Name",
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
-            <Link
-              className="hover:underline font-semibold"
-              href={`${ROUTES.CUSTOMER}/${row.original.id}`}
-              onClick={(e) => e.stopPropagation()}
-              prefetch={false} // temporary fix for next link prefetching issues
-            >
+            <span className="hover:underline font-semibold">
               {row.original.customerName}
-            </Link>
+            </span>
             {row.original.appUserId && (
               <Badge variant="outline" className="text-xs">
                 Logi App User

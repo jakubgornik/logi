@@ -39,14 +39,9 @@ export function useTransactionTableColumns(): ColumnDef<Transaction>[] {
         header: "Transaction Name",
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
-            <Link
-              className="hover:underline font-semibold"
-              href={`${ROUTES.TRANSACTION}/${row.original.id}`}
-              onClick={(e) => e.stopPropagation()}
-              prefetch={false} // temporary fix for next link prefetching issues
-            >
+            <span className="hover:underline font-semibold">
               {row.original.name}
-            </Link>
+            </span>
           </div>
         ),
       },
