@@ -56,7 +56,18 @@ export const PUT = routeGuard<RouteParams>(
     }
 
     try {
-      await prisma.$transaction(async (tx) => {
+      const didUpdate = await prisma.$transaction(async (tx) => {
+        const customer = validCustomerId
+          ? await tx.customer.findUnique({
+              where: { id: validCustomerId, sellerId: user.id },
+              select: { appUserId: true },
+            })
+          : null;
+
+        if (validCustomerId && !customer) {
+          return false;
+        }
+
         if (status === TransactionStatus.CONFIRMED) {
           await tx.transaction.update({
             where: { id: transactionId },
@@ -73,14 +84,7 @@ export const PUT = routeGuard<RouteParams>(
             },
           });
 
-          let linkedBuyerUserId: string | null = null;
-          if (validCustomerId) {
-            const customerRecord = await tx.customer.findUnique({
-              where: { id: validCustomerId },
-              select: { appUserId: true },
-            });
-            linkedBuyerUserId = customerRecord?.appUserId || null;
-          }
+          const linkedBuyerUserId = customer?.appUserId ?? null;
 
           for (const item of items) {
             const sellerInventory = await tx.inventory.findUnique({
@@ -162,7 +166,16 @@ export const PUT = routeGuard<RouteParams>(
             },
           });
         }
+
+        return true;
       });
+
+      if (!didUpdate) {
+        return NextResponse.json(
+          { message: "Customer not found" },
+          { status: 404 },
+        );
+      }
 
       return NextResponse.json({
         message:

@@ -30,6 +30,20 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
     customerId && customerId.trim() !== "" ? customerId : null;
 
   try {
+    if (validCustomerId) {
+      const customer = await prisma.customer.findUnique({
+        where: { id: validCustomerId, sellerId: user.id },
+        select: { id: true },
+      });
+
+      if (!customer) {
+        return NextResponse.json(
+          { message: "Customer not found" },
+          { status: 404 },
+        );
+      }
+    }
+
     const transaction = await prisma.transaction.create({
       data: {
         sellerId: user.id,
