@@ -15,6 +15,13 @@ interface RouteParams {
   id: string;
 }
 
+class InsufficientStockError extends Error {
+  constructor(productId: string) {
+    super(`Insufficient stock for product ID: ${productId}`);
+    this.name = "InsufficientStockError";
+  }
+}
+
 export const PUT = routeGuard<RouteParams>(
   async (request: NextRequest, { user, params }) => {
     const { id: transactionId } = params;
@@ -90,32 +97,22 @@ export const PUT = routeGuard<RouteParams>(
           });
 
           const linkedBuyerUserId = customer?.appUserId ?? null;
+          const transferItems = [...items].sort((a, b) =>
+            a.productId.localeCompare(b.productId),
+          );
 
-          for (const item of items) {
-            const sellerInventory = await tx.inventory.findUnique({
+          for (const item of transferItems) {
+            const deductedStock = await tx.inventory.updateMany({
               where: {
-                userId_productId: {
-                  userId: user.id,
-                  productId: item.productId,
-                },
+                userId: user.id,
+                productId: item.productId,
+                quantity: { gte: item.quantity },
               },
+              data: { quantity: { decrement: item.quantity } },
             });
 
-            if (!sellerInventory || sellerInventory.quantity < item.quantity) {
-              throw new Error(
-                `Insufficient stock for product ID: ${item.productId}`,
-              );
-            }
-
-            const remainingQuantity = sellerInventory.quantity - item.quantity;
-
-            if (remainingQuantity === 0) {
-              await tx.inventory.delete({ where: { id: sellerInventory.id } });
-            } else {
-              await tx.inventory.update({
-                where: { id: sellerInventory.id },
-                data: { quantity: remainingQuantity },
-              });
+            if (deductedStock.count === 0) {
+              throw new InsufficientStockError(item.productId);
             }
 
             if (linkedBuyerUserId) {
@@ -198,6 +195,10 @@ export const PUT = routeGuard<RouteParams>(
             : "Draft Updated",
       });
     } catch (error) {
+      if (error instanceof InsufficientStockError) {
+        return NextResponse.json({ message: error.message }, { status: 409 });
+      }
+
       console.error("Update Error:", error);
       return NextResponse.json(
         { message: "Internal Server Error" },
