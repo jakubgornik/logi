@@ -9,8 +9,13 @@ interface RouteParams {
 }
 
 export const PUT = routeGuard<RouteParams>(
-  async (request: NextRequest, { params }) => {
+  async (request: NextRequest, { user, params }) => {
     const { id } = params;
+
+    if (id !== user.id) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
     const payload = userSchema.safeParse(await request.json());
 
     if (!payload.success) {
@@ -19,7 +24,7 @@ export const PUT = routeGuard<RouteParams>(
 
     try {
       const updatedUser = await prisma.user.update({
-        where: { id },
+        where: { id: user.id },
         data: {
           ...payload.data,
           notifications: {
