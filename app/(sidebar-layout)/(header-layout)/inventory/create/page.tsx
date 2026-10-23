@@ -1,4 +1,4 @@
-import { getContracts } from "@/lib/fetchers/get-contracts";
+import { getInventoryContracts } from "@/lib/fetchers/get-inventory-contracts";
 import { getCurrentUser } from "@/lib/fetchers/get-current-user";
 import { ROUTES } from "@/lib/routes";
 import { InventoryForm } from "@/modules/inventory/inventory-form";
@@ -10,12 +10,9 @@ export default async function CreateInventoryPage() {
   if (!user) {
     redirect(ROUTES.SIGN_IN);
   }
-  const result = await getContracts({
-    userId: user.id,
-    fetchAll: true,
-  });
+  const result = await getInventoryContracts(user.id);
 
-  const contracts = result.success ? result.data.data : [];
+  const contracts = result.success ? result.data : [];
 
   return <InventoryForm contracts={contracts} userScopes={user.scopes} />;
 }

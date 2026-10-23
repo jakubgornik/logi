@@ -2,6 +2,7 @@ import { routeGuard } from "@/lib/auth";
 import { getInventories } from "@/lib/fetchers/get-inventories";
 import { prisma } from "@/lib/prisma";
 import { paginatedQuerySchema } from "@/lib/types/common.types";
+import { isTodayOrFuture } from "@/modules/contract/contract-form.utils";
 import { inventorySchema } from "@/modules/inventory/inventory-form.validation";
 import { NotificationType } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,15 +14,41 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
     return NextResponse.json({ message: "Invalid data" }, { status: 400 });
   }
 
-  const { name, scope, quantity } = payload.data;
+  const { contractId, name, scope, quantity } = payload.data;
 
   try {
+    const contract = await prisma.contract.findFirst({
+      where: {
+        id: contractId,
+        userId: user.id,
+        supplier: { userId: user.id },
+      },
+      select: {
+        validUntil: true,
+        supplier: { select: { scopes: true } },
+      },
+    });
+
+    if (!contract) {
+      return NextResponse.json(
+        { message: "Contract not found" },
+        { status: 404 },
+      );
+    }
+
+    if (!isTodayOrFuture(contract.validUntil)) {
+      return NextResponse.json(
+        { message: "Cannot add inventory using an expired contract" },
+        { status: 409 },
+      );
+    }
+
     const product = await prisma.product.findFirst({
       where: {
         name: name,
         scope: scope,
       },
-      select: { id: true },
+      select: { id: true, scope: true },
     });
 
     if (!product) {
@@ -30,6 +57,19 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
           message: `Product '${name}' not found for scope ${scope}`,
         },
         { status: 404 },
+      );
+    }
+
+    if (
+      !user.scopes.includes(product.scope) ||
+      !contract.supplier.scopes.includes(product.scope)
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "Cannot add inventory: Product capability must be supported by both you and the contract supplier",
+        },
+        { status: 403 },
       );
     }
 

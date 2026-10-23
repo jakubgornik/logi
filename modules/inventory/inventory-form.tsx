@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useMemo } from "react";
-import { IContractWithSupplier } from "../contract/contract.types";
+import type { InventoryContractOption } from "./inventory.types";
 import { PRODUCTS } from "@/lib/shared/consts";
 import { Scope } from "@/prisma/client/enums";
 import { useAddInventory } from "@/hooks/inventory.hooks";
@@ -25,7 +25,7 @@ import {
 import { Loader2 } from "lucide-react";
 
 interface InventoryFormProps {
-  contracts: IContractWithSupplier[];
+  contracts: InventoryContractOption[];
   userScopes: Scope[];
 }
 
@@ -57,7 +57,7 @@ export const InventoryForm = ({
   const commonScopes = useMemo(() => {
     if (!selectedContract) return [];
     return userScopes.filter((scope) =>
-      selectedContract.supplier.scopes.includes(scope)
+      selectedContract.supplier.scopes.includes(scope),
     );
   }, [selectedContract, userScopes]);
 
@@ -175,7 +175,7 @@ export const InventoryForm = ({
                         onValueChange={(val) => {
                           field.onChange(val);
                           const selectedProduct = PRODUCTS.find(
-                            (p) => p.name === val
+                            (p) => p.name === val,
                           );
                           if (selectedProduct) {
                             setValue("scope", selectedProduct.scope);
@@ -190,8 +190,8 @@ export const InventoryForm = ({
                               !selectedContractId
                                 ? "Select contract first"
                                 : !canAddProducts
-                                ? "No matching capabilities"
-                                : "Choose a product..."
+                                  ? "No matching capabilities"
+                                  : "Choose a product..."
                             }
                           />
                         </SelectTrigger>
