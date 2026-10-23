@@ -49,7 +49,7 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
         select: { scopes: true },
       }),
       prisma.supplier.findUnique({
-        where: { id: payload.data.supplierId },
+        where: { id: payload.data.supplierId, userId: user.id },
         select: { scopes: true },
       }),
     ]);
