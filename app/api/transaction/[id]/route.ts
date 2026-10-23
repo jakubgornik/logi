@@ -38,13 +38,6 @@ export const PUT = routeGuard<RouteParams>(
       );
     }
 
-    if (existingTransaction.status === TransactionStatus.CONFIRMED) {
-      return NextResponse.json(
-        { message: "Cannot edit a confirmed transaction." },
-        { status: 403 },
-      );
-    }
-
     const validCustomerId =
       customerId && customerId.trim() !== "" ? customerId : null;
 
@@ -56,7 +49,7 @@ export const PUT = routeGuard<RouteParams>(
     }
 
     try {
-      const didUpdate = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx) => {
         const customer = validCustomerId
           ? await tx.customer.findUnique({
               where: { id: validCustomerId, sellerId: user.id },
@@ -65,14 +58,26 @@ export const PUT = routeGuard<RouteParams>(
           : null;
 
         if (validCustomerId && !customer) {
-          return false;
+          return "CUSTOMER_NOT_FOUND";
+        }
+
+        const claimedTransaction = await tx.transaction.updateMany({
+          where: {
+            id: transactionId,
+            sellerId: user.id,
+            status: TransactionStatus.DRAFT,
+          },
+          data: { status: status ?? TransactionStatus.DRAFT },
+        });
+
+        if (claimedTransaction.count === 0) {
+          return "TRANSACTION_CONFLICT";
         }
 
         if (status === TransactionStatus.CONFIRMED) {
           await tx.transaction.update({
             where: { id: transactionId },
             data: {
-              status: TransactionStatus.CONFIRMED,
               customerId: validCustomerId,
               items: {
                 deleteMany: {},
@@ -167,13 +172,22 @@ export const PUT = routeGuard<RouteParams>(
           });
         }
 
-        return true;
+        return "UPDATED";
       });
 
-      if (!didUpdate) {
+      if (result === "CUSTOMER_NOT_FOUND") {
         return NextResponse.json(
           { message: "Customer not found" },
           { status: 404 },
+        );
+      }
+
+      if (result === "TRANSACTION_CONFLICT") {
+        return NextResponse.json(
+          {
+            message: "Transaction is no longer a draft and cannot be updated.",
+          },
+          { status: 409 },
         );
       }
 
