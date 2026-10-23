@@ -1,5 +1,6 @@
 import { getSupplier } from "@/lib/fetchers/get-supplier";
 import { SupplierDetailsCard } from "@/modules/supplier/supplier-details";
+import { notFound } from "next/navigation";
 
 interface SupplierDetailsPageProps {
   params: Promise<{
@@ -13,6 +14,10 @@ export default async function SupplierDetailsPage({
   const { id } = await params;
 
   const supplier = await getSupplier(id);
+
+  if (!supplier) {
+    notFound();
+  }
 
   return <SupplierDetailsCard supplier={supplier} />;
 }

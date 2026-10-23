@@ -1,21 +1,23 @@
 import { cache } from "react";
 import { Supplier } from "@/prisma/client/client";
 import { prisma } from "../prisma";
+import { getCurrentUser } from "./get-current-user";
+import { redirect } from "next/navigation";
+import { ROUTES } from "../routes";
 
-export const getSupplier = cache(async (id: string): Promise<Supplier> => {
-  try {
-    const supplier = await prisma.supplier.findUnique({
-      where: {
-        id: id,
-      },
-    });
+export const getSupplier = cache(
+  async (id: string): Promise<Supplier | null> => {
+    const user = await getCurrentUser();
 
-    if (!supplier) {
-      throw new Error("Supplier not found");
+    if (!user) {
+      redirect(ROUTES.SIGN_IN);
     }
 
-    return supplier;
-  } catch (error) {
-    throw new Error("Supplier not found");
+    return prisma.supplier.findUnique({
+      where: {
+        id,
+        userId: user.id,
+      },
+    });
   }
-});
+);
