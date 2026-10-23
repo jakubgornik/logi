@@ -17,6 +17,7 @@ import {
 import { Transaction } from "@/prisma/client/client";
 import { shouldUseInitialData } from "@/lib/utils/should-use-initial-data";
 import { useNotify } from "@/hooks/use-notify";
+import { useGetQueryUserId } from "./use-get-query-user-id";
 
 interface TransactionPayload {
   id: string;
@@ -84,13 +85,16 @@ const useGetTransactions = (
   query: Partial<ITransactionQuery>,
   initialData?: PaginatedResponse<Transaction>
 ) => {
+  const userId = useGetQueryUserId();
+
   return useQuery({
-    queryKey: ["transaction", query],
-    queryFn: async () => {
+    queryKey: ["transaction", userId, query],
+    queryFn: async ({ signal }) => {
       const res = await api.get<PaginatedResponse<Transaction>>(
         "/transaction",
         {
           params: query,
+          signal,
         }
       );
       return res.data;

@@ -1,15 +1,16 @@
 import api from "@/lib/axios";
 import { ROUTES } from "@/lib/routes";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useLogout() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => api.post("/auth/logout"),
-    onSuccess: () => {
-      router.replace(ROUTES.SIGN_IN);
+    onSuccess: async () => {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      window.location.replace(ROUTES.SIGN_IN);
     },
   });
 }

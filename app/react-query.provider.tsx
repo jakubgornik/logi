@@ -2,12 +2,25 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { QueryUserIdContext } from "@/hooks/use-get-query-user-id";
+
+interface ReactQueryProviderProps {
+  children: React.ReactNode;
+  userId?: string | null;
+}
 
 export default function ReactQueryProvider({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  userId = null,
+}: ReactQueryProviderProps) {
+  return (
+    <QueryClientScope key={userId ?? "public"} userId={userId}>
+      {children}
+    </QueryClientScope>
+  );
+}
+
+function QueryClientScope({ children, userId }: ReactQueryProviderProps) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -21,6 +34,8 @@ export default function ReactQueryProvider({
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryUserIdContext.Provider value={userId ?? null}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </QueryUserIdContext.Provider>
   );
 }

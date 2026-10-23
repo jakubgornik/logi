@@ -5,12 +5,15 @@ import { UserFormSchema as IUpdateUser } from "@/modules/settings/user-form.vali
 import { ROUTES } from "@/lib/routes";
 import { AppUserSearchResult } from "@/modules/customer/customer.types";
 import { useNotify } from "./use-notify";
+import { useGetQueryUserId } from "./use-get-query-user-id";
 
 function useCurrentUser() {
+  const userId = useGetQueryUserId();
+
   return useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const res = await api.get("/user");
+    queryKey: ["user", userId],
+    queryFn: async ({ signal }) => {
+      const res = await api.get("/user", { signal });
       return res.data;
     },
   });
@@ -38,13 +41,16 @@ const useUpdateUser = () => {
 };
 
 const useGetAppUsersToLink = (query: { search?: string }) => {
+  const userId = useGetQueryUserId();
+
   return useQuery({
-    queryKey: ["user", query],
-    queryFn: async () => {
+    queryKey: ["user", userId, "link-to-customer", query],
+    queryFn: async ({ signal }) => {
       const res = await api.get<AppUserSearchResult[]>(
         "/user/link-to-customer",
         {
           params: query,
+          signal,
         }
       );
       return res.data;

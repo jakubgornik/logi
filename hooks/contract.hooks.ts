@@ -19,18 +19,22 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useNotify } from "./use-notify";
+import { useGetQueryUserId } from "./use-get-query-user-id";
 
 const useGetContracts = (
   query: Partial<IContractQuery>,
   initialData?: PaginatedResponse<IContractWithSupplier>
 ) => {
+  const userId = useGetQueryUserId();
+
   return useQuery({
-    queryKey: ["contract", query],
-    queryFn: async () => {
+    queryKey: ["contract", userId, query],
+    queryFn: async ({ signal }) => {
       const res = await api.get<PaginatedResponse<IContractWithSupplier>>(
         "/contract",
         {
           params: query,
+          signal,
         }
       );
       return res.data;

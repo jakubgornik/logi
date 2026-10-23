@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useNotify } from "./use-notify";
+import { useGetQueryUserId } from "./use-get-query-user-id";
 
 const useCreateCustomer = () => {
   const router = useRouter();
@@ -43,11 +44,14 @@ const useGetCustomers = (
   query: Partial<ICustomerQuery>,
   initialData?: PaginatedResponse<Customer>
 ) => {
+  const userId = useGetQueryUserId();
+
   return useQuery({
-    queryKey: ["customer", query],
-    queryFn: async () => {
+    queryKey: ["customer", userId, query],
+    queryFn: async ({ signal }) => {
       const res = await api.get<PaginatedResponse<Customer>>("/customer", {
         params: query,
+        signal,
       });
       return res.data;
     },

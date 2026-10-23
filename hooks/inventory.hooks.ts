@@ -15,19 +15,22 @@ import {
 import { useRouter } from "next/navigation";
 import { InventoryFormSchema as IAddInventory } from "@/modules/inventory/inventory-form.validation";
 import { useNotify } from "./use-notify";
+import { useGetQueryUserId } from "./use-get-query-user-id";
 
 const useGetInventory = (
   query: Partial<IInventoryQuery>,
-  userId: string,
   initialData?: PaginatedResponse<IInventoryWithProduct>
 ) => {
+  const userId = useGetQueryUserId();
+
   return useQuery({
     queryKey: ["inventory", userId, query],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await api.get<PaginatedResponse<IInventoryWithProduct>>(
         "/inventory",
         {
-          params: { ...query, userId },
+          params: query,
+          signal,
         }
       );
       return res.data;

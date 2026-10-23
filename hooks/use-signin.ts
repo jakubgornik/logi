@@ -1,6 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { auth } from "@/lib/firebase";
 import { AuthenticationForm } from "@/modules/auth/auth-form.validation";
@@ -8,7 +7,7 @@ import { useNotify } from "./use-notify";
 import { ROUTES } from "@/lib/routes";
 
 export function useSignIn() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const { showSuccess, showError } = useNotify();
 
   return useMutation({
@@ -24,10 +23,11 @@ export function useSignIn() {
       const response = await api.post("/auth/signin", { idToken });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.cancelQueries();
+      queryClient.clear();
       showSuccess("Signed in successfully");
-      router.replace(ROUTES.DASHBOARD);
-      router.refresh();
+      window.location.replace(ROUTES.DASHBOARD);
     },
     onError: (error) => showError(error),
   });

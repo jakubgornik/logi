@@ -17,7 +17,6 @@ export default async function InventoryPage() {
 
   return (
     <InventoryTable
-      userId={session.userId}
       initialData={inventories.success ? inventories.data : undefined}
     />
   );
