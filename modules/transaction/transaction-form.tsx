@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useCallback, useState, useEffect } from "react";
+import { useMemo, useCallback, useState, useEffect, useRef } from "react";
+import type { FormEvent } from "react";
 import { useForm, FormProvider } from "react-hook-form";
+import type { FieldErrors, FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryState, parseAsStringEnum } from "nuqs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +12,7 @@ import { TransactionFormFooter } from "./transaction-form-footer";
 import {
   TransactionFormSchema,
   createDetailsSchema,
-  customerSchema,
+  createConfirmationSchema,
 } from "./transaction-form.validation";
 import type { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
 import {
@@ -30,6 +32,7 @@ import {
 } from "@/hooks/transaction.hooks";
 import type { TransactionWithItems } from "@/lib/fetchers/get-transaction";
 import { SUB_ROUTES } from "@/lib/routes";
+import { TransactionStatus } from "@/prisma/client/enums";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -85,20 +88,24 @@ export const TransactionForm = ({
   );
 
   const isEditMode = !!transactionId;
+  const submissionPendingRef = useRef(false);
+  const confirmationCompleteRef = useRef(false);
 
-  const currentSchema = useMemo(() => {
-    switch (currentStep) {
-      case TransactionFormSteps.DETAILS:
-        return createDetailsSchema(inventories);
-      case TransactionFormSteps.CUSTOMER:
-        return customerSchema;
-      default:
-        return createDetailsSchema(inventories);
-    }
-  }, [currentStep, inventories]);
+  const detailsSchema = useMemo(
+    () => createDetailsSchema(inventories),
+    [inventories],
+  );
+  const confirmationSchema = useMemo(
+    () => createConfirmationSchema(inventories),
+    [inventories],
+  );
+  const currentSchema =
+    currentStep === TransactionFormSteps.DETAILS
+      ? detailsSchema
+      : confirmationSchema;
 
   const methods = useForm<TransactionFormSchema>({
-    resolver: currentSchema ? zodResolver(currentSchema) : undefined,
+    resolver: zodResolver(currentSchema),
     defaultValues: createTransactionDefaultValues(transaction),
     mode: "onChange",
   });
@@ -111,13 +118,25 @@ export const TransactionForm = ({
     useUpdateTransaction();
 
   const {
-    mutate: confirmTransaction,
+    mutateAsync: confirmTransaction,
     isPending: isConfirming,
-    isSuccess: isConfirmed,
+    isSuccess: isConfirmationSuccessful,
   } = useConfirmTransaction();
 
+  const isConfirmed =
+    isConfirmationSuccessful ||
+    transaction?.status === TransactionStatus.CONFIRMED;
   const isLoading =
     isCreating || isUpdating || isConfirming || formState.isSubmitting;
+  const isFormLocked = isLoading || isConfirmed;
+
+  const isInteractionBlocked = useCallback(
+    () =>
+      isFormLocked ||
+      submissionPendingRef.current ||
+      confirmationCompleteRef.current,
+    [isFormLocked],
+  );
 
   const onStepSubmit = async (data: TransactionFormSchema) => {
     try {
@@ -126,7 +145,8 @@ export const TransactionForm = ({
           console.error("Missing transaction ID. Cannot confirm.");
           return;
         }
-        confirmTransaction({ id: transactionId, data });
+        await confirmTransaction({ id: transactionId, data });
+        confirmationCompleteRef.current = true;
         return;
       }
 
@@ -169,20 +189,93 @@ export const TransactionForm = ({
   };
 
   const handleBack = useCallback(() => {
+    if (isInteractionBlocked()) return;
+
     const prev = prevStepMap[currentStep];
     if (prev) setCurrentStep(prev);
-  }, [currentStep, setCurrentStep]);
+  }, [currentStep, isInteractionBlocked, setCurrentStep]);
 
   const checkStepValidity = useCallback(
     (stepId: string) => {
+      if (isFormLocked) return false;
+
       return canVisitStep(
         stepId as TransactionFormSteps,
         completedSteps,
         STEPS,
       );
     },
-    [completedSteps],
+    [completedSteps, isFormLocked],
   );
+
+  const showValidationStep = (fieldNames: string[]) => {
+    const hasInvalidDetails =
+      fieldNames.includes("name") || fieldNames.includes("items");
+    const invalidStep = hasInvalidDetails
+      ? TransactionFormSteps.DETAILS
+      : TransactionFormSteps.CUSTOMER;
+
+    setCurrentStep(invalidStep);
+  };
+
+  const handleInvalidSubmit = (
+    errors: FieldErrors<TransactionFormSchema>,
+  ) => {
+    showValidationStep(Object.keys(errors));
+  };
+
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (isInteractionBlocked()) return;
+
+    submissionPendingRef.current = true;
+
+    try {
+      await handleSubmit(onStepSubmit, handleInvalidSubmit)(event);
+    } finally {
+      submissionPendingRef.current = false;
+    }
+  };
+
+  const handleStepClick = (stepId: string) => {
+    const isNavigationBlocked =
+      isInteractionBlocked() || !checkStepValidity(stepId);
+
+    if (isNavigationBlocked) return;
+
+    const targetStep = stepId as TransactionFormSteps;
+    const isMovingForward =
+      STEPS.indexOf(targetStep) > STEPS.indexOf(currentStep);
+
+    if (isMovingForward) {
+      const targetSchema =
+        targetStep === TransactionFormSteps.SUMMARY
+          ? confirmationSchema
+          : detailsSchema;
+      const validation = targetSchema.safeParse(methods.getValues());
+
+      methods.clearErrors();
+
+      if (!validation.success) {
+        validation.error.issues.forEach((issue) => {
+          const fieldName = issue.path.join(
+            ".",
+          ) as FieldPath<TransactionFormSchema>;
+          methods.setError(fieldName, {
+            type: "validation",
+            message: issue.message,
+          });
+        });
+        showValidationStep(
+          validation.error.issues.map((issue) => String(issue.path[0])),
+        );
+        return;
+      }
+    }
+
+    setCurrentStep(targetStep);
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -227,25 +320,20 @@ export const TransactionForm = ({
           steps={STEPS}
           currentStepId={currentStep}
           isStepValid={checkStepValidity}
-          onStepClick={(stepId) => {
-            if (checkStepValidity(stepId)) {
-              setCurrentStep(stepId as TransactionFormSteps);
-            }
-          }}
+          onStepClick={handleStepClick}
         />
         <CardContent>
           <FormProvider {...methods}>
-            <form
-              onSubmit={handleSubmit(onStepSubmit)}
-              className="flex flex-col gap-4"
-            >
-              {renderStep()}
-              <TransactionFormFooter
-                currentStep={currentStep}
-                onBack={handleBack}
-                isLoading={isLoading}
-                isSuccess={isConfirmed}
-              />
+            <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
+              <fieldset disabled={isFormLocked} className="contents">
+                {renderStep()}
+                <TransactionFormFooter
+                  currentStep={currentStep}
+                  onBack={handleBack}
+                  isLoading={isLoading}
+                  isSuccess={isConfirmed}
+                />
+              </fieldset>
             </form>
           </FormProvider>
         </CardContent>

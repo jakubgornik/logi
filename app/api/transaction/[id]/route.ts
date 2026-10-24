@@ -1,5 +1,6 @@
 import { routeGuard } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/prisma/client/client";
 import { baseTransactionSchema } from "@/modules/transaction/transaction-form.validation";
 import { NotificationType, TransactionStatus } from "@/prisma/client/enums";
 import { NextRequest, NextResponse } from "next/server";
@@ -48,12 +49,29 @@ export const PUT = routeGuard<RouteParams>(
     const validCustomerId =
       customerId && customerId.trim() !== "" ? customerId : null;
 
-    if (status === TransactionStatus.CONFIRMED && !validCustomerId) {
+    const isConfirmationMissingCustomer =
+      status === TransactionStatus.CONFIRMED && !validCustomerId;
+
+    if (isConfirmationMissingCustomer) {
       return NextResponse.json(
         { message: "A Customer must be selected to confirm the transaction." },
         { status: 400 },
       );
     }
+
+    const hasConflictingName = async (
+      client: Pick<Prisma.TransactionClient, "transaction">,
+    ) => {
+      const transactionWithName = await client.transaction.findUnique({
+        where: { sellerId_name: { sellerId: user.id, name } },
+        select: { id: true },
+      });
+
+      const isAnotherTransaction =
+        transactionWithName !== null && transactionWithName.id !== transactionId;
+
+      return isAnotherTransaction;
+    };
 
     try {
       const result = await prisma.$transaction(async (tx) => {
@@ -66,6 +84,10 @@ export const PUT = routeGuard<RouteParams>(
 
         if (validCustomerId && !customer) {
           return "CUSTOMER_NOT_FOUND";
+        }
+
+        if (await hasConflictingName(tx)) {
+          return "NAME_CONFLICT";
         }
 
         const claimedTransaction = await tx.transaction.updateMany({
@@ -85,6 +107,7 @@ export const PUT = routeGuard<RouteParams>(
           await tx.transaction.update({
             where: { id: transactionId },
             data: {
+              name,
               customerId: validCustomerId,
               items: {
                 deleteMany: {},
@@ -140,13 +163,6 @@ export const PUT = routeGuard<RouteParams>(
             },
           });
         } else {
-          if (name !== existingTransaction.name) {
-            const nameCheck = await tx.transaction.findUnique({
-              where: { sellerId_name: { sellerId: user.id, name } },
-            });
-            if (nameCheck) throw new Error("Name already taken");
-          }
-
           await tx.transaction.update({
             where: { id: transactionId },
             data: {
@@ -188,6 +204,13 @@ export const PUT = routeGuard<RouteParams>(
         );
       }
 
+      if (result === "NAME_CONFLICT") {
+        return NextResponse.json(
+          { message: "A transaction with this name already exists." },
+          { status: 409 },
+        );
+      }
+
       return NextResponse.json({
         message:
           status === TransactionStatus.CONFIRMED
@@ -197,6 +220,19 @@ export const PUT = routeGuard<RouteParams>(
     } catch (error) {
       if (error instanceof InsufficientStockError) {
         return NextResponse.json({ message: error.message }, { status: 409 });
+      }
+
+      try {
+        const hasNameConflict = await hasConflictingName(prisma);
+
+        if (hasNameConflict) {
+          return NextResponse.json(
+            { message: "A transaction with this name already exists." },
+            { status: 409 },
+          );
+        }
+      } catch (nameCheckError) {
+        console.error("Transaction name check failed:", nameCheckError);
       }
 
       console.error("Update Error:", error);

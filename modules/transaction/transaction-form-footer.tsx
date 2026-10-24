@@ -19,6 +19,7 @@ export function TransactionFormFooter({
 }: TransactionFormFooterProps) {
   const isFirstStep = currentStep === TransactionFormSteps.DETAILS;
   const isLastStep = currentStep === TransactionFormSteps.SUMMARY;
+  const isDisabled = isLoading || isSuccess;
 
   return (
     <div className="flex justify-end gap-2 mt-4">
@@ -28,7 +29,7 @@ export function TransactionFormFooter({
           variant="outline"
           onClick={onBack}
           type="button"
-          disabled={isLoading || isSuccess}
+          disabled={isDisabled}
         >
           Back
         </Button>
@@ -38,14 +39,14 @@ export function TransactionFormFooter({
           size="lg"
           variant="secondary"
           type="submit"
-          disabled={isLoading}
+          disabled={isDisabled}
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? "Saving..." : "Save & Continue"}
         </Button>
       )}
       {isLastStep && (
-        <Button size="lg" type="submit" disabled={isLoading || isSuccess}>
+        <Button size="lg" type="submit" disabled={isDisabled}>
           {(isLoading || isSuccess) && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}

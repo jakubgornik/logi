@@ -33,7 +33,7 @@ export const baseTransactionSchema = z.object({
 });
 
 export const customerSchema = baseTransactionSchema.extend({
-  customerId: z.string().min(1, "Please select a customer"),
+  customerId: z.string().trim().min(1, "Please select a customer"),
 });
 
 export type TransactionFormSchema = z.infer<typeof baseTransactionSchema>;
@@ -43,6 +43,12 @@ export const createDetailsSchema = (inventories: InventoryWithProduct[]) => {
     items: transactionItemsSchema.superRefine((items, ctx) =>
       validateTransactionStock(items, ctx, inventories),
     ),
+  });
+};
+
+export const createConfirmationSchema = (inventories: InventoryWithProduct[]) => {
+  return createDetailsSchema(inventories).extend({
+    customerId: customerSchema.shape.customerId,
   });
 };
 
