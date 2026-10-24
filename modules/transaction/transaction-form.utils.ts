@@ -1,10 +1,30 @@
-import { TransactionWithItems } from "@/lib/fetchers/get-transaction";
-import { TransactionFormSchema } from "./transaction-form.validation";
+import type { TransactionWithItems } from "@/lib/fetchers/get-transaction";
+import type { UseFormReturn } from "react-hook-form";
+import type { TransactionFormSchema } from "./transaction-form.validation";
+
+export const updateTransactionSavedBaseline = (
+  {
+    getValues,
+    reset,
+  }: Pick<UseFormReturn<TransactionFormSchema>, "getValues" | "reset">,
+  savedValues: TransactionFormSchema,
+) => {
+  const currentValues = getValues();
+  const keepCurrentInputState = {
+    keepValues: true,
+    keepErrors: true,
+    keepTouched: true,
+  };
+
+  // Update the saved defaults, then recalculate dirtiness without replacing newer edits
+  reset(savedValues, keepCurrentInputState);
+  reset(currentValues, { ...keepCurrentInputState, keepDefaultValues: true });
+};
 
 export function canVisitStep<T>(
   targetStep: T,
   completedSteps: Set<T>,
-  stepOrder: T[]
+  stepOrder: T[],
 ): boolean {
   const targetIndex = stepOrder.indexOf(targetStep);
 
@@ -22,7 +42,7 @@ export function canVisitStep<T>(
 }
 
 export const createTransactionDefaultValues = (
-  transaction?: TransactionWithItems | null
+  transaction?: TransactionWithItems | null,
 ): TransactionFormSchema => {
   const noItems = [{ productId: "", quantity: 0 }];
 

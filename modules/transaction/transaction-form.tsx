@@ -12,12 +12,13 @@ import {
   createDetailsSchema,
   customerSchema,
 } from "./transaction-form.validation";
-import { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
+import type { InventoryWithProduct } from "@/lib/fetchers/get-inventories";
 import {
   canVisitStep,
   createTransactionDefaultValues,
+  updateTransactionSavedBaseline,
 } from "./transaction-form.utils";
-import { Customer, Transaction } from "@/prisma/client/client";
+import type { Customer } from "@/prisma/client/client";
 import { useRefreshWarning } from "@/hooks/use-refresh-warning";
 import { TransactionDetailsStep } from "./steps/transaction-details-step";
 import { TransactionCustomerStep } from "./steps/transaction-customer-step";
@@ -27,7 +28,8 @@ import {
   useCreateTransaction,
   useUpdateTransaction,
 } from "@/hooks/transaction.hooks";
-import { TransactionWithItems } from "@/lib/fetchers/get-transaction";
+import type { TransactionWithItems } from "@/lib/fetchers/get-transaction";
+import { SUB_ROUTES } from "@/lib/routes";
 
 export enum TransactionFormSteps {
   DETAILS = "details",
@@ -67,8 +69,8 @@ export const TransactionForm = ({
   const [currentStep, setCurrentStep] = useQueryState<TransactionFormSteps>(
     "step",
     parseAsStringEnum<TransactionFormSteps>(
-      Object.values(TransactionFormSteps)
-    ).withDefault(TransactionFormSteps.DETAILS)
+      Object.values(TransactionFormSteps),
+    ).withDefault(TransactionFormSteps.DETAILS),
   );
   const [completedSteps, setCompletedSteps] = useState<
     Set<TransactionFormSteps>
@@ -79,7 +81,7 @@ export const TransactionForm = ({
     return new Set();
   });
   const [transactionId, setTransactionId] = useState<string | null>(
-    transaction?.id || null
+    transaction?.id || null,
   );
 
   const isEditMode = !!transactionId;
@@ -128,12 +130,17 @@ export const TransactionForm = ({
         return;
       }
 
+      let createdDraftId: string | null = null;
+
       if (!transactionId) {
-        const transaction = await createTransaction(data);
-        setTransactionId(transaction.data.id);
+        const savedTransaction = await createTransaction(data);
+        createdDraftId = savedTransaction.data.id;
+        setTransactionId(createdDraftId);
       } else {
         await updateTransaction({ id: transactionId, data });
       }
+
+      updateTransactionSavedBaseline(methods, data);
 
       setCompletedSteps((prev) => {
         const next = new Set(prev);
@@ -142,7 +149,20 @@ export const TransactionForm = ({
       });
 
       const nextStep = nextStepMap[currentStep];
-      if (nextStep) setCurrentStep(nextStep);
+
+      if (createdDraftId) {
+        const savedDraftUrl = new URL(window.location.href);
+        savedDraftUrl.pathname = SUB_ROUTES.TRANSACTION_EDIT(createdDraftId);
+
+        if (nextStep) {
+          savedDraftUrl.searchParams.set("step", nextStep);
+        }
+
+        // Keep the live form mounted so edits made during creation are preserved
+        window.history.replaceState(null, "", savedDraftUrl);
+      } else if (nextStep) {
+        setCurrentStep(nextStep);
+      }
     } catch (error) {
       console.error("Step error:", error);
     }
@@ -158,10 +178,10 @@ export const TransactionForm = ({
       return canVisitStep(
         stepId as TransactionFormSteps,
         completedSteps,
-        STEPS
+        STEPS,
       );
     },
-    [completedSteps]
+    [completedSteps],
   );
 
   const renderStep = () => {
@@ -186,15 +206,14 @@ export const TransactionForm = ({
 
   useRefreshWarning(shouldBlockRefresh);
 
+  const requiresSavedDraft =
+    currentStep !== TransactionFormSteps.DETAILS && !transactionId;
+
   useEffect(() => {
-    if (
-      currentStep !== TransactionFormSteps.DETAILS &&
-      !transaction &&
-      !transactionId
-    ) {
+    if (requiresSavedDraft) {
       setCurrentStep(TransactionFormSteps.DETAILS);
     }
-  }, []);
+  }, [requiresSavedDraft, setCurrentStep]);
 
   return (
     <div className="p-3">
