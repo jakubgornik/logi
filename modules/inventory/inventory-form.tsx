@@ -23,6 +23,7 @@ import {
   inventorySchema,
 } from "./inventory-form.validation";
 import { Loader2 } from "lucide-react";
+import { MAX_QUANTITY } from "@/lib/shared/quantity.validation";
 
 interface InventoryFormProps {
   contracts: InventoryContractOption[];
@@ -235,6 +236,8 @@ export const InventoryForm = ({
                         id="quantity"
                         type="number"
                         min={1}
+                        max={MAX_QUANTITY}
+                        step={1}
                         placeholder="Enter amount"
                         aria-invalid={!!errors.quantity}
                         onChange={(e) => field.onChange(Number(e.target.value))}

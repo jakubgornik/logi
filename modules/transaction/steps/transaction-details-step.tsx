@@ -43,6 +43,7 @@ export const TransactionDetailsStep = ({
   });
 
   const items = watch("items");
+  const itemListError = errors.items?.root ?? errors.items;
 
   return (
     <div className="space-y-6">
@@ -86,6 +87,7 @@ export const TransactionDetailsStep = ({
           />
         ))}
       </div>
+      <FieldError errors={[itemListError]} />
       <Button
         type="button"
         variant="outline"
@@ -204,6 +206,7 @@ const TransactionItem = ({
                 type="number"
                 placeholder="Qty"
                 min={1}
+                step={1}
                 max={maxQuantity}
                 disabled={!selectedProductId}
                 aria-invalid={!!currentItemErrors?.quantity}
