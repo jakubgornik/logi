@@ -75,6 +75,8 @@ model Customer {
     linkedUser    User?          @relation("LinkedAppUser", fields: [appUserId], references: [id])
     transactions  Transaction[]
     notifications Notification[]
+
+    @@unique([sellerId, appUserId])
 }
 
 model Supplier {

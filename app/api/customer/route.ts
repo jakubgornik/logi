@@ -17,34 +17,68 @@ export const POST = routeGuard(async (request: NextRequest, { user }) => {
 
   try {
     if (isAppUser && appUserId) {
+      if (appUserId === user.id) {
+        return NextResponse.json(
+          { message: "You cannot link your own account as a customer." },
+          { status: 403 },
+        );
+      }
+
       const linkedUser = await prisma.user.findUnique({
-        where: { id: appUserId },
+        where: { id: appUserId, isCustomer: true },
+        select: {
+          id: true,
+          customerName: true,
+          addressCountry: true,
+          addressCity: true,
+          addressStreet: true,
+          addressPostalCode: true,
+        },
       });
 
       if (!linkedUser) {
         return NextResponse.json(
-          { message: "The selected app user does not exist." },
+          { message: "The selected app user is not available as a customer." },
           { status: 404 },
         );
       }
 
-      await prisma.customer.create({
-        data: {
-          sellerId: user.id,
-          customerName: linkedUser.customerName,
-          addressCountry: linkedUser.addressCountry,
-          addressCity: linkedUser.addressCity,
-          addressStreet: linkedUser.addressStreet,
-          addressPostalCode: linkedUser.addressPostalCode,
-          appUserId: linkedUser.id,
-          notifications: {
-            create: {
-              userId: user.id,
-              type: NotificationType.CUSTOMER_LINKED,
+      try {
+        await prisma.customer.create({
+          data: {
+            sellerId: user.id,
+            customerName: linkedUser.customerName,
+            addressCountry: linkedUser.addressCountry,
+            addressCity: linkedUser.addressCity,
+            addressStreet: linkedUser.addressStreet,
+            addressPostalCode: linkedUser.addressPostalCode,
+            appUserId: linkedUser.id,
+            notifications: {
+              create: {
+                userId: user.id,
+                type: NotificationType.CUSTOMER_LINKED,
+              },
             },
           },
-        },
-      });
+        });
+      } catch (error) {
+        // A concurrent request may have created the link before this insert failed.
+        const existingCustomer = await prisma.customer.findUnique({
+          where: {
+            sellerId_appUserId: { sellerId: user.id, appUserId: linkedUser.id },
+          },
+          select: { id: true },
+        });
+
+        if (existingCustomer) {
+          return NextResponse.json(
+            { message: "This app user is already linked as a customer." },
+            { status: 409 },
+          );
+        }
+
+        throw error;
+      }
 
       return NextResponse.json(
         { message: "App user linked successfully" },
