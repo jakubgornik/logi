@@ -3,9 +3,7 @@
 import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
-import { ROUTES } from "@/lib/routes";
-import { Transaction } from "@/prisma/client/client";
+import type { Transaction } from "@/prisma/client/client";
 import { Badge } from "@/components/ui/badge";
 
 export function useTransactionTableColumns(): ColumnDef<Transaction>[] {
@@ -16,6 +14,7 @@ export function useTransactionTableColumns(): ColumnDef<Transaction>[] {
         header: ({ table }) => (
           <Checkbox
             className="shadow-2xl"
+            disabled={table.options.enableRowSelection === false}
             checked={
               table.getIsAllPageRowsSelected() ||
               (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -28,6 +27,7 @@ export function useTransactionTableColumns(): ColumnDef<Transaction>[] {
         cell: ({ row }) => (
           <Checkbox
             className="shadow-2xl"
+            disabled={!row.getCanSelect()}
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             onClick={(e) => e.stopPropagation()}

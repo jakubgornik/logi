@@ -15,11 +15,9 @@ import {
   useDeleteTransaction,
   useGetTransactions,
 } from "@/hooks/transaction.hooks";
-import {
-  getSelectedIdsFromRowSelection,
-  mapSortingToSortBy,
-} from "@/modules/supplier/supplier-table.utils";
+import { mapSortingToSortBy } from "@/modules/supplier/supplier-table.utils";
 import { TransactionTableActions } from "./transaction-table-actions";
+import { useTransactionSelection } from "./use-transaction-selection";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 20];
 
@@ -45,7 +43,6 @@ export function TransactionTable({
     handlePaginationChange,
     reconcilePagination,
   } = useManualTableState();
-  const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
   const sortBy = mapSortingToSortBy(sorting);
   const columns = useTransactionTableColumns();
 
@@ -61,23 +58,41 @@ export function TransactionTable({
 
   reconcilePagination(data, isPlaceholderData, dataUpdatedAt);
 
-  const { mutate: deleteTransaction } = useDeleteTransaction({
-    onSuccess: () => {
-      setRowSelection({});
-    },
-  });
+  const { mutate: deleteTransaction, isPending: isDeleting } =
+    useDeleteTransaction({
+      onSuccess: () => {
+        setRowSelection({});
+      },
+    });
 
   const items = useMemo(() => data?.data ?? [], [data]);
 
-  const selectedTransactions = useMemo(() => {
-    return items.filter((item) => selectedIds.includes(item.id));
-  }, [items, selectedIds]);
+  const { selectedIds, canDelete, canEdit } = useTransactionSelection({
+    rowSelection,
+    transactions: items,
+    isPlaceholderData,
+    dataUpdatedAt,
+  });
+  const isSelectionLocked = isPlaceholderData || isDeleting;
+  const isPaginationLoading = isFetching || isSelectionLocked;
+  const actionSelectionKey = JSON.stringify({
+    ids: [...selectedIds].sort(),
+    canDelete,
+  });
+
+  const handleDelete = () => {
+    const isDeleteBlocked = !canDelete || isDeleting;
+
+    if (isDeleteBlocked) return;
+
+    deleteTransaction({ ids: [...selectedIds] });
+  };
 
   const table = useReactTable({
     data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    enableRowSelection: true,
+    enableRowSelection: !isSelectionLocked,
     onRowSelectionChange: setRowSelection,
     onSortingChange: handleSortingChange,
     manualSorting: true,
@@ -115,19 +130,20 @@ export function TransactionTable({
           additionalFilters={additionalFilters}
         />
         <TransactionTableActions
-          selectedTransactions={selectedTransactions}
+          key={actionSelectionKey}
           selectedIds={selectedIds}
-          onDelete={() => {
-            deleteTransaction({ ids: selectedIds });
-          }}
+          canDelete={canDelete}
+          canEdit={canEdit}
+          isDeleting={isDeleting}
+          onDelete={handleDelete}
         />
       </div>
-      <DataTable table={table} enableRowSelection />
+      <DataTable table={table} enableRowSelection={!isSelectionLocked} />
       <Pagination
         table={table}
         totalCount={totalCount}
         pageSizeOptions={PAGE_SIZE_OPTIONS}
-        isLoading={isFetching || isPlaceholderData}
+        isLoading={isPaginationLoading}
       />
       {children}
     </div>
