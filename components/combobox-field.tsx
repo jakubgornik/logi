@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -35,7 +35,7 @@ interface ComboboxFieldProps {
   className?: string;
   id?: string;
   disabled?: boolean;
-  fieldRef?: React.Ref<HTMLDivElement>;
+  fieldRef?: React.Ref<HTMLButtonElement>;
   showIcons?: boolean;
   ariaInvalid?: boolean;
 }
@@ -47,6 +47,8 @@ export function ComboboxField({
   onBlur,
   id,
   fieldRef,
+  disabled = false,
+  className,
   placeholder = "Select an option...",
   searchPlaceholder = "Search...",
   emptyMessage = "No results found.",
@@ -54,24 +56,39 @@ export function ComboboxField({
   ariaInvalid,
 }: ComboboxFieldProps) {
   const [open, setOpen] = useState(false);
+  const popupId = useId();
   const selectedOption = options.find((option) => option.value === value);
+
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== "ArrowDown") return;
+
+    event.preventDefault();
+    setOpen(true);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div
+        <button
+          type="button"
+          role="combobox"
           ref={fieldRef}
           onBlur={onBlur}
+          onKeyDown={handleTriggerKeyDown}
           id={id}
+          disabled={disabled}
+          aria-controls={popupId}
+          aria-expanded={open}
+          aria-haspopup="dialog"
           aria-invalid={ariaInvalid}
-          tabIndex={0}
           className={cn(
             "flex h-9 w-full items-center justify-between rounded-md px-3 py-1 border border-input bg-transparent shadow-xs text-foreground md:text-sm cursor-pointer transition-[border-color,box-shadow] outline-none",
             "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
             "aria-invalid:ring-destructive/20 aria-invalid:border-destructive",
-            !value && "text-muted-foreground"
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            !value && "text-muted-foreground",
+            className,
           )}
-          onClick={() => setOpen(true)}
         >
           <span className="flex items-center gap-2 truncate">
             {showIcons && selectedOption?.icon && (
@@ -81,16 +98,21 @@ export function ComboboxField({
             )}
             {selectedOption ? selectedOption.label : placeholder}
           </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </div>
+          <ChevronsUpDown
+            aria-hidden="true"
+            className="ml-2 h-4 w-4 shrink-0 opacity-50"
+          />
+        </button>
       </PopoverTrigger>
       <PopoverContent
+        id={popupId}
+        aria-label={placeholder}
         className="w-full p-0"
         style={{
           width: "var(--radix-popover-trigger-width)",
         }}
       >
-        <Command>
+        <Command label={searchPlaceholder}>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <ScrollArea>
@@ -108,7 +130,7 @@ export function ComboboxField({
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4 shrink-0",
-                        value === option.value ? "opacity-100" : "opacity-0"
+                        value === option.value ? "opacity-100" : "opacity-0",
                       )}
                     />
                     {showIcons && option.icon && (
