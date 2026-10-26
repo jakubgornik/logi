@@ -1,15 +1,11 @@
 "use client";
 
 import { DataTable } from "@/components/data-table";
-import {
-  useReactTable,
-  getCoreRowModel,
-  SortingState,
-  PaginationState,
-} from "@tanstack/react-table";
-import { ReactNode, useMemo, useState } from "react";
+import { useManualTableState } from "@/hooks/use-manual-table-state";
+import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
+import { ReactNode, useMemo } from "react";
 import { TableToolbar } from "@/components/filters/table-toolbar";
-import { FilterColumn, FilterState } from "@/components/filters/filters.types";
+import { FilterColumn } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import { PaginatedResponse } from "@/lib/types/common.types";
 import { Transaction } from "@/prisma/client/client";
@@ -36,26 +32,24 @@ export function TransactionTable({
   initialData,
   children,
 }: TransactionTableProps) {
-  const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    filters: [],
-  });
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const {
+    rowSelection,
+    setRowSelection,
+    sorting,
+    filters,
+    pagination,
+    totalCount,
+    pageCount,
+    handleFiltersChange,
+    handleSortingChange,
+    handlePaginationChange,
+    reconcilePagination,
+  } = useManualTableState();
   const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
   const sortBy = mapSortingToSortBy(sorting);
   const columns = useTransactionTableColumns();
 
-  const handleFiltersChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
-    setRowSelection({});
-  };
-
-  const { data } = useGetTransactions(
+  const { data, isPlaceholderData, isFetching, dataUpdatedAt } = useGetTransactions(
     {
       page: pagination.pageIndex,
       pageSize: pagination.pageSize,
@@ -65,6 +59,8 @@ export function TransactionTable({
     initialData
   );
 
+  reconcilePagination(data, isPlaceholderData, dataUpdatedAt);
+
   const { mutate: deleteTransaction } = useDeleteTransaction({
     onSuccess: () => {
       setRowSelection({});
@@ -72,8 +68,6 @@ export function TransactionTable({
   });
 
   const items = useMemo(() => data?.data ?? [], [data]);
-  const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);
-  const pageCount = useMemo(() => data?.totalPages, [data]);
 
   const selectedTransactions = useMemo(() => {
     return items.filter((item) => selectedIds.includes(item.id));
@@ -85,9 +79,9 @@ export function TransactionTable({
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     manualSorting: true,
-    onPaginationChange: setPagination,
+    onPaginationChange: handlePaginationChange,
     manualPagination: true,
     getRowId: (row) => row.id,
     pageCount,
@@ -133,6 +127,7 @@ export function TransactionTable({
         table={table}
         totalCount={totalCount}
         pageSizeOptions={PAGE_SIZE_OPTIONS}
+        isLoading={isFetching || isPlaceholderData}
       />
       {children}
     </div>

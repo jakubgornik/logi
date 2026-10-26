@@ -1,15 +1,10 @@
 "use client";
 
 import { DataTable } from "@/components/data-table";
-import {
-  useReactTable,
-  getCoreRowModel,
-  SortingState,
-  PaginationState,
-} from "@tanstack/react-table";
-import { ReactNode, useMemo, useState } from "react";
+import { useManualTableState } from "@/hooks/use-manual-table-state";
+import { useReactTable, getCoreRowModel } from "@tanstack/react-table";
+import { ReactNode, useMemo } from "react";
 import { TableToolbar } from "@/components/filters/table-toolbar";
-import { FilterState } from "@/components/filters/filters.types";
 import Pagination from "@/components/pagination/pagination";
 import { PaginatedResponse } from "@/lib/types/common.types";
 import { Customer } from "@/prisma/client/client";
@@ -29,16 +24,19 @@ interface CustomerTableProps {
 }
 
 export function CustomerTable({ initialData, children }: CustomerTableProps) {
-  const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    filters: [],
-  });
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const {
+    rowSelection,
+    setRowSelection,
+    sorting,
+    filters,
+    pagination,
+    totalCount,
+    pageCount,
+    handleFiltersChange,
+    handleSortingChange,
+    handlePaginationChange,
+    reconcilePagination,
+  } = useManualTableState();
   const selectedIds = getSelectedIdsFromRowSelection(rowSelection);
   const sortBy = mapSortingToSortBy(sorting);
   const columns = useCustomerTableColumns();
@@ -48,12 +46,7 @@ export function CustomerTable({ initialData, children }: CustomerTableProps) {
     },
   });
 
-  const handleFiltersChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
-    setRowSelection({});
-  };
-
-  const { data } = useGetCustomers(
+  const { data, isPlaceholderData, isFetching, dataUpdatedAt } = useGetCustomers(
     {
       page: pagination.pageIndex,
       pageSize: pagination.pageSize,
@@ -63,9 +56,9 @@ export function CustomerTable({ initialData, children }: CustomerTableProps) {
     initialData
   );
 
+  reconcilePagination(data, isPlaceholderData, dataUpdatedAt);
+
   const items = useMemo(() => data?.data ?? [], [data]);
-  const totalCount = useMemo(() => data?.totalCount ?? 0, [data]);
-  const pageCount = useMemo(() => data?.totalPages, [data]);
 
   const table = useReactTable({
     data: items,
@@ -73,9 +66,9 @@ export function CustomerTable({ initialData, children }: CustomerTableProps) {
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     manualSorting: true,
-    onPaginationChange: setPagination,
+    onPaginationChange: handlePaginationChange,
     manualPagination: true,
     getRowId: (row) => row.id,
     pageCount,
@@ -109,6 +102,7 @@ export function CustomerTable({ initialData, children }: CustomerTableProps) {
         table={table}
         totalCount={totalCount}
         pageSizeOptions={PAGE_SIZE_OPTIONS}
+        isLoading={isFetching || isPlaceholderData}
       />
       {children}
     </div>
